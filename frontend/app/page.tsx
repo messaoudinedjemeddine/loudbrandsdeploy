@@ -187,7 +187,7 @@ export default function HomePage() {
           loop
           playsInline
           preload="metadata"
-          poster="/images/hero-poster.jpg"
+          poster="/images/Djawhara Green2.jpg"
         >
           <source src="/videos/hero-video.mp4" type="video/mp4" />
           <source src="/videos/hero-video.webm" type="video/webm" />
@@ -195,7 +195,7 @@ export default function HomePage() {
           
           {/* Fallback image if video fails to load */}
           <img
-            src="/images/hero-fallback.jpg"
+            src="/images/Djawhara Green2.jpg"
             alt="LOUD BRANDS Hero"
             className="absolute inset-0 w-full h-full object-cover"
           />
