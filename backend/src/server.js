@@ -44,6 +44,7 @@ app.use(limiter);
 const allowedOrigins = [
   process.env.FRONTEND_URL, // Production Vercel URL
   'https://loudbrandss.com', // Production domain
+  'https://www.loudbrandss.com', // Production domain with www
   'http://localhost:3000', // Development
   'http://127.0.0.1:3000' // Development
 ].filter(Boolean); // Remove undefined values
@@ -52,10 +53,16 @@ app.use(cors({
   origin: function (origin, callback) {
     // Allow requests with no origin (like mobile apps or curl)
     if (!origin) return callback(null, true);
+    
+    console.log('CORS request from origin:', origin);
+    console.log('Allowed origins:', allowedOrigins);
+    
     if (allowedOrigins.indexOf(origin) === -1) {
+      console.log('CORS blocked origin:', origin);
       const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
       return callback(new Error(msg), false);
     }
+    console.log('CORS allowed origin:', origin);
     return callback(null, true);
   },
   credentials: true,
