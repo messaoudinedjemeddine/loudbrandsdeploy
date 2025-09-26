@@ -6,7 +6,7 @@ const nextConfig = {
   },
   images: { 
     unoptimized: true,
-    domains: ['localhost', 'your-heroku-app.herokuapp.com'],
+    domains: ['localhost', 'loudbrands-backend-da682a11031e.herokuapp.com'],
     remotePatterns: [
       {
         protocol: 'https',
