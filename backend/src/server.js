@@ -40,9 +40,24 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-// CORS configuration - More permissive for development
+// CORS configuration for production and development
+const allowedOrigins = [
+  process.env.FRONTEND_URL, // Production Vercel URL
+  'https://loudbrandss.com', // Production domain
+  'http://localhost:3000', // Development
+  'http://127.0.0.1:3000' // Development
+].filter(Boolean); // Remove undefined values
+
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://127.0.0.1:3000'], // Allow specific origins
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
