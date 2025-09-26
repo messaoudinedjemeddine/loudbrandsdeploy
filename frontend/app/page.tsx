@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, Suspense, lazy } from 'react'
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -12,9 +12,7 @@ import { useCartStore } from '@/lib/store'
 import { useLocaleStore } from '@/lib/locale-store'
 import { Navbar } from '@/components/navbar'
 
-// Lazy load heavy components
-const LazyProductGrid = lazy(() => import('@/components/product-grid'))
-const LazyFeatures = lazy(() => import('@/components/features'))
+// Performance optimizations - removed lazy loading for now
 
 // Define types
 interface Product {
