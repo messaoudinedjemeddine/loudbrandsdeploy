@@ -379,7 +379,7 @@ export default function AdminOrdersPage() {
         firstname: firstname,
         familyname: familyname,
         contactPhone: order.customerPhone,
-        address: order.deliveryType === 'HOME_DELIVERY' ? order.deliveryAddress : `${order.city.name} - ${order.deliveryDesk?.name || 'Pickup Location'}`,
+        address: order.deliveryType === 'HOME_DELIVERY' ? (order.deliveryAddress || `${order.city.name} - Home Delivery`) : `${order.city.name} - ${order.deliveryDesk?.name || 'Pickup Location'}`,
         toCommuneName: toCommuneName,
         toWilayaName: toWilayaName,
         productList: productList,
