@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense, lazy } from 'react'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -11,6 +11,10 @@ import Image from 'next/image'
 import { useCartStore } from '@/lib/store'
 import { useLocaleStore } from '@/lib/locale-store'
 import { Navbar } from '@/components/navbar'
+
+// Lazy load heavy components
+const LazyProductGrid = lazy(() => import('@/components/product-grid'))
+const LazyFeatures = lazy(() => import('@/components/features'))
 
 // Define types
 interface Product {
@@ -176,32 +180,10 @@ export default function HomePage() {
           <Navbar />
         </div>
         
-        {/* Video Background */}
-        <video
-          id="hero-video"
-          className="absolute inset-0 w-full h-full object-cover"
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="none"
-          poster="/images/hero-poster.jpg"
-        >
-          {/* Multiple video formats for better browser compatibility */}
-          <source src="/videos/hero-video.mp4" type="video/mp4" />
-          <source src="/videos/hero-video.webm" type="video/webm" />
-          <source src="/videos/hero-video.ogg" type="video/ogg" />
-          
-          {/* Fallback to external video if local files don't exist */}
-          <source src="https://player.vimeo.com/external/371433846.sd.mp4?s=236da2f3c0fd273d2c6d9a064f3ae35579b2bbdf&profile_id=139&oauth2_token_id=57447761" type="video/mp4" />
-          
-          {/* Fallback image if video fails to load */}
-          <img
-            src="/images/hero-fallback.jpg"
-            alt="LOUD BRANDS Hero"
-            className="absolute inset-0 w-full h-full object-cover"
-          />
-        </video>
+        {/* Optimized Background - Static gradient for instant loading */}
+        <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-800">
+          <div className="absolute inset-0 bg-black/20"></div>
+        </div>
 
         {/* Video Overlay */}
         <div className="absolute inset-0 bg-black/40" />
