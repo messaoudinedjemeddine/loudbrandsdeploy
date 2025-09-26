@@ -18,6 +18,9 @@ const shippingRoutes = require('./routes/shipping');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Trust proxy for Heroku
+app.set('trust proxy', 1);
+
 // Static files with CORS headers (before other middleware)
 app.use('/uploads', (req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
@@ -84,6 +87,16 @@ app.get('/health', (req, res) => {
     status: 'OK', 
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV 
+  });
+});
+
+// Debug endpoint for CORS testing
+app.get('/api/debug', (req, res) => {
+  res.status(200).json({
+    message: 'API is working',
+    origin: req.get('Origin'),
+    userAgent: req.get('User-Agent'),
+    timestamp: new Date().toISOString()
   });
 });
 
