@@ -132,16 +132,16 @@ export default function LoudimInventoryPage() {
       setProducts(productsList)
       
       // Calculate stats from analytics if available
-      if (response.analytics) {
+      if ((response as any).analytics) {
         setStats({
-          totalProducts: response.analytics.totalProducts,
+          totalProducts: (response as any).analytics.totalProducts,
           lowStockProducts: productsList.filter(p => (p.totalStock || p.stock) <= 5 && (p.totalStock || p.stock) > 0).length,
           outOfStockProducts: productsList.filter(p => (p.totalStock || p.stock) === 0).length,
-          totalValue: response.analytics.totalValue,
-          totalCost: response.analytics.totalCost,
-          totalProfit: response.analytics.totalProfit,
-          averageProfitMargin: response.analytics.averageProfitMargin,
-          totalStock: response.analytics.totalStock
+          totalValue: (response as any).analytics.totalValue,
+          totalCost: (response as any).analytics.totalCost,
+          totalProfit: (response as any).analytics.totalProfit,
+          averageProfitMargin: (response as any).analytics.averageProfitMargin,
+          totalStock: (response as any).analytics.totalStock
         })
       } else {
         // Fallback calculation
@@ -240,7 +240,7 @@ export default function LoudimInventoryPage() {
   }
 
   const getCategories = () => {
-    const categories = [...new Set(products.map(p => p.category?.name).filter(Boolean))]
+    const categories = Array.from(new Set(products.map(p => p.category?.name).filter(Boolean)))
     return categories
   }
 
@@ -519,7 +519,7 @@ export default function LoudimInventoryPage() {
                        <TableHead>Status</TableHead>
                        <TableHead>Actions</TableHead>
                      </TableRow>
-                   </TableHead>
+                  </TableHeader>
                   <TableBody>
                     {filteredProducts.map((product) => (
                       <TableRow key={product.id}>

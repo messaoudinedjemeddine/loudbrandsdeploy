@@ -47,6 +47,7 @@ export default function NewProductPage() {
     description: '',
     descriptionAr: '',
     price: '',
+    costPrice: '',
     oldPrice: '',
     brandId: '',
     category: '',
@@ -77,7 +78,7 @@ export default function NewProductPage() {
   const fetchBrands = async () => {
     try {
       const response = await api.admin.getBrands()
-      setBrands(response)
+      setBrands(response as any)
     } catch (error) {
       console.error('Failed to fetch brands:', error)
       toast.error('Failed to load brands')
@@ -188,6 +189,7 @@ export default function NewProductPage() {
         description: productData.description,
         descriptionAr: productData.descriptionAr,
         price: parseFloat(productData.price),
+        costPrice: parseFloat(productData.costPrice || '0'),
         oldPrice: productData.oldPrice ? parseFloat(productData.oldPrice) : undefined,
         brandId: productData.brandId,
         categoryId: productData.category, // Now this should be a valid UUID
@@ -369,9 +371,22 @@ export default function NewProductPage() {
               <CardTitle>Pricing</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="price">Price (DA) *</Label>
+                  <Label htmlFor="costPrice">Buying Price (DA) *</Label>
+                  <Input
+                    id="costPrice"
+                    type="number"
+                    value={productData.costPrice}
+                    onChange={(e) => handleInputChange('costPrice', e.target.value)}
+                    placeholder="0"
+                    min="0"
+                    required
+                  />
+                  <p className="text-xs text-muted-foreground">The price you paid for this product</p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="price">Selling Price (DA) *</Label>
                   <Input
                     id="price"
                     type="number"
@@ -381,6 +396,7 @@ export default function NewProductPage() {
                     min="0"
                     required
                   />
+                  <p className="text-xs text-muted-foreground">The price customers will pay</p>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="oldPrice">Old Price (DA)</Label>
@@ -392,6 +408,7 @@ export default function NewProductPage() {
                     placeholder="0"
                     min="0"
                   />
+                  <p className="text-xs text-muted-foreground">Previous selling price (for discounts)</p>
                 </div>
               </div>
 

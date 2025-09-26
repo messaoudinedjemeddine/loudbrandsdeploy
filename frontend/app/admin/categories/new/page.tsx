@@ -42,7 +42,7 @@ export default function NewCategoryPage() {
   const fetchBrands = async () => {
     try {
       const response = await api.admin.getBrands()
-      setBrands(response)
+      setBrands(response as any)
     } catch (error) {
       console.error('Failed to fetch brands:', error)
       toast.error('Failed to load brands')

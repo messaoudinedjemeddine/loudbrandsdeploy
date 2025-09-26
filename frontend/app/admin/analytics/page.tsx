@@ -13,74 +13,137 @@ import {
   Users,
   Package,
   Calendar,
-  MapPin,
-  Star
+  MapPin
 } from 'lucide-react'
 import { AdminLayout } from '@/components/admin/admin-layout'
+import { api } from '@/lib/api'
 
-// Mock analytics data
-const mockAnalytics = {
-  overview: {
-    totalRevenue: 1250000,
-    revenueGrowth: 18.5,
-    totalOrders: 234,
-    ordersGrowth: 23.1,
-    totalCustomers: 89,
-    customersGrowth: 5.2,
-    avgOrderValue: 5342,
-    avgOrderGrowth: -2.1
-  },
-  salesByMonth: [
-    { month: 'Jan', revenue: 85000, orders: 45 },
-    { month: 'Feb', revenue: 92000, orders: 52 },
-    { month: 'Mar', revenue: 78000, orders: 38 },
-    { month: 'Apr', revenue: 105000, orders: 61 },
-    { month: 'May', revenue: 118000, orders: 68 },
-    { month: 'Jun', revenue: 134000, orders: 72 }
-  ],
-  topProducts: [
-    { name: 'Traditional Karakou Dress', sales: 45, revenue: 1125000 },
-    { name: 'Modern Takchita', sales: 32, revenue: 1024000 },
-    { name: 'Embroidered Caftan', sales: 28, revenue: 616000 },
-    { name: 'Elegant Haik Dress', sales: 25, revenue: 450000 }
-  ],
-  topCategories: [
-    { name: 'Traditional Dresses', sales: 142, percentage: 35.5 },
-    { name: 'Bridal Collection', sales: 98, percentage: 24.5 },
-    { name: 'Modern Abayas', sales: 87, percentage: 21.8 },
-    { name: 'Embroidered Caftans', sales: 73, percentage: 18.2 }
-  ],
-  ordersByCity: [
-    { city: 'Algiers', orders: 89, percentage: 38.0 },
-    { city: 'Oran', orders: 56, percentage: 23.9 },
-    { city: 'Constantine', orders: 34, percentage: 14.5 },
-    { city: 'Annaba', orders: 28, percentage: 12.0 },
-    { city: 'Blida', orders: 27, percentage: 11.5 }
-  ],
-  customerSatisfaction: {
-    averageRating: 4.7,
-    totalReviews: 156,
-    ratingDistribution: [
-      { stars: 5, count: 89, percentage: 57.1 },
-      { stars: 4, count: 45, percentage: 28.8 },
-      { stars: 3, count: 15, percentage: 9.6 },
-      { stars: 2, count: 5, percentage: 3.2 },
-      { stars: 1, count: 2, percentage: 1.3 }
-    ]
-  }
+interface TopProduct {
+  id: string;
+  name: string;
+  nameAr?: string;
+  price: number;
+  image: string;
+  totalQuantity: number;
+  orderCount: number;
+  totalRevenue: number;
+}
+
+interface CategorySales {
+  categoryId: string;
+  categoryName: string;
+  categoryNameAr?: string;
+  totalQuantity: number;
+  orderCount: number;
+  totalRevenue: number;
+  percentage: number;
+}
+
+interface OrdersByCity {
+  cityId: string;
+  cityName: string;
+  cityNameAr?: string;
+  orders: number;
+  percentage: number;
 }
 
 export default function AdminAnalyticsPage() {
   const [mounted, setMounted] = useState(false)
   const [timeRange, setTimeRange] = useState('6months')
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  
+  // Real data state
+  const [overview, setOverview] = useState({
+    totalRevenue: 0,
+    revenueGrowth: 0,
+    totalOrders: 0,
+    ordersGrowth: 0,
+    totalCustomers: 0,
+    customersGrowth: 0,
+    avgOrderValue: 0,
+    avgOrderGrowth: 0
+  })
+  const [topProducts, setTopProducts] = useState<TopProduct[]>([])
+  const [topCategories, setTopCategories] = useState<CategorySales[]>([])
+  const [ordersByCity, setOrdersByCity] = useState<OrdersByCity[]>([])
 
   useEffect(() => {
     setMounted(true)
+    fetchAnalyticsData()
   }, [])
+
+  const fetchAnalyticsData = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+
+      // Fetch dashboard stats for overview
+      const dashboardStats = await api.admin.getDashboardStats()
+      
+      // Fetch analytics data
+      const [topProductsData, categoriesData, citiesData] = await Promise.all([
+        api.admin.getTopProducts(10),
+        api.admin.getSalesByCategory(),
+        api.admin.getOrdersByCity()
+      ])
+
+      // Update overview with real data
+      setOverview({
+        totalRevenue: (dashboardStats as any)?.totalRevenue || 0,
+        revenueGrowth: 0, // You can calculate this based on previous periods
+        totalOrders: (dashboardStats as any)?.totalOrders || 0,
+        ordersGrowth: 0, // You can calculate this based on previous periods
+        totalCustomers: (dashboardStats as any)?.totalUsers || 0,
+        customersGrowth: 0, // You can calculate this based on previous periods
+        avgOrderValue: (dashboardStats as any)?.totalOrders > 0 ? Math.round((dashboardStats as any)?.totalRevenue / (dashboardStats as any)?.totalOrders) : 0,
+        avgOrderGrowth: 0 // You can calculate this based on previous periods
+      })
+
+      setTopProducts((topProductsData as any) || [])
+      setTopCategories((categoriesData as any) || [])
+      setOrdersByCity((citiesData as any) || [])
+
+    } catch (err) {
+      console.error('Error fetching analytics data:', err)
+      setError(err instanceof Error ? err.message : 'Failed to load analytics data')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   if (!mounted) return null
 
-  const { overview, topProducts, topCategories, ordersByCity, customerSatisfaction } = mockAnalytics
+  if (loading) {
+    return (
+      <AdminLayout>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading analytics data...</p>
+          </div>
+        </div>
+      </AdminLayout>
+    )
+  }
+
+  if (error) {
+    return (
+      <AdminLayout>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <p className="text-red-500 mb-4">{error}</p>
+            <button 
+              onClick={fetchAnalyticsData}
+              className="px-4 py-2 bg-primary text-white rounded hover:bg-primary/90"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      </AdminLayout>
+    )
+  }
 
   return (
     <AdminLayout>
@@ -88,9 +151,9 @@ export default function AdminAnalyticsPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold">Analytics</h1>
+            <h1 className="text-3xl font-bold">Analyses</h1>
             <p className="text-muted-foreground">
-              Business insights and performance metrics
+              Insights commerciaux et métriques de performance
             </p>
           </div>
           <Select value={timeRange} onValueChange={setTimeRange}>
@@ -116,7 +179,7 @@ export default function AdminAnalyticsPage() {
           >
             <Card>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
+                <CardTitle className="text-sm font-medium">Revenus Totaux</CardTitle>
                 <DollarSign className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
@@ -125,7 +188,7 @@ export default function AdminAnalyticsPage() {
                 </div>
                 <p className="text-xs text-muted-foreground flex items-center">
                   <TrendingUp className="w-3 h-3 mr-1 text-green-500" />
-                  +{overview.revenueGrowth}% from last period
+                  +{overview.revenueGrowth}% par rapport à la période précédente
                 </p>
               </CardContent>
             </Card>
@@ -138,14 +201,14 @@ export default function AdminAnalyticsPage() {
           >
             <Card>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
+                <CardTitle className="text-sm font-medium">Total Commandes</CardTitle>
                 <ShoppingCart className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{overview.totalOrders}</div>
                 <p className="text-xs text-muted-foreground flex items-center">
                   <TrendingUp className="w-3 h-3 mr-1 text-green-500" />
-                  +{overview.ordersGrowth}% from last period
+                  +{overview.ordersGrowth}% par rapport à la période précédente
                 </p>
               </CardContent>
             </Card>
@@ -158,14 +221,14 @@ export default function AdminAnalyticsPage() {
           >
             <Card>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Total Customers</CardTitle>
+                <CardTitle className="text-sm font-medium">Total Clients</CardTitle>
                 <Users className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{overview.totalCustomers}</div>
                 <p className="text-xs text-muted-foreground flex items-center">
                   <TrendingUp className="w-3 h-3 mr-1 text-green-500" />
-                  +{overview.customersGrowth}% from last period
+                  +{overview.customersGrowth}% par rapport à la période précédente
                 </p>
               </CardContent>
             </Card>
@@ -178,7 +241,7 @@ export default function AdminAnalyticsPage() {
           >
             <Card>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Avg Order Value</CardTitle>
+                <CardTitle className="text-sm font-medium">Valeur Moyenne Commande</CardTitle>
                 <BarChart3 className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
@@ -187,7 +250,7 @@ export default function AdminAnalyticsPage() {
                 </div>
                 <p className="text-xs text-muted-foreground flex items-center">
                   <TrendingDown className="w-3 h-3 mr-1 text-red-500" />
-                  {overview.avgOrderGrowth}% from last period
+                  {overview.avgOrderGrowth}% par rapport à la période précédente
                 </p>
               </CardContent>
             </Card>
@@ -206,31 +269,48 @@ export default function AdminAnalyticsPage() {
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <Package className="w-5 h-5 mr-2" />
-                  Top Selling Products
+                  Produits les Plus Vendus
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {topProducts.map((product, index) => (
-                    <div key={index} className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-8 h-8 bg-gradient-to-br from-camel-400 to-camel-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
-                          {index + 1}
+                  {topProducts.length === 0 ? (
+                    <p className="text-muted-foreground text-center py-8">Aucune commande confirmée trouvée</p>
+                  ) : (
+                    topProducts.map((product, index) => (
+                      <div key={product.id} className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-8 h-8 bg-gradient-to-br from-camel-400 to-camel-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                            {index + 1}
+                          </div>
+                          <div className="flex items-center space-x-3">
+                            <img 
+                              src={product.image} 
+                              alt={product.name}
+                              className="w-10 h-10 rounded object-cover"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).src = '/placeholder-product.jpg'
+                              }}
+                            />
+                            <div>
+                              <p className="font-medium">{product.name}</p>
+                              <p className="text-sm text-muted-foreground">
+                                {product.totalQuantity} unités vendues
+                              </p>
+                            </div>
+                          </div>
                         </div>
-                        <div>
-                          <p className="font-medium">{product.name}</p>
+                        <div className="text-right">
+                          <p className="font-bold">
+                            {product.totalRevenue.toLocaleString()} DA
+                          </p>
                           <p className="text-sm text-muted-foreground">
-                            {product.sales} sales
+                            {product.orderCount} commandes
                           </p>
                         </div>
                       </div>
-                      <div className="text-right">
-                        <p className="font-bold">
-                          {product.revenue.toLocaleString()} DA
-                        </p>
-                      </div>
-                    </div>
-                  ))}
+                    ))
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -246,27 +326,35 @@ export default function AdminAnalyticsPage() {
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <BarChart3 className="w-5 h-5 mr-2" />
-                  Sales by Category
+                  Ventes par Catégorie
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {topCategories.map((category, index) => (
-                    <div key={index} className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="font-medium">{category.name}</span>
-                        <span className="text-sm text-muted-foreground">
-                          {category.sales} sales ({category.percentage}%)
-                        </span>
+                  {topCategories.length === 0 ? (
+                    <p className="text-muted-foreground text-center py-8">Aucune donnée de vente trouvée</p>
+                  ) : (
+                    topCategories.map((category, index) => (
+                      <div key={category.categoryId} className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="font-medium">{category.categoryName}</span>
+                          <span className="text-sm text-muted-foreground">
+                            {category.totalQuantity} unités ({category.percentage.toFixed(1)}%)
+                          </span>
+                        </div>
+                        <div className="w-full bg-muted rounded-full h-2">
+                          <div
+                            className="bg-gradient-to-r from-camel-400 to-camel-600 h-2 rounded-full transition-all duration-300"
+                            style={{ width: `${category.percentage}%` }}
+                          />
+                        </div>
+                        <div className="flex justify-between text-xs text-muted-foreground">
+                          <span>{category.orderCount} commandes</span>
+                          <span>{category.totalRevenue.toLocaleString()} DA</span>
+                        </div>
                       </div>
-                      <div className="w-full bg-muted rounded-full h-2">
-                        <div
-                          className="bg-gradient-to-r from-camel-400 to-camel-600 h-2 rounded-full transition-all duration-300"
-                          style={{ width: `${category.percentage}%` }}
-                        />
-                      </div>
-                    </div>
-                  ))}
+                    ))
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -285,88 +373,36 @@ export default function AdminAnalyticsPage() {
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <MapPin className="w-5 h-5 mr-2" />
-                  Orders by City
+                  Commandes par Ville
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {ordersByCity.map((city, index) => (
-                    <div key={index} className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
-                          {index + 1}
+                  {ordersByCity.length === 0 ? (
+                    <p className="text-muted-foreground text-center py-8">Aucune commande trouvée</p>
+                  ) : (
+                    ordersByCity.map((city, index) => (
+                      <div key={city.cityId} className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                            {index + 1}
+                          </div>
+                          <span className="font-medium">{city.cityName}</span>
                         </div>
-                        <span className="font-medium">{city.city}</span>
+                        <div className="text-right">
+                          <p className="font-bold">{city.orders} commandes</p>
+                          <p className="text-sm text-muted-foreground">
+                            {city.percentage.toFixed(1)}%
+                          </p>
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <p className="font-bold">{city.orders} orders</p>
-                        <p className="text-sm text-muted-foreground">
-                          {city.percentage}%
-                        </p>
-                      </div>
-                    </div>
-                  ))}
+                    ))
+                  )}
                 </div>
               </CardContent>
             </Card>
           </motion.div>
 
-          {/* Customer Satisfaction */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8 }}
-          >
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Star className="w-5 h-5 mr-2" />
-                  Customer Satisfaction
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-primary">
-                      {customerSatisfaction.averageRating}
-                    </div>
-                    <div className="flex items-center justify-center space-x-1 mb-2">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className={`w-4 h-4 ${
-                            i < Math.floor(customerSatisfaction.averageRating)
-                              ? 'text-yellow-400 fill-current'
-                              : 'text-gray-300'
-                          }`}
-                        />
-                      ))}
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      Based on {customerSatisfaction.totalReviews} reviews
-                    </p>
-                  </div>
-
-                  <div className="space-y-2">
-                    {customerSatisfaction.ratingDistribution.map((rating) => (
-                      <div key={rating.stars} className="flex items-center space-x-2">
-                        <span className="text-sm w-8">{rating.stars}★</span>
-                        <div className="flex-1 bg-muted rounded-full h-2">
-                          <div
-                            className="bg-yellow-400 h-2 rounded-full transition-all duration-300"
-                            style={{ width: `${rating.percentage}%` }}
-                          />
-                        </div>
-                        <span className="text-sm text-muted-foreground w-12">
-                          {rating.count}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
         </div>
       </div>
     </AdminLayout>

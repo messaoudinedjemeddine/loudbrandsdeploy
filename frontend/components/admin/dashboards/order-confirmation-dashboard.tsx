@@ -827,7 +827,7 @@ export function OrderConfirmationDashboard() {
                   id="customerPhone"
                   value={editForm.customerPhone}
                   onChange={(e) => setEditForm({ ...editForm, customerPhone: e.target.value })}
-                  placeholder="Phone number"
+                  placeholder="Numéro de téléphone"
                 />
                           </div>
               
@@ -855,7 +855,7 @@ export function OrderConfirmationDashboard() {
                   id="deliveryAddress"
                   value={editForm.deliveryAddress}
                   onChange={(e) => setEditForm({ ...editForm, deliveryAddress: e.target.value })}
-                  placeholder="Full address"
+                  placeholder="Adresse complète"
                 />
                         </div>
             )}
@@ -868,7 +868,7 @@ export function OrderConfirmationDashboard() {
                   onValueChange={(value) => setEditForm({ ...editForm, cityId: value, deliveryDeskId: '' })}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select city" />
+                    <SelectValue placeholder="Sélectionner une ville" />
                   </SelectTrigger>
                   <SelectContent>
                     {cities.map((city) => (
@@ -888,7 +888,7 @@ export function OrderConfirmationDashboard() {
                     onValueChange={(value) => setEditForm({ ...editForm, deliveryDeskId: value })}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select delivery desk" />
+                      <SelectValue placeholder="Sélectionner un point relais" />
                     </SelectTrigger>
                     <SelectContent>
                       {deliveryDesks
@@ -910,7 +910,7 @@ export function OrderConfirmationDashboard() {
                 id="notes"
                 value={editForm.notes}
                 onChange={(e) => setEditForm({ ...editForm, notes: e.target.value })}
-                placeholder="Add notes about this order"
+                placeholder="Ajouter des notes sur cette commande"
                 rows={3}
               />
             </div>
@@ -969,7 +969,7 @@ export function OrderConfirmationDashboard() {
                 id="orderNotes"
                 value={selectedOrder?.notes || ''}
                 onChange={(e) => setSelectedOrder(selectedOrder ? { ...selectedOrder, notes: e.target.value } : null)}
-                placeholder="Add notes about this order"
+                placeholder="Ajouter des notes sur cette commande"
                 rows={4}
               />
             </div>
@@ -1005,7 +1005,7 @@ export function OrderConfirmationDashboard() {
                 onValueChange={(value) => setNewItemForm({ ...newItemForm, productId: value })}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select product" />
+                  <SelectValue placeholder="Sélectionner un produit" />
                 </SelectTrigger>
                 <SelectContent>
                   {products.map((product) => (
@@ -1037,7 +1037,7 @@ export function OrderConfirmationDashboard() {
                   id="size"
                   value={newItemForm.size}
                   onChange={(e) => setNewItemForm({ ...newItemForm, size: e.target.value })}
-                  placeholder="Size"
+                  placeholder="Taille"
                 />
               </div>
               
@@ -1047,7 +1047,7 @@ export function OrderConfirmationDashboard() {
                   id="color"
                   value={newItemForm.color}
                   onChange={(e) => setNewItemForm({ ...newItemForm, color: e.target.value })}
-                  placeholder="Color"
+                  placeholder="Couleur"
                 />
               </div>
             </div>

@@ -1,5 +1,5 @@
 import { notFound, redirect } from 'next/navigation'
-import ProductDetailClient from './product-detail-client'
+import ProductDetailClient from './luxury-product-detail'
 
 interface Product {
   id: string;
@@ -38,9 +38,9 @@ interface Product {
 }
 
 interface ProductPageProps {
-  params: {
+  params: Promise<{
     slug: string
-  }
+  }>
 }
 
 // Required for static export
@@ -85,7 +85,8 @@ async function getProduct(slug: string): Promise<Product | null> {
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
-  const product = await getProduct(params.slug)
+  const resolvedParams = await params
+  const product = await getProduct(resolvedParams.slug)
 
   if (!product) {
     notFound()

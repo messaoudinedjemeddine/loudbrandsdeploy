@@ -165,6 +165,38 @@ export interface Translations {
       newsletterText: string
     }
     
+    loudBrands: {
+      whoWeAre: string
+      ourStory: string
+      ourValues: string
+      loudBrands: string
+      fromHeart: string
+      leadingBrand: string
+      loudStylesDesc: string
+      loudimDesc: string
+      proudAlgerian: string
+      storyBegin: string
+      storyJourney: string
+      storyInnovation: string
+      loudStylesPurpose: string
+      loudimPurpose: string
+      storyToday: string
+      qualityFirst: string
+      qualityFirstDesc: string
+      refinedElegance: string
+      refinedEleganceDesc: string
+      localIndustry: string
+      localIndustryDesc: string
+      boldness: string
+      boldnessDesc: string
+      innovation: string
+      innovationDesc: string
+      exploreLoudim: string
+      exploreLoudStyles: string
+      loudimTagline: string
+      loudStylesTagline: string
+    }
+    
     about: {
       title: string
       subtitle: string
@@ -505,6 +537,38 @@ export const translations: Record<Locale, Translations> = {
         newsletterText: 'Subscribe to our newsletter and be the first to know about new products and exclusive offers'
       },
       
+      loudBrands: {
+        whoWeAre: 'Who We Are',
+        ourStory: 'Our Story',
+        ourValues: 'Our Values',
+        loudBrands: 'LOUD Brands',
+        fromHeart: 'From the heart of Algeria, we are redefining elegance with a style that blends modernity and authenticity.',
+        leadingBrand: 'We are a leading Algerian brand specializing in the design and production of occasion wear and everyday clothing, through two distinct branches:',
+        loudStylesDesc: 'Luxurious wedding and evening gowns.',
+        loudimDesc: 'Chic outerwear and sophisticated casual wear.',
+        proudAlgerian: 'We are here to offer Algerian women local choices that powerfully compete with international brands—with complete pride, we are 100% Algerian.',
+        storyBegin: 'LOUD Brands began as a simple dream: to create local fashion that reflects the identity of the Algerian woman and meets her refined taste for every occasion.',
+        storyJourney: 'From a wedding dress that immortalizes life\'s big moment to a casual look that mirrors your everyday self—our journey has been filled with passion, design, and commitment to quality.',
+        storyInnovation: 'We chose to be different... so we innovated by creating two branches to cater to every aspect of your life:',
+        loudStylesPurpose: 'For every grand moment, a look worthy of you.',
+        loudimPurpose: 'For every day, an elegance that suits you.',
+        storyToday: 'Today, we are proud to be an Algerian brand making a difference with every step.',
+        qualityFirst: 'Quality First',
+        qualityFirstDesc: 'From fabric selection to the final stitch, we prioritize the smallest details.',
+        refinedElegance: 'Refined Elegance',
+        refinedEleganceDesc: 'We design pieces that reflect your personality, with a contemporary vision and an Algerian touch.',
+        localIndustry: 'Empowering Local Industry',
+        localIndustryDesc: 'Our ultimate pride is being 100% Algerian production.',
+        boldness: 'Boldness and Distinction',
+        boldnessDesc: 'We believe every woman deserves to be unique and different.',
+        innovation: 'Continuous Innovation',
+        innovationDesc: 'We follow the latest fashion lines and adapt them to suit your local taste.',
+        exploreLoudim: 'Explore LOUDIM',
+        exploreLoudStyles: 'Explore LOUD STYLES',
+        loudimTagline: 'LOUDIM collection combines elegance and comfort, designed for the modern woman seeking distinction in every occasion.',
+        loudStylesTagline: 'LOUD STYLES collection embodies luxury and sophistication, crafted for the woman who demands excellence in every moment.'
+      },
+      
       about: {
         title: 'About E-Shop Algeria',
         subtitle: "We're on a mission to revolutionize online shopping in Algeria",
@@ -842,6 +906,38 @@ export const translations: Record<Locale, Translations> = {
         newsletterText: 'اشترك في نشرتنا الإخبارية وكن أول من يعرف عن المنتجات الجديدة والعروض الحصرية'
       },
       
+      loudBrands: {
+        whoWeAre: 'من نحن',
+        ourStory: 'قصتنا',
+        ourValues: 'قيمنا',
+        loudBrands: 'LOUD Brands',
+        fromHeart: 'من قلب الجزائر، نحن نعيد تعريف الأناقة بأسلوب يجمع بين الحداثة والأصالة.',
+        leadingBrand: 'نحن علامة جزائرية رائدة متخصصة في تصميم وإنتاج ملابس المناسبات والملابس اليومية، من خلال فرعين متميزين:',
+        loudStylesDesc: 'فساتين أعراس وملابس سهرات فاخرة.',
+        loudimDesc: 'ملابس خارجية أنيقة وملابس كاجوال راقية.',
+        proudAlgerian: 'نحن هنا لنقدم للنساء الجزائريات خيارات محلية تنافس بقوة العلامات التجارية الدولية—بفخر كامل، نحن 100% جزائريون.',
+        storyBegin: 'بدأت LOUD Brands كحلم بسيط: إنشاء موضة محلية تعكس هوية المرأة الجزائرية وتلبي ذوقها المتميز في كل مناسبة.',
+        storyJourney: 'من فستان زفاف يخلد لحظة كبيرة في الحياة إلى إطلالة كاجوال تعكس ذاتك اليومية—كانت رحلتنا مليئة بالشغف والتصميم والالتزام بالجودة.',
+        storyInnovation: 'اخترنا أن نكون مختلفين... لذلك ابتكرنا من خلال إنشاء فرعين لخدمة كل جانب من جوانب حياتك:',
+        loudStylesPurpose: 'لكل لحظة عظيمة، إطلالة تليق بك.',
+        loudimPurpose: 'لكل يوم، أناقة تناسبك.',
+        storyToday: 'اليوم، نحن فخورون بأن نكون علامة جزائرية تحدث فرقاً مع كل خطوة.',
+        qualityFirst: 'الجودة أولاً',
+        qualityFirstDesc: 'من اختيار القماش إلى الغرزة الأخيرة، نولي أصغر التفاصيل أولوية.',
+        refinedElegance: 'أناقة راقية',
+        refinedEleganceDesc: 'نصمم قطعاً تعكس شخصيتك، برؤية معاصرة ولمسة جزائرية.',
+        localIndustry: 'تمكين الصناعة المحلية',
+        localIndustryDesc: 'فخرنا الأكبر هو أن نكون إنتاج 100% جزائري.',
+        boldness: 'الجسارة والتميز',
+        boldnessDesc: 'نؤمن أن كل امرأة تستحق أن تكون فريدة ومختلفة.',
+        innovation: 'الابتكار المستمر',
+        innovationDesc: 'نتبع أحدث خطوط الموضة ونكيفها لتناسب ذوقك المحلي.',
+        exploreLoudim: 'استكشفي LOUDIM',
+        exploreLoudStyles: 'استكشفي LOUD STYLES',
+        loudimTagline: 'مجموعة LOUDIM تجمع بين الأناقة والراحة، مصممة للمرأة العصرية التي تبحث عن التميز في كل مناسبة.',
+        loudStylesTagline: 'مجموعة LOUD STYLES تجسد الفخامة والأناقة، مصنوعة للمرأة التي تطالب بالتميز في كل لحظة.'
+      },
+      
       about: {
         title: 'حول متجر الجزائر الإلكتروني',
         subtitle: 'نحن في مهمة لثورة التسوق عبر الإنترنت في الجزائر',
@@ -1177,6 +1273,38 @@ export const translations: Record<Locale, Translations> = {
         featuredProducts: 'Produits en vedette',
         stayUpdated: 'Restez informé',
         newsletterText: 'Abonnez-vous à notre newsletter et soyez le premier à connaître les nouveaux produits et offres exclusives'
+      },
+      
+      loudBrands: {
+        whoWeAre: 'Qui nous sommes',
+        ourStory: 'Notre histoire',
+        ourValues: 'Nos valeurs',
+        loudBrands: 'LOUD Brands',
+        fromHeart: 'Du cœur de l\'Algérie, nous redéfinissons l\'élégance avec un style qui allie modernité et authenticité.',
+        leadingBrand: 'Nous sommes une marque algérienne leader spécialisée dans la conception et la production de vêtements d\'occasion et de tous les jours, à travers deux branches distinctes :',
+        loudStylesDesc: 'Robes de mariée et tenues de soirée luxueuses.',
+        loudimDesc: 'Vêtements d\'extérieur élégants et vêtements décontractés sophistiqués.',
+        proudAlgerian: 'Nous sommes ici pour offrir aux femmes algériennes des choix locaux qui rivalisent puissamment avec les marques internationales—avec une fierté totale, nous sommes 100% algériens.',
+        storyBegin: 'LOUD Brands a commencé comme un simple rêve : créer une mode locale qui reflète l\'identité de la femme algérienne et répond à son goût raffiné pour chaque occasion.',
+        storyJourney: 'D\'une robe de mariée qui immortalise le grand moment de la vie à un look décontracté qui reflète votre moi quotidien—notre parcours a été rempli de passion, de design et d\'engagement envers la qualité.',
+        storyInnovation: 'Nous avons choisi d\'être différents... alors nous avons innové en créant deux branches pour répondre à chaque aspect de votre vie :',
+        loudStylesPurpose: 'Pour chaque grand moment, un look digne de vous.',
+        loudimPurpose: 'Pour chaque jour, une élégance qui vous convient.',
+        storyToday: 'Aujourd\'hui, nous sommes fiers d\'être une marque algérienne qui fait la différence à chaque pas.',
+        qualityFirst: 'Qualité d\'abord',
+        qualityFirstDesc: 'De la sélection du tissu au point final, nous privilégions les plus petits détails.',
+        refinedElegance: 'Élégance raffinée',
+        refinedEleganceDesc: 'Nous concevons des pièces qui reflètent votre personnalité, avec une vision contemporaine et une touche algérienne.',
+        localIndustry: 'Autonomiser l\'industrie locale',
+        localIndustryDesc: 'Notre fierté ultime est d\'être une production 100% algérienne.',
+        boldness: 'Audace et distinction',
+        boldnessDesc: 'Nous croyons que chaque femme mérite d\'être unique et différente.',
+        innovation: 'Innovation continue',
+        innovationDesc: 'Nous suivons les dernières lignes de mode et les adaptons à votre goût local.',
+        exploreLoudim: 'Explorez LOUDIM',
+        exploreLoudStyles: 'Explorez LOUD STYLES',
+        loudimTagline: 'La collection LOUDIM allie élégance et confort, conçue pour la femme moderne qui recherche la distinction à chaque occasion.',
+        loudStylesTagline: 'La collection LOUD STYLES incarne le luxe et la sophistication, conçue pour la femme qui exige l\'excellence à chaque moment.'
       },
       
       about: {

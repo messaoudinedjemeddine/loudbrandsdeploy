@@ -169,17 +169,21 @@ export default function CheckoutPage() {
   
   // Calculate delivery fee based on Yalidine data
   const getDeliveryFee = () => {
-    if (!shippingFees) return 0
+    if (!shippingFees) {
+      // Fallback to default delivery fees if shipping fees not available
+      console.warn('Shipping fees not available, using default fees');
+      return formData.deliveryType === 'HOME_DELIVERY' ? 500 : 0;
+    }
     
     try {
       if (formData.deliveryType === 'HOME_DELIVERY') {
-        return shippingFees.deliveryOptions?.express?.home || 0
+        return shippingFees.deliveryOptions?.express?.home || 500; // Fallback to 500 if not available
       } else {
-        return shippingFees.deliveryOptions?.express?.desk || 0
+        return shippingFees.deliveryOptions?.express?.desk || 0;
       }
     } catch (error) {
       console.error('Error calculating delivery fee:', error)
-      return 0
+      return formData.deliveryType === 'HOME_DELIVERY' ? 500 : 0; // Fallback to default
     }
   }
   
@@ -247,8 +251,9 @@ export default function CheckoutPage() {
         deliveryType: formData.deliveryType as 'HOME_DELIVERY' | 'PICKUP',
         deliveryAddress: formData.deliveryType === 'HOME_DELIVERY' ? formData.deliveryAddress : undefined,
         wilayaId: parseInt(formData.wilayaId),
-        deliveryDeskId: formData.deliveryType === 'PICKUP' ? formData.centerId : undefined,
+        deliveryDeskId: formData.deliveryType === 'PICKUP' && formData.centerId ? formData.centerId : undefined,
         deliveryDeskName: formData.deliveryType === 'PICKUP' && selectedCenter ? selectedCenter.name : undefined,
+        deliveryFee: deliveryFee > 0 ? deliveryFee : undefined,
         notes: formData.notes || undefined,
         items: items.map(item => ({
           productId: item.id,
@@ -259,6 +264,13 @@ export default function CheckoutPage() {
 
       // Debug: Log the order data being sent
       console.log('🔍 Debug: Order data being sent:', orderData);
+      console.log('🔍 Debug: Delivery fee calculation:', {
+        deliveryFee,
+        subtotal,
+        total,
+        deliveryType: formData.deliveryType,
+        shippingFees: shippingFees
+      });
       console.log('🔍 Debug: API base URL:', process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api');
 
       // Create order via API

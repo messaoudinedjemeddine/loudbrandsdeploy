@@ -36,14 +36,17 @@ import { toast } from 'sonner'
 import { yalidineAPI } from '@/lib/yalidine-api'
 
 interface DeliveryStats {
-  readyOrders: number;
-  inTransitOrders: number;
-  deliveredOrders: number;
-  totalDeliveries: number;
+  enPreparation: number;
+  centre: number;
+  versWilaya: number;
+  sortiEnLivraison: number;
+  livre: number;
+  echecLivraison: number;
+  retourARetirer: number;
+  retourneAuVendeur: number;
+  echangeEchoue: number;
   confirmedOrders: number;
-  answeredOrders: number;
-  noAnswerOrders: number;
-  smsSentOrders: number;
+  totalShipments: number;
 }
 
 interface Order {
@@ -143,18 +146,68 @@ export function DeliveryAgentDashboard() {
   const [error, setError] = useState<string | null>(null)
   const { t, isRTL, direction } = useLocaleStore()
   const [stats, setStats] = useState<DeliveryStats>({
-    readyOrders: 0,
-    inTransitOrders: 0,
-    deliveredOrders: 0,
-    totalDeliveries: 0,
+    enPreparation: 0,
+    centre: 0,
+    versWilaya: 0,
+    sortiEnLivraison: 0,
+    livre: 0,
+    echecLivraison: 0,
+    retourARetirer: 0,
+    retourneAuVendeur: 0,
+    echangeEchoue: 0,
     confirmedOrders: 0,
-    answeredOrders: 0,
-    noAnswerOrders: 0,
-    smsSentOrders: 0
+    totalShipments: 0
   })
   const [orders, setOrders] = useState<Order[]>([])
   const [yalidineShipments, setYalidineShipments] = useState<YalidineShipment[]>([])
   const [loadingShipments, setLoadingShipments] = useState(false)
+  
+  // Pagination state for Yalidine shipments
+  const [shipmentPagination, setShipmentPagination] = useState({
+    has_more: false,
+    total_data: 0,
+    current_page: 1,
+    total_pages: 0,
+    per_page: 25
+  })
+  
+  // Status filter for Yalidine shipments
+  const [statusFilter, setStatusFilter] = useState<string>('all')
+  
+  // Yalidine status options
+  const yalidineStatuses = [
+    { value: 'all', label: 'All Statuses' },
+    { value: 'Pas encore expédié', label: 'Pas encore expédié' },
+    { value: 'A vérifier', label: 'A vérifier' },
+    { value: 'En préparation', label: 'En préparation' },
+    { value: 'Pas encore ramassé', label: 'Pas encore ramassé' },
+    { value: 'Prêt à expédier', label: 'Prêt à expédier' },
+    { value: 'Ramassé', label: 'Ramassé' },
+    { value: 'Bloqué', label: 'Bloqué' },
+    { value: 'Débloqué', label: 'Débloqué' },
+    { value: 'Transfert', label: 'Transfert' },
+    { value: 'Expédié', label: 'Expédié' },
+    { value: 'Centre', label: 'Centre' },
+    { value: 'En localisation', label: 'En localisation' },
+    { value: 'Vers Wilaya', label: 'Vers Wilaya' },
+    { value: 'Reçu à Wilaya', label: 'Reçu à Wilaya' },
+    { value: 'En attente du client', label: 'En attente du client' },
+    { value: 'Prêt pour livreur', label: 'Prêt pour livreur' },
+    { value: 'Sorti en livraison', label: 'Sorti en livraison' },
+    { value: 'En attente', label: 'En attente' },
+    { value: 'En alerte', label: 'En alerte' },
+    { value: 'Tentative échouée', label: 'Tentative échouée' },
+    { value: 'Livré', label: 'Livré' },
+    { value: 'Echèc livraison', label: 'Echèc livraison' },
+    { value: 'Retour vers centre', label: 'Retour vers centre' },
+    { value: 'Retourné au centre', label: 'Retourné au centre' },
+    { value: 'Retour transfert', label: 'Retour transfert' },
+    { value: 'Retour groupé', label: 'Retour groupé' },
+    { value: 'Retour à retirer', label: 'Retour à retirer' },
+    { value: 'Retour vers vendeur', label: 'Retour vers vendeur' },
+    { value: 'Retourné au vendeur', label: 'Retourné au vendeur' },
+    { value: 'Echange échoué', label: 'Echange échoué' }
+  ]
   
   // Enhanced functionality state
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
@@ -164,16 +217,50 @@ export function DeliveryAgentDashboard() {
 
   useEffect(() => {
     fetchDeliveryData()
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Reset pagination when filter changes
+  useEffect(() => {
+    setShipmentPagination(prev => ({ ...prev, current_page: 1 }))
+  }, [statusFilter])
+
+  // Filter shipments by status
+  const allFilteredShipments = statusFilter && statusFilter !== 'all'
+    ? yalidineShipments.filter(shipment => shipment.last_status === statusFilter)
+    : yalidineShipments
+
+  // Paginate the filtered results
+  const startIndex = (shipmentPagination.current_page - 1) * shipmentPagination.per_page
+  const endIndex = startIndex + shipmentPagination.per_page
+  const filteredShipments = allFilteredShipments.slice(startIndex, endIndex)
+  
+  // Update pagination info based on filtered results
+  const totalFilteredItems = allFilteredShipments.length
+  const totalPages = Math.ceil(totalFilteredItems / shipmentPagination.per_page)
 
   const fetchDeliveryData = async () => {
     try {
       setLoading(true)
       setError(null)
 
-      // Fetch delivery data and Yalidine shipments
-      const [ordersData] = await Promise.all([
-        api.admin.getOrders({ limit: 100 }) // Get more orders for delivery agent
+      // Fetch delivery data, Yalidine shipments, and Yalidine stats
+      const [ordersData, yalidineStats] = await Promise.all([
+        api.admin.getOrders({ limit: 100 }), // Get more orders for delivery agent
+        yalidineAPI.getShipmentStats().catch(err => {
+          console.warn('Failed to fetch Yalidine stats:', err)
+          return {
+            enPreparation: 0,
+            centre: 0,
+            versWilaya: 0,
+            sortiEnLivraison: 0,
+            livre: 0,
+            echecLivraison: 0,
+            retourARetirer: 0,
+            retourneAuVendeur: 0,
+            echangeEchoue: 0,
+            totalShipments: 0
+          }
+        })
       ])
 
       const ordersList = (ordersData as any).orders || ordersData as Order[]
@@ -182,17 +269,11 @@ export function DeliveryAgentDashboard() {
       // Fetch Yalidine shipments
       await fetchYalidineShipments()
 
-      // Calculate stats
-      const confirmedOrders = ordersList.filter(o => o.callCenterStatus === 'CONFIRMED')
+      // Calculate stats combining Yalidine data with confirmed orders
+        const confirmedOrders = ordersList.filter((o: Order) => o.callCenterStatus === 'CONFIRMED')
       const stats = {
-        readyOrders: ordersList.filter(o => o.deliveryStatus === 'READY').length,
-        inTransitOrders: ordersList.filter(o => o.deliveryStatus === 'IN_TRANSIT').length,
-        deliveredOrders: ordersList.filter(o => o.deliveryStatus === 'DONE').length,
-        totalDeliveries: ordersList.filter(o => o.deliveryStatus === 'READY' || o.deliveryStatus === 'IN_TRANSIT').length,
-        confirmedOrders: confirmedOrders.length,
-        answeredOrders: confirmedOrders.filter(o => o.communicationStatus === 'ANSWERED').length,
-        noAnswerOrders: confirmedOrders.filter(o => o.communicationStatus === 'DIDNT_ANSWER').length,
-        smsSentOrders: confirmedOrders.filter(o => o.communicationStatus === 'SMS_SENT').length
+        ...yalidineStats,
+        confirmedOrders: confirmedOrders.length
       }
       setStats(stats)
 
@@ -204,16 +285,52 @@ export function DeliveryAgentDashboard() {
     }
   }
 
-  const fetchYalidineShipments = async () => {
+  const fetchYalidineShipments = async (page: number = 1) => {
     try {
       setLoadingShipments(true)
-      const response = await yalidineAPI.getAllShipments()
+        const response = await yalidineAPI.getAllShipments({ page })
+      
+      // Handle pagination data
+      setShipmentPagination({
+        has_more: response.has_more || false,
+        total_data: response.total_data || response.data?.length || 0,
+        current_page: page,
+        total_pages: Math.ceil((response.total_data || 0) / shipmentPagination.per_page),
+        per_page: shipmentPagination.per_page
+      })
+      
       setYalidineShipments(response.data || [])
     } catch (error) {
       console.error('Error fetching Yalidine shipments:', error)
       setYalidineShipments([])
+      setShipmentPagination({
+        has_more: false,
+        total_data: 0,
+        current_page: 1,
+        total_pages: 0,
+        per_page: shipmentPagination.per_page
+      })
     } finally {
       setLoadingShipments(false)
+    }
+  }
+
+  // Pagination functions
+  const goToPage = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setShipmentPagination(prev => ({ ...prev, current_page: page }))
+    }
+  }
+
+  const nextPage = () => {
+    if (shipmentPagination.current_page < totalPages) {
+      goToPage(shipmentPagination.current_page + 1)
+    }
+  }
+
+  const prevPage = () => {
+    if (shipmentPagination.current_page > 1) {
+      goToPage(shipmentPagination.current_page - 1)
     }
   }
 
@@ -345,7 +462,7 @@ https://loudim.com/track-order
     <div className="space-y-6" dir={direction}>
       {/* Header */}
       <div>
-        <h2 className="text-2xl font-bold">{t?.admin?.deliveryAgent || 'Delivery Management Dashboard'}</h2>
+        <h2 className="text-2xl font-bold">Delivery Management Dashboard</h2>
         <p className="text-muted-foreground">
           Manage deliveries and track order status. Handle customer communications and navigation.
         </p>
@@ -360,13 +477,13 @@ https://loudim.com/track-order
         >
           <Card>
             <CardHeader className={`flex flex-row items-center justify-between pb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
-              <CardTitle className="text-sm font-medium">Ready for Pickup</CardTitle>
+              <CardTitle className="text-sm font-medium">En préparation</CardTitle>
               <Package className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.readyOrders}</div>
+              <div className="text-2xl font-bold">{stats.enPreparation}</div>
               <p className="text-xs text-muted-foreground">
-                Orders ready for pickup
+                Orders being prepared
               </p>
             </CardContent>
           </Card>
@@ -379,13 +496,13 @@ https://loudim.com/track-order
         >
           <Card>
             <CardHeader className={`flex flex-row items-center justify-between pb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
-              <CardTitle className="text-sm font-medium">In Transit</CardTitle>
+              <CardTitle className="text-sm font-medium">Centre</CardTitle>
               <Truck className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.inTransitOrders}</div>
+              <div className="text-2xl font-bold">{stats.centre}</div>
               <p className="text-xs text-muted-foreground">
-                Currently delivering
+                At distribution center
               </p>
             </CardContent>
           </Card>
@@ -398,13 +515,13 @@ https://loudim.com/track-order
         >
           <Card>
             <CardHeader className={`flex flex-row items-center justify-between pb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
-              <CardTitle className="text-sm font-medium">Delivered Today</CardTitle>
-              <CheckCircle className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium">Vers Wilaya</CardTitle>
+              <Navigation className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.deliveredOrders}</div>
+              <div className="text-2xl font-bold">{stats.versWilaya}</div>
               <p className="text-xs text-muted-foreground">
-                Successfully delivered
+                Heading to destination
               </p>
             </CardContent>
           </Card>
@@ -417,13 +534,13 @@ https://loudim.com/track-order
         >
           <Card>
             <CardHeader className={`flex flex-row items-center justify-between pb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
-              <CardTitle className="text-sm font-medium">Total Active</CardTitle>
+              <CardTitle className="text-sm font-medium">Sorti en livraison</CardTitle>
               <Truck className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.totalDeliveries}</div>
+              <div className="text-2xl font-bold">{stats.sortiEnLivraison}</div>
               <p className="text-xs text-muted-foreground">
-                Active deliveries
+                Out for delivery
               </p>
             </CardContent>
           </Card>
@@ -436,13 +553,13 @@ https://loudim.com/track-order
         >
           <Card>
             <CardHeader className={`flex flex-row items-center justify-between pb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
-              <CardTitle className="text-sm font-medium">Confirmed Orders</CardTitle>
+              <CardTitle className="text-sm font-medium">Livré</CardTitle>
               <CheckCircle className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.confirmedOrders}</div>
+              <div className="text-2xl font-bold">{stats.livre}</div>
               <p className="text-xs text-muted-foreground">
-                Orders to contact
+                Successfully delivered
               </p>
             </CardContent>
           </Card>
@@ -455,13 +572,13 @@ https://loudim.com/track-order
         >
           <Card>
             <CardHeader className={`flex flex-row items-center justify-between pb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
-              <CardTitle className="text-sm font-medium">Answered</CardTitle>
-              <MessageSquare className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium">Échec de livraison</CardTitle>
+              <AlertTriangle className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.answeredOrders}</div>
+              <div className="text-2xl font-bold">{stats.echecLivraison}</div>
               <p className="text-xs text-muted-foreground">
-                Customers answered
+                Delivery failed
               </p>
             </CardContent>
           </Card>
@@ -474,13 +591,13 @@ https://loudim.com/track-order
         >
           <Card>
             <CardHeader className={`flex flex-row items-center justify-between pb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
-              <CardTitle className="text-sm font-medium">No Answer</CardTitle>
-              <Phone className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium">Retour à retirer</CardTitle>
+              <Package className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.noAnswerOrders}</div>
+              <div className="text-2xl font-bold">{stats.retourARetirer}</div>
               <p className="text-xs text-muted-foreground">
-                Customers didn't answer
+                Return to pickup
               </p>
             </CardContent>
           </Card>
@@ -493,13 +610,51 @@ https://loudim.com/track-order
         >
           <Card>
             <CardHeader className={`flex flex-row items-center justify-between pb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
-              <CardTitle className="text-sm font-medium">SMS Sent</CardTitle>
-              <Send className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium">Retourné au vendeur</CardTitle>
+              <Truck className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.smsSentOrders}</div>
+              <div className="text-2xl font-bold">{stats.retourneAuVendeur}</div>
               <p className="text-xs text-muted-foreground">
-                SMS notifications sent
+                Returned to seller
+              </p>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.9 }}
+        >
+          <Card>
+            <CardHeader className={`flex flex-row items-center justify-between pb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+              <CardTitle className="text-sm font-medium">Échange échoué</CardTitle>
+              <AlertTriangle className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.echangeEchoue}</div>
+              <p className="text-xs text-muted-foreground">
+                Exchange failed
+              </p>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.0 }}
+        >
+          <Card>
+            <CardHeader className={`flex flex-row items-center justify-between pb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+              <CardTitle className="text-sm font-medium">Confirmed Orders</CardTitle>
+              <CheckCircle className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.confirmedOrders}</div>
+              <p className="text-xs text-muted-foreground">
+                From our website
               </p>
             </CardContent>
           </Card>
@@ -510,9 +665,9 @@ https://loudim.com/track-order
       <Tabs defaultValue="confirmed" className="space-y-4">
         <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="confirmed">Confirmed Orders ({stats.confirmedOrders})</TabsTrigger>
-          <TabsTrigger value="ready">Ready for Pickup ({stats.readyOrders})</TabsTrigger>
-          <TabsTrigger value="in-transit">In Transit ({stats.inTransitOrders})</TabsTrigger>
-          <TabsTrigger value="delivered">Delivered ({stats.deliveredOrders})</TabsTrigger>
+          <TabsTrigger value="preparation">En préparation ({stats.enPreparation})</TabsTrigger>
+          <TabsTrigger value="delivery">Out for Delivery ({stats.sortiEnLivraison})</TabsTrigger>
+          <TabsTrigger value="delivered">Delivered ({stats.livre})</TabsTrigger>
           <TabsTrigger value="yalidine">Yalidine Shipments ({yalidineShipments.length})</TabsTrigger>
         </TabsList>
 
@@ -535,12 +690,15 @@ https://loudim.com/track-order
                         <div className={`flex items-center ${isRTL ? 'space-x-reverse space-x-2' : 'space-x-2'} mb-2`}>
                           <h4 className="font-medium">#{order.orderNumber}</h4>
                           <Badge variant="outline">{order.customerPhone}</Badge>
-                          {order.communicationStatus && (
-                            <Badge className={communicationStatusColors[order.communicationStatus as keyof typeof communicationStatusColors]}>
-                              {communicationStatusLabels[order.communicationStatus as keyof typeof communicationStatusLabels]}
-                            </Badge>
-                          )}
                         </div>
+                        {order.trackingNumber && (
+                          <div className="text-sm text-muted-foreground mb-2">
+                            <span className="font-medium">Yalidine Tracking:</span> 
+                            <span className="ml-2 font-mono bg-blue-50 px-2 py-1 rounded text-blue-700">
+                              {order.trackingNumber}
+                            </span>
+                          </div>
+                        )}
                         <div className={`flex items-center ${isRTL ? 'space-x-reverse space-x-4' : 'space-x-4'} text-sm text-muted-foreground mb-2`}>
                           <span>{order.customerName}</span>
                           <span>{order.items.length} items</span>
@@ -564,17 +722,6 @@ https://loudim.com/track-order
                           variant="outline"
                           onClick={() => {
                             setSelectedOrder(order)
-                            setShowCommunicationDialog(true)
-                          }}
-                        >
-                          <MessageSquare className="w-4 h-4 mr-1" />
-                          Update Status
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => {
-                            setSelectedOrder(order)
                             setShowNotesDialog(true)
                           }}
                         >
@@ -591,14 +738,6 @@ https://loudim.com/track-order
                             WhatsApp
                           </Button>
                         )}
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleCallCustomer(order.customerPhone)}
-                        >
-                          <Phone className="w-4 h-4 mr-1" />
-                          Call
-                        </Button>
                       </div>
                     </div>
                   ))}
@@ -608,81 +747,75 @@ https://loudim.com/track-order
           </Card>
         </TabsContent>
 
-        <TabsContent value="ready" className="space-y-4">
+        <TabsContent value="preparation" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Orders Ready for Pickup</CardTitle>
+              <CardTitle>Orders in Preparation</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {orders.filter(order => order.deliveryStatus === 'READY').map((order) => (
-                  <div key={order.id} className="border rounded-lg p-4">
+                {yalidineShipments.filter(shipment => shipment.last_status === 'En préparation').map((shipment, index) => (
+                  <div key={shipment.id || shipment.tracking || `preparation-${index}`} className="border rounded-lg p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
                         <div className="flex items-center space-x-4">
                           <div>
-                            <p className="font-medium">#{order.orderNumber}</p>
-                            <p className="text-sm text-muted-foreground">{order.customerName}</p>
-                            <p className="text-sm text-muted-foreground">{order.customerPhone}</p>
+                            <p className="font-medium">#{shipment.tracking}</p>
+                            <p className="text-sm text-muted-foreground">{shipment.customer_name}</p>
+                            <p className="text-sm text-muted-foreground">{shipment.customer_phone}</p>
                             <p className="text-sm text-muted-foreground">
-                              {order.deliveryType === 'HOME_DELIVERY' ? 'Home Delivery' : 'Pickup'}
+                              {shipment.price?.toLocaleString()} DA
                             </p>
                           </div>
                           <div className="flex space-x-2">
-                            <Badge className={statusColors[order.deliveryStatus as keyof typeof statusColors]}>
-                              {statusLabels[order.deliveryStatus as keyof typeof statusLabels]}
+                            <Badge className="bg-amber-100 text-amber-800 border border-amber-200">
+                              {shipment.last_status}
                             </Badge>
                           </div>
                         </div>
                         <div className="mt-2 text-sm text-muted-foreground">
-                          {order.items.length} items • {order.total.toLocaleString()} DA • {new Date(order.createdAt).toLocaleString()}
+                          {shipment.product_list || 'N/A'} • {shipment.weight || 1} kg
                         </div>
-                        {order.deliveryAddress && (
+                        {shipment.customer_address && (
                           <div className="mt-2 text-sm bg-muted p-2 rounded">
-                            <strong>Address:</strong> {order.deliveryAddress}
+                            <strong>Address:</strong> {shipment.customer_address}
                           </div>
                         )}
                       </div>
                       <div className="flex space-x-2">
                         <Button 
                           size="sm" 
-                          onClick={() => updateDeliveryStatus(order.id, 'IN_TRANSIT')}
-                          className="bg-blue-600 hover:bg-blue-700"
+                          variant="outline"
+                          onClick={() => sendWhatsAppMessage(shipment.customer_phone, shipment.tracking)}
                         >
-                          <Truck className="w-4 h-4 mr-1" />
-                          Start Delivery
+                          <ExternalLink className="w-4 h-4 mr-1" />
+                          WhatsApp
                         </Button>
-                        {order.deliveryAddress && (
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => handleCallCustomer(shipment.customer_phone)}
+                        >
+                          <Phone className="w-4 h-4 mr-1" />
+                          Call
+                        </Button>
+                        {shipment.customer_address && (
                           <Button 
                             size="sm" 
                             variant="outline"
-                            onClick={() => handleNavigateToAddress(order.deliveryAddress!)}
+                            onClick={() => handleNavigateToAddress(shipment.customer_address!)}
                           >
                             <Navigation className="w-4 h-4 mr-1" />
                             Navigate
                           </Button>
                         )}
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={() => handleCallCustomer(order.customerPhone)}
-                        >
-                          <Phone className="w-4 h-4 mr-1" />
-                          Call
-                        </Button>
-                        <Button size="sm" variant="outline" asChild>
-                          <Link href={`/admin/orders/${order.id}`}>
-                            <Eye className="w-4 h-4 mr-1" />
-                            View
-                          </Link>
-                        </Button>
                       </div>
                     </div>
                   </div>
                 ))}
-                {orders.filter(order => order.deliveryStatus === 'READY').length === 0 && (
+                {yalidineShipments.filter(shipment => shipment.last_status === 'En préparation').length === 0 && (
                   <div className="text-center py-8 text-muted-foreground">
-                    No orders ready for pickup
+                    No orders in preparation
                   </div>
                 )}
               </div>
@@ -690,81 +823,75 @@ https://loudim.com/track-order
           </Card>
         </TabsContent>
 
-        <TabsContent value="in-transit" className="space-y-4">
+        <TabsContent value="delivery" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Orders In Transit</CardTitle>
+              <CardTitle>Orders Out for Delivery</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {orders.filter(order => order.deliveryStatus === 'IN_TRANSIT').map((order) => (
-                  <div key={order.id} className="border rounded-lg p-4">
+                {yalidineShipments.filter(shipment => shipment.last_status === 'Sorti en livraison').map((shipment, index) => (
+                  <div key={shipment.id || shipment.tracking || `delivery-${index}`} className="border rounded-lg p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
                         <div className="flex items-center space-x-4">
                           <div>
-                            <p className="font-medium">#{order.orderNumber}</p>
-                            <p className="text-sm text-muted-foreground">{order.customerName}</p>
-                            <p className="text-sm text-muted-foreground">{order.customerPhone}</p>
+                            <p className="font-medium">#{shipment.tracking}</p>
+                            <p className="text-sm text-muted-foreground">{shipment.customer_name}</p>
+                            <p className="text-sm text-muted-foreground">{shipment.customer_phone}</p>
                             <p className="text-sm text-muted-foreground">
-                              {order.deliveryType === 'HOME_DELIVERY' ? 'Home Delivery' : 'Pickup'}
+                              {shipment.price?.toLocaleString()} DA
                             </p>
                           </div>
                           <div className="flex space-x-2">
-                            <Badge className={statusColors[order.deliveryStatus as keyof typeof statusColors]}>
-                              {statusLabels[order.deliveryStatus as keyof typeof statusLabels]}
+                            <Badge className="bg-sky-100 text-sky-800 border border-sky-200">
+                              {shipment.last_status}
                             </Badge>
                           </div>
                         </div>
                         <div className="mt-2 text-sm text-muted-foreground">
-                          {order.items.length} items • {order.total.toLocaleString()} DA
+                          {shipment.product_list || 'N/A'} • {shipment.weight || 1} kg
                         </div>
-                        {order.deliveryAddress && (
+                        {shipment.customer_address && (
                           <div className="mt-2 text-sm bg-muted p-2 rounded">
-                            <strong>Address:</strong> {order.deliveryAddress}
+                            <strong>Address:</strong> {shipment.customer_address}
                           </div>
                         )}
                       </div>
                       <div className="flex space-x-2">
                         <Button 
                           size="sm" 
-                          onClick={() => updateDeliveryStatus(order.id, 'DONE')}
-                          className="bg-green-600 hover:bg-green-700"
+                          variant="outline"
+                          onClick={() => sendWhatsAppMessage(shipment.customer_phone, shipment.tracking)}
                         >
-                          <CheckCircle className="w-4 h-4 mr-1" />
-                          Mark Delivered
+                          <ExternalLink className="w-4 h-4 mr-1" />
+                          WhatsApp
                         </Button>
-                        {order.deliveryAddress && (
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => handleCallCustomer(shipment.customer_phone)}
+                        >
+                          <Phone className="w-4 h-4 mr-1" />
+                          Call
+                        </Button>
+                        {shipment.customer_address && (
                           <Button 
                             size="sm" 
                             variant="outline"
-                            onClick={() => handleNavigateToAddress(order.deliveryAddress!)}
+                            onClick={() => handleNavigateToAddress(shipment.customer_address!)}
                           >
                             <Navigation className="w-4 h-4 mr-1" />
                             Navigate
                           </Button>
                         )}
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={() => handleCallCustomer(order.customerPhone)}
-                        >
-                          <Phone className="w-4 h-4 mr-1" />
-                          Call
-                        </Button>
-                        <Button size="sm" variant="outline" asChild>
-                          <Link href={`/admin/orders/${order.id}`}>
-                            <Eye className="w-4 h-4 mr-1" />
-                            View
-                          </Link>
-                        </Button>
                       </div>
                     </div>
                   </div>
                 ))}
-                {orders.filter(order => order.deliveryStatus === 'IN_TRANSIT').length === 0 && (
+                {yalidineShipments.filter(shipment => shipment.last_status === 'Sorti en livraison').length === 0 && (
                   <div className="text-center py-8 text-muted-foreground">
-                    No orders in transit
+                    No orders out for delivery
                   </div>
                 )}
               </div>
@@ -779,41 +906,51 @@ https://loudim.com/track-order
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {orders.filter(order => order.deliveryStatus === 'DONE').map((order) => (
-                  <div key={order.id} className="border rounded-lg p-4">
+                {yalidineShipments.filter(shipment => shipment.last_status === 'Livré').map((shipment, index) => (
+                  <div key={shipment.id || shipment.tracking || `delivered-${index}`} className="border rounded-lg p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
                         <div className="flex items-center space-x-4">
                           <div>
-                            <p className="font-medium">#{order.orderNumber}</p>
-                            <p className="text-sm text-muted-foreground">{order.customerName}</p>
-                            <p className="text-sm text-muted-foreground">{order.customerPhone}</p>
+                            <p className="font-medium">#{shipment.tracking}</p>
+                            <p className="text-sm text-muted-foreground">{shipment.customer_name}</p>
+                            <p className="text-sm text-muted-foreground">{shipment.customer_phone}</p>
                             <p className="text-sm text-muted-foreground">
-                              {order.deliveryType === 'HOME_DELIVERY' ? 'Home Delivery' : 'Pickup'}
+                              {shipment.price?.toLocaleString()} DA
                             </p>
                           </div>
                           <div className="flex space-x-2">
-                            <Badge className={statusColors[order.deliveryStatus as keyof typeof statusColors]}>
-                              {statusLabels[order.deliveryStatus as keyof typeof statusLabels]}
+                            <Badge className="bg-emerald-100 text-emerald-800 border border-emerald-200">
+                              {shipment.last_status}
                             </Badge>
                           </div>
                         </div>
                         <div className="mt-2 text-sm text-muted-foreground">
-                          {order.items.length} items • {order.total.toLocaleString()} DA
+                          {shipment.product_list || 'N/A'} • {shipment.weight || 1} kg
                         </div>
                       </div>
                       <div className="flex space-x-2">
-                        <Button size="sm" variant="outline" asChild>
-                          <Link href={`/admin/orders/${order.id}`}>
-                            <Eye className="w-4 h-4 mr-1" />
-                            View
-                          </Link>
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => sendWhatsAppMessage(shipment.customer_phone, shipment.tracking)}
+                        >
+                          <ExternalLink className="w-4 h-4 mr-1" />
+                          WhatsApp
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => handleCallCustomer(shipment.customer_phone)}
+                        >
+                          <Phone className="w-4 h-4 mr-1" />
+                          Call
                         </Button>
                       </div>
                     </div>
                   </div>
                 ))}
-                {orders.filter(order => order.deliveryStatus === 'DONE').length === 0 && (
+                {yalidineShipments.filter(shipment => shipment.last_status === 'Livré').length === 0 && (
                   <div className="text-center py-8 text-muted-foreground">
                     No delivered orders today
                   </div>
@@ -829,17 +966,41 @@ https://loudim.com/track-order
               <div className="flex items-center justify-between">
                 <CardTitle className={`flex items-center ${isRTL ? 'flex-row-reverse' : ''}`}>
                   <Package className={`w-5 h-5 ${isRTL ? 'ml-2' : 'mr-2'}`} />
-                  Yalidine Shipments
+                  Yalidine Shipments ({totalFilteredItems} total)
+                  {totalPages > 1 && ` • Page ${shipmentPagination.current_page} of ${totalPages}`}
                 </CardTitle>
-                <Button 
-                  onClick={fetchYalidineShipments} 
-                  disabled={loadingShipments}
-                  variant="outline"
-                  size="sm"
-                >
-                  <Loader2 className={`h-4 w-4 mr-2 ${loadingShipments ? 'animate-spin' : ''}`} />
-                  Refresh
-                </Button>
+                <div className="flex items-center space-x-2">
+                  <Select value={statusFilter} onValueChange={setStatusFilter}>
+                    <SelectTrigger className="w-48">
+                      <SelectValue placeholder="Filter by status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {yalidineStatuses.map((status) => (
+                        <SelectItem key={status.value} value={status.value}>
+                          {status.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {statusFilter && statusFilter !== 'all' && (
+                    <Button 
+                      onClick={() => setStatusFilter('all')} 
+                      variant="outline"
+                      size="sm"
+                    >
+                      Clear Filter
+                    </Button>
+                  )}
+                  <Button 
+                    onClick={() => fetchYalidineShipments(1)} 
+                    disabled={loadingShipments}
+                    variant="outline"
+                    size="sm"
+                  >
+                    <Loader2 className={`h-4 w-4 mr-2 ${loadingShipments ? 'animate-spin' : ''}`} />
+                    Refresh
+                  </Button>
+                </div>
               </div>
         </CardHeader>
         <CardContent>
@@ -848,14 +1009,29 @@ https://loudim.com/track-order
                   <Loader2 className="h-6 w-6 animate-spin" />
                   <span className="ml-2">Loading shipments from Yalidine...</span>
                 </div>
-              ) : yalidineShipments.length === 0 ? (
+              ) : filteredShipments.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
                   <Package className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                  <p>No shipments found in Yalidine account</p>
+                  <p>
+                    {statusFilter && statusFilter !== 'all'
+                      ? `No shipments found with status "${statusFilter}"` 
+                      : 'No shipments found in Yalidine account'
+                    }
+                  </p>
+                  {statusFilter && statusFilter !== 'all' && (
+                    <Button 
+                      onClick={() => setStatusFilter('all')} 
+                      variant="outline"
+                      size="sm"
+                      className="mt-2"
+                    >
+                      Clear Filter
+                    </Button>
+                  )}
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {yalidineShipments.map((shipment, index) => (
+                  {filteredShipments.map((shipment, index) => (
                     <div key={shipment.id || shipment.tracking || `shipment-${index}`} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
@@ -955,6 +1131,84 @@ https://loudim.com/track-order
                   ))}
                 </div>
               )}
+              
+              {/* Pagination Controls */}
+              {totalFilteredItems > 0 && totalPages > 1 && (
+                <div className="flex items-center justify-between mt-6 pt-4 border-t">
+                  <div className="text-sm text-muted-foreground">
+                    Showing {startIndex + 1} to {Math.min(endIndex, totalFilteredItems)} of {totalFilteredItems} shipments
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={prevPage}
+                      disabled={shipmentPagination.current_page === 1}
+                    >
+                      Previous
+                    </Button>
+                    
+                    {/* Page numbers */}
+                    <div className="flex items-center space-x-1">
+                      {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                        const pageNum = i + 1;
+                        const isCurrentPage = pageNum === shipmentPagination.current_page;
+                        return (
+                          <Button
+                            key={pageNum}
+                            variant={isCurrentPage ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => goToPage(pageNum)}
+                            className="w-8 h-8 p-0"
+                          >
+                            {pageNum}
+                          </Button>
+                        );
+                      })}
+                      
+                      {totalPages > 5 && (
+                        <>
+                          {shipmentPagination.current_page > 3 && (
+                            <span className="px-2">...</span>
+                          )}
+                          {shipmentPagination.current_page > 3 && shipmentPagination.current_page < totalPages - 2 && (
+                            <Button
+                              variant="default"
+                              size="sm"
+                              className="w-8 h-8 p-0"
+                              onClick={() => goToPage(shipmentPagination.current_page)}
+                            >
+                              {shipmentPagination.current_page}
+                            </Button>
+                          )}
+                          {shipmentPagination.current_page < totalPages - 2 && (
+                            <span className="px-2">...</span>
+                          )}
+                          {totalPages > 5 && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="w-8 h-8 p-0"
+                              onClick={() => goToPage(totalPages)}
+                            >
+                              {totalPages}
+                            </Button>
+                          )}
+                        </>
+                      )}
+                    </div>
+                    
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={nextPage}
+                      disabled={shipmentPagination.current_page === totalPages}
+                    >
+                      Next
+                    </Button>
+                  </div>
+                </div>
+              )}
         </CardContent>
       </Card>
         </TabsContent>
@@ -986,7 +1240,7 @@ https://loudim.com/track-order
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="ANSWERED">Answered</SelectItem>
-                  <SelectItem value="DIDNT_ANSWER">Didn't Answer</SelectItem>
+                    <SelectItem value="DIDNT_ANSWER">Didn&apos;t Answer</SelectItem>
                   <SelectItem value="SMS_SENT">SMS Sent</SelectItem>
                 </SelectContent>
               </Select>

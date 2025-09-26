@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, use } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
@@ -20,12 +20,14 @@ import { api } from '@/lib/api'
 import { toast } from 'sonner'
 
 interface EditUserPageProps {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
 export default function EditUserPage({ params }: EditUserPageProps) {
+  // Unwrap params for Next.js 15 compatibility
+  const unwrappedParams = use(params)
   const router = useRouter()
   const [mounted, setMounted] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -59,7 +61,7 @@ export default function EditUserPage({ params }: EditUserPageProps) {
         }>;
       }
       
-      const user = response.users.find(u => u.id === params.id)
+      const user = response.users.find(u => u.id === unwrappedParams.id)
       if (user) {
         setUserData({
           firstName: user.firstName,
@@ -79,7 +81,7 @@ export default function EditUserPage({ params }: EditUserPageProps) {
     } finally {
       setIsLoadingData(false)
     }
-  }, [params.id, router])
+  }, [unwrappedParams.id, router])
 
   useEffect(() => {
     if (mounted) {
@@ -103,7 +105,7 @@ export default function EditUserPage({ params }: EditUserPageProps) {
         return
       }
 
-      await api.admin.updateUser(params.id, {
+      await api.admin.updateUser(unwrappedParams.id, {
         firstName: userData.firstName,
         lastName: userData.lastName,
         email: userData.email,
@@ -152,7 +154,7 @@ export default function EditUserPage({ params }: EditUserPageProps) {
             </div>
           </div>
           <Button variant="outline" asChild>
-            <Link href={`/admin/users/${params.id}`}>
+            <Link href={`/admin/users/${unwrappedParams.id}`}>
               <Eye className="w-4 h-4 mr-2" />
               View User
             </Link>

@@ -11,7 +11,6 @@ import Image from 'next/image'
 import { useCartStore } from '@/lib/store'
 import { useLocaleStore } from '@/lib/locale-store'
 import { Navbar } from '@/components/navbar'
-import { Counter } from '@/components/counter'
 
 // Define types
 interface Product {
@@ -169,7 +168,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-cream-50 via-warm-50 to-cream-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900" dir={isRTL ? 'rtl' : 'ltr'}>
+    <div className="min-h-screen bg-gradient-to-br from-cream-50 via-warm-50 to-cream-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 overflow-x-hidden" dir={isRTL ? 'rtl' : 'ltr'}>
       {/* Hero Section with Video */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden bg-gradient-to-r from-camel-100 via-camel-200 to-camel-300 dark:from-camel-800 dark:via-camel-700 dark:to-camel-600">
         {/* Navbar positioned over video */}
@@ -296,8 +295,8 @@ export default function HomePage() {
 
       {/* About Us Section */}
       <section className="py-24 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             {/* Content */}
             <motion.div
               initial={{ opacity: 0, x: -50 }}
@@ -313,33 +312,77 @@ export default function HomePage() {
                 viewport={{ once: true }}
                 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900"
               >
-                {isRTL ? 'من نحن' : 'About Us'}
+{t?.pages?.loudBrands?.whoWeAre || (isRTL ? 'من نحن' : 'Who We Are')}
               </motion.h2>
+              
+              <motion.h3
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                viewport={{ once: true }}
+                className="text-2xl md:text-3xl font-bold mb-4 text-gray-800"
+              >
+                {isRTL ? 'LOUD Brands' : 'LOUD Brands'}
+              </motion.h3>
               
               <motion.p
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.4 }}
                 viewport={{ once: true }}
-                className="text-lg text-gray-600 mb-6 leading-relaxed"
+                className="text-lg text-gray-600 mb-6 leading-relaxed break-words"
               >
-                {isRTL 
-                  ? 'نحن فخورون بتقديم أجمل الأزياء الجزائرية التقليدية والعصرية، مصممة بعناية فائقة لتناسب كل مناسبة.'
-                  : 'We are proud to offer the most beautiful traditional and modern Algerian fashion, carefully designed to suit every occasion.'
-                }
+{t?.pages?.loudBrands?.fromHeart || (isRTL
+                  ? 'من قلب الجزائر، نحن نعيد تعريف الأناقة بأسلوب يجمع بين الحداثة والأصالة.'
+                  : 'From the heart of Algeria, we are redefining elegance with a style that blends modernity and authenticity.'
+                )}
               </motion.p>
               
               <motion.p
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.5 }}
+                viewport={{ once: true }}
+                className="text-lg text-gray-600 mb-4 leading-relaxed break-words"
+              >
+{t?.pages?.loudBrands?.leadingBrand || (isRTL
+                  ? 'نحن علامة جزائرية رائدة متخصصة في تصميم وإنتاج ملابس المناسبات والملابس اليومية، من خلال فرعين متميزين:'
+                  : 'We are a leading Algerian brand specializing in the design and production of occasion wear and everyday clothing, through two distinct branches:'
+                )}
+              </motion.p>
+
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.6 }}
                 viewport={{ once: true }}
-                className="text-lg text-gray-600 mb-8 leading-relaxed"
+                className="space-y-3 mb-6"
               >
-                {isRTL 
-                  ? 'نحن نؤمن بأن الأناقة ليست مجرد مظهر خارجي، بل هي تعبير عن الهوية والثقافة والثقة بالنفس.'
-                  : 'We believe that elegance is not just an outward appearance, but an expression of identity, culture, and self-confidence.'
-                }
+                <div className="flex items-start space-x-3">
+                  <div className="w-2 h-2 bg-primary rounded-full mt-3 flex-shrink-0"></div>
+                  <p className="text-lg text-gray-600">
+                    <strong>LOUD Styles:</strong> {t?.pages?.loudBrands?.loudStylesDesc || (isRTL ? 'فساتين أعراس وملابس سهرات فاخرة.' : 'Luxurious wedding and evening gowns.')}
+                  </p>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <div className="w-2 h-2 bg-primary rounded-full mt-3 flex-shrink-0"></div>
+                  <p className="text-lg text-gray-600">
+                    <strong>LOUDIM:</strong> {t?.pages?.loudBrands?.loudimDesc || (isRTL ? 'ملابس خارجية أنيقة وملابس كاجوال راقية.' : 'Chic outerwear and sophisticated casual wear.')}
+                  </p>
+                </div>
+              </motion.div>
+              
+              <motion.p
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.7 }}
+                viewport={{ once: true }}
+                className="text-lg text-gray-600 mb-8 leading-relaxed font-medium break-words"
+              >
+{t?.pages?.loudBrands?.proudAlgerian || (isRTL
+                  ? 'نحن هنا لنقدم للنساء الجزائريات خيارات محلية تنافس بقوة العلامات التجارية الدولية—بفخر كامل، نحن 100% جزائريون.'
+                  : 'We are here to offer Algerian women local choices that powerfully compete with international brands—with complete pride, we are 100% Algerian.'
+                )}
               </motion.p>
 
               {/* Statistics Cards */}
@@ -352,7 +395,7 @@ export default function HomePage() {
                   className="bg-gray-50 p-6 rounded-2xl text-center hover:scale-105 transition-transform duration-300"
                 >
                   <div className="text-3xl font-bold text-primary mb-2">
-                    <Counter end={5000} duration={2} />
+                    5000+
                   </div>
                   <p className="text-gray-600 font-medium">
                     {isRTL ? 'عميلة سعيدة' : 'Happy Customers'}
@@ -367,7 +410,7 @@ export default function HomePage() {
                   className="bg-gray-50 p-6 rounded-2xl text-center hover:scale-105 transition-transform duration-300"
                 >
                   <div className="text-3xl font-bold text-primary mb-2">
-                    <Counter end={1000} duration={2} />
+                    1000+
                   </div>
                   <p className="text-gray-600 font-medium">
                     {isRTL ? 'تصميم فريد' : 'Unique Designs'}
@@ -386,11 +429,12 @@ export default function HomePage() {
             >
               <div className="relative">
                 <Image
-                  src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
+                  src="/images/Djawhara Green2.jpg"
                   alt="LOUD BRANDS Collection - Traditional Algerian Fashion"
                   width={600}
                   height={600}
                   className="w-full h-[600px] object-cover rounded-2xl shadow-2xl"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />
                 
                 {/* Floating Badge */}
@@ -411,7 +455,7 @@ export default function HomePage() {
 
       {/* Our Story Section */}
       <section className="py-24 text-gray-900" style={{ backgroundColor: '#ede2d1' }}>
-        <div className="container mx-auto px-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.h2
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -419,110 +463,78 @@ export default function HomePage() {
             viewport={{ once: true }}
             className="text-4xl md:text-5xl font-bold text-center mb-16"
           >
-            {isRTL ? 'قصتنا' : 'Our Story'}
+{t?.pages?.loudBrands?.ourStory || (isRTL ? 'قصتنا' : 'Our Story')}
           </motion.h2>
 
-          <div className="space-y-16">
-            {/* Story Point 1 */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             <motion.div
-              initial={{ opacity: 0, y: 100 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
               viewport={{ once: true }}
-              className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
+              className="relative"
             >
-              <div className="relative">
+              <div className="relative w-full h-96 rounded-2xl overflow-hidden shadow-2xl">
                 <Image
-                  src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
-                  alt="Our Beginning - Traditional Fashion Workshop"
-                  width={500}
-                  height={400}
-                  className="w-full h-[400px] object-cover rounded-2xl shadow-2xl"
+                  src="/images/Djebarpink.jpg"
+                  alt="Our Story"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />
-                <div className="absolute -top-4 -left-4 bg-primary text-primary-foreground px-4 py-2 rounded-full font-bold">
-                  2019
-                </div>
-                <div className="absolute top-1/2 right-4 w-8 h-8 bg-yellow-400 rounded-full"></div>
-              </div>
-              <div>
-                <h3 className="text-3xl font-bold mb-4">
-                  {isRTL ? 'البداية' : 'The Beginning'}
-                </h3>
-                <p className="text-lg text-gray-700 leading-relaxed">
-                  {isRTL 
-                    ? 'بدأت رحلتنا بحلم بسيط: تقديم أجمل الأزياء الجزائرية للعالم. بدأنا بورشة صغيرة في قلب الجزائر العاصمة.'
-                    : 'Our journey began with a simple dream: to bring the most beautiful Algerian fashion to the world. We started with a small workshop in the heart of Algiers.'
-                  }
-                </p>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
               </div>
             </motion.div>
 
-            {/* Story Point 2 */}
             <motion.div
-              initial={{ opacity: 0, y: 100 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.6 }}
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
               viewport={{ once: true }}
-              className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
+              className="space-y-6"
             >
-              <div className="lg:order-2 relative">
-                <Image
-                  src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
-                  alt="Growth and Innovation - Modern Fashion Design"
-                  width={500}
-                  height={400}
-                  className="w-full h-[400px] object-cover rounded-2xl shadow-2xl"
-                />
-                <div className="absolute -top-4 -right-4 bg-primary text-primary-foreground px-4 py-2 rounded-full font-bold">
-                  2021
+              <p className="text-lg text-gray-700 leading-relaxed break-words">
+{t?.pages?.loudBrands?.storyBegin || (isRTL 
+                  ? 'بدأت LOUD Brands كحلم بسيط: إنشاء موضة محلية تعكس هوية المرأة الجزائرية وتلبي ذوقها المتميز في كل مناسبة.'
+                  : 'LOUD Brands began as a simple dream: to create local fashion that reflects the identity of the Algerian woman and meets her refined taste for every occasion.'
+                )}
+              </p>
+              
+              <p className="text-lg text-gray-700 leading-relaxed break-words">
+{t?.pages?.loudBrands?.storyJourney || (isRTL 
+                  ? 'من فستان زفاف يخلد لحظة كبيرة في الحياة إلى إطلالة كاجوال تعكس ذاتك اليومية—كانت رحلتنا مليئة بالشغف والتصميم والالتزام بالجودة.'
+                  : 'From a wedding dress that immortalizes life\'s big moment to a casual look that mirrors your everyday self—our journey has been filled with passion, design, and commitment to quality.'
+                )}
+              </p>
+              
+              <p className="text-lg text-gray-700 leading-relaxed break-words">
+{t?.pages?.loudBrands?.storyInnovation || (isRTL 
+                  ? 'اخترنا أن نكون مختلفين... لذلك ابتكرنا من خلال إنشاء فرعين لخدمة كل جانب من جوانب حياتك:'
+                  : 'We chose to be different... so we innovated by creating two branches to cater to every aspect of your life:'
+                )}
+              </p>
+              
+              <div className="space-y-3">
+                <div className="flex items-start space-x-3">
+                  <div className="w-2 h-2 bg-primary rounded-full mt-3 flex-shrink-0"></div>
+                  <p className="text-lg text-gray-700 break-words">
+                    <strong>LOUD Styles:</strong> {t?.pages?.loudBrands?.loudStylesPurpose || (isRTL ? 'لكل لحظة عظيمة، إطلالة تليق بك.' : 'For every grand moment, a look worthy of you.')}
+                  </p>
                 </div>
-                <div className="absolute top-1/2 left-4 w-8 h-8 bg-white rounded-full"></div>
-              </div>
-              <div className="lg:order-1">
-                <h3 className="text-3xl font-bold mb-4">
-                  {isRTL ? 'النمو والابتكار' : 'Growth & Innovation'}
-                </h3>
-                <p className="text-lg text-gray-700 leading-relaxed">
-                  {isRTL 
-                    ? 'مع نمو علامتنا التجارية، بدأنا في دمج التقاليد الجزائرية مع التصاميم العصرية، مما أدى إلى إنشاء مجموعات فريدة.'
-                    : 'As our brand grew, we began integrating Algerian traditions with modern designs, creating unique collections that honor our heritage.'
-                  }
-                </p>
-              </div>
-            </motion.div>
-
-            {/* Story Point 3 */}
-            <motion.div
-              initial={{ opacity: 0, y: 100 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.9 }}
-              viewport={{ once: true }}
-              className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
-            >
-              <div className="relative">
-                <Image
-                  src="https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2026&q=80"
-                  alt="Today and Beyond - Luxury Fashion Collection"
-                  width={500}
-                  height={400}
-                  className="w-full h-[400px] object-cover rounded-2xl shadow-2xl"
-                />
-                <div className="absolute -top-4 -left-4 bg-primary text-primary-foreground px-4 py-2 rounded-full font-bold">
-                  2024
+                <div className="flex items-start space-x-3">
+                  <div className="w-2 h-2 bg-primary rounded-full mt-3 flex-shrink-0"></div>
+                  <p className="text-lg text-gray-700 break-words">
+                    <strong>LOUDIM:</strong> {t?.pages?.loudBrands?.loudimPurpose || (isRTL ? 'لكل يوم، أناقة تناسبك.' : 'For every day, an elegance that suits you.')}
+                  </p>
                 </div>
-                <div className="absolute top-1/2 right-4 w-8 h-8 bg-yellow-400 rounded-full"></div>
               </div>
-              <div>
-                <h3 className="text-3xl font-bold mb-4">
-                  {isRTL ? 'اليوم والمستقبل' : 'Today & Beyond'}
-                </h3>
-                <p className="text-lg text-gray-700 leading-relaxed">
-                  {isRTL 
-                    ? 'اليوم، نحن فخورون بأن نكون علامة تجارية رائدة في الأزياء الجزائرية، مع رؤية واضحة للمستقبل وخطط للتوسع العالمي.'
-                    : 'Today, we are proud to be a leading brand in Algerian fashion, with a clear vision for the future and plans for global expansion.'
-                  }
-                </p>
-              </div>
+              
+              <p className="text-lg text-gray-700 leading-relaxed font-medium break-words">
+{t?.pages?.loudBrands?.storyToday || (isRTL 
+                  ? 'اليوم، نحن فخورون بأن نكون علامة جزائرية تحدث فرقاً مع كل خطوة.'
+                  : 'Today, we are proud to be an Algerian brand making a difference with every step.'
+                )}
+              </p>
             </motion.div>
           </div>
         </div>
@@ -578,10 +590,10 @@ export default function HomePage() {
 
                 {/* Description */}
                 <p className="text-lg leading-relaxed text-gray-600">
-                  {isRTL 
+{t?.pages?.loudBrands?.loudimTagline || (isRTL 
                     ? 'مجموعة LOUDIM تجمع بين الأناقة والراحة، مصممة للمرأة العصرية التي تبحث عن التميز في كل مناسبة.'
                     : 'LOUDIM collection combines elegance and comfort, designed for the modern woman seeking distinction in every occasion.'
-                  }
+                  )}
                 </p>
 
                 {/* Feature List */}
@@ -613,7 +625,7 @@ export default function HomePage() {
                 >
                   <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300">
                     <Link href="/loudim">
-                      {isRTL ? 'استكشفي LOUDIM' : 'Explore LOUDIM'}
+{t?.pages?.loudBrands?.exploreLoudim || (isRTL ? 'استكشفي LOUDIM' : 'Explore LOUDIM')}
                     </Link>
                   </Button>
                 </motion.div>
@@ -627,7 +639,7 @@ export default function HomePage() {
               >
                 <div className="relative h-[500px] rounded-2xl shadow-2xl overflow-hidden">
                   <Image
-                    src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
+                    src="/images/kufsulblk3.jpg"
                     alt="LOUDIM Collection - Casual Fashion"
                     fill
                     className="object-cover"
@@ -664,7 +676,7 @@ export default function HomePage() {
               >
                 <div className="relative h-[500px] rounded-2xl shadow-2xl overflow-hidden">
                   <Image
-                    src="https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2026&q=80"
+                    src="/images/kufsulblue2.jpg"
                     alt="LOUD STYLES Collection - Luxury Fashion"
                     fill
                     className="object-cover"
@@ -748,39 +760,67 @@ export default function HomePage() {
       </section>
 
 
-
-      {/* Newsletter Section */}
-      <section className="py-20 bg-gradient-to-r from-camel-500 via-camel-600 to-camel-700 dark:from-camel-600 dark:via-camel-700 dark:to-camel-800 text-white">
-        <div className="container mx-auto px-4 text-center">
+      {/* Our Values Section */}
+      <section className="py-20 text-gray-900" style={{ backgroundColor: '#ede2d1' }}>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
+            className="text-center mb-16"
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              {isRTL ? 'ابقي على اطلاع' : 'Stay Updated'}
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
+{t?.pages?.loudBrands?.ourValues || (isRTL ? 'قيمنا' : 'Our Values')}
             </h2>
-            <p className="text-lg mb-8 opacity-90 max-w-2xl mx-auto">
-              {isRTL 
-                ? 'اشتركي في نشرتنا الإخبارية واحصلي على آخر أخبار الموضة والعروض الحصرية'
-                : 'Subscribe to our newsletter and get the latest fashion news and exclusive offers'
-              }
-            </p>
-            <div className={`flex flex-col sm:flex-row gap-4 max-w-md mx-auto ${isRTL ? 'sm:flex-row-reverse' : ''}`}>
-              <input
-                type="email"
-                placeholder={isRTL ? 'أدخلي بريدك الإلكتروني' : 'Enter your email'}
-                className={`flex-1 px-4 py-3 rounded-lg text-gray-800 placeholder-gray-500 ${isRTL ? 'text-right' : 'text-left'}`}
-                dir={isRTL ? 'rtl' : 'ltr'}
-              />
-              <Button variant="secondary" size="lg" className="bg-white text-camel-600 hover:bg-gray-100 font-medium">
-                {isRTL ? 'اشتراك' : 'Subscribe'}
-              </Button>
-            </div>
+            <div className="w-24 h-1 bg-primary mx-auto mb-8"></div>
           </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[
+              {
+                icon: '✨',
+                title: t?.pages?.loudBrands?.qualityFirst || (isRTL ? 'الجودة أولاً' : 'Quality First'),
+                description: t?.pages?.loudBrands?.qualityFirstDesc || (isRTL ? 'من اختيار الأقمشة إلى الغرزة الأخيرة، نعطي الأولوية لأصغر التفاصيل.' : 'From fabric selection to the final stitch, we prioritize the smallest details.')
+              },
+              {
+                icon: '✨',
+                title: t?.pages?.loudBrands?.refinedElegance || (isRTL ? 'أناقة راقية' : 'Refined Elegance'),
+                description: t?.pages?.loudBrands?.refinedEleganceDesc || (isRTL ? 'نصمم قطعاً تعكس شخصيتك، برؤية معاصرة ولمسة جزائرية.' : 'We design pieces that reflect your personality, with a contemporary vision and an Algerian touch.')
+              },
+              {
+                icon: '✨',
+                title: t?.pages?.loudBrands?.localIndustry || (isRTL ? 'تمكين الصناعة المحلية' : 'Empowering Local Industry'),
+                description: t?.pages?.loudBrands?.localIndustryDesc || (isRTL ? 'فخرنا الأكبر هو كوننا إنتاج 100% جزائري.' : 'Our ultimate pride is being 100% Algerian production.')
+              },
+              {
+                icon: '✨',
+                title: t?.pages?.loudBrands?.boldness || (isRTL ? 'الجرأة والتميز' : 'Boldness and Distinction'),
+                description: t?.pages?.loudBrands?.boldnessDesc || (isRTL ? 'نؤمن أن كل امرأة تستحق أن تكون فريدة ومختلفة.' : 'We believe every woman deserves to be unique and different.')
+              },
+              {
+                icon: '✨',
+                title: t?.pages?.loudBrands?.innovation || (isRTL ? 'الابتكار المستمر' : 'Continuous Innovation'),
+                description: t?.pages?.loudBrands?.innovationDesc || (isRTL ? 'نتبع أحدث خطوط الموضة ونكيفها لتناسب ذوقك المحلي.' : 'We follow the latest fashion lines and adapt them to suit your local taste.')
+              }
+            ].map((value, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                viewport={{ once: true }}
+                className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+              >
+                <div className="text-3xl mb-4">{value.icon}</div>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">{value.title}</h3>
+                <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{value.description}</p>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
+
     </div>
   )
 }

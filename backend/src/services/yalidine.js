@@ -335,9 +335,10 @@ class YalidineService {
   formatParcelData(orderData) {
     const {
       orderId,
-      customerName,
-      customerPhone,
-      customerAddress,
+      firstname,
+      familyname,
+      contactPhone,
+      address,
       fromWilayaName,
       toWilayaName,
       toCommuneName,
@@ -356,18 +357,13 @@ class YalidineService {
       productToCollect = null
     } = orderData;
 
-    // Split customer name into first and last name
-    const nameParts = customerName.split(' ');
-    const firstName = nameParts[0] || '';
-    const lastName = nameParts.slice(1).join(' ') || '';
-
     return {
       order_id: orderId,
       from_wilaya_name: fromWilayaName,
-      firstname: firstName,
-      familyname: lastName,
-      contact_phone: customerPhone,
-      address: customerAddress,
+      firstname: firstname,
+      familyname: familyname,
+      contact_phone: contactPhone,
+      address: address,
       to_commune_name: toCommuneName,
       to_wilaya_name: toWilayaName,
       product_list: productList,

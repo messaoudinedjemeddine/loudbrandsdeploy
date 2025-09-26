@@ -109,7 +109,7 @@ export default function ProfitAnalyticsPage() {
       setAnalytics(response)
     } catch (error) {
       console.error('Failed to fetch profit analytics:', error)
-      toast.error('Failed to load profit analytics')
+      toast.error('Échec du chargement des analyses de profit')
     } finally {
       setLoading(false)
     }
@@ -117,21 +117,21 @@ export default function ProfitAnalyticsPage() {
 
   const exportAnalytics = async () => {
     try {
-      toast.loading('Preparing analytics export...')
+      toast.loading('Préparation de l\'export des analyses...')
       
       const brandSlug = selectedBrand === 'all' ? undefined : selectedBrand
       const response = await api.admin.getProfitAnalytics(brandSlug) as ProfitAnalyticsResponse
       
       // Create CSV content
       const headers = [
-        'Category',
-        'Brand',
-        'Total Products',
-        'Total Stock',
-        'Total Value (DA)',
-        'Total Cost (DA)',
-        'Total Profit (DA)',
-        'Average Profit Margin (%)'
+        'Catégorie',
+        'Marque',
+        'Total Produits',
+        'Stock Total',
+        'Valeur Totale (DA)',
+        'Coût Total (DA)',
+        'Profit Total (DA)',
+        'Marge de Profit Moyenne (%)'
       ]
 
       const csvRows = [headers.join(',')]
@@ -163,11 +163,11 @@ export default function ProfitAnalyticsPage() {
       URL.revokeObjectURL(url)
 
       toast.dismiss()
-      toast.success('Analytics exported successfully')
+      toast.success('Analyses exportées avec succès')
     } catch (error) {
       console.error('Export failed:', error)
       toast.dismiss()
-      toast.error('Failed to export analytics')
+      toast.error('Échec de l\'export des analyses')
     }
   }
 
@@ -182,21 +182,21 @@ export default function ProfitAnalyticsPage() {
             <Link href="/admin">
               <Button variant="ghost" size="sm" className="flex items-center space-x-2">
                 <ArrowLeft className="w-4 h-4" />
-                <span>Back to Dashboard</span>
+                <span>Retour au Tableau de Bord</span>
               </Button>
             </Link>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Profit Analytics</h1>
-              <p className="text-gray-600 dark:text-gray-400">Analyze profit margins by category and product</p>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Analyses de Profit</h1>
+              <p className="text-gray-600 dark:text-gray-400">Analyser les marges de profit par catégorie et produit</p>
             </div>
           </div>
           <div className="flex items-center space-x-3">
             <Select value={selectedBrand} onValueChange={setSelectedBrand}>
               <SelectTrigger className="w-48">
-                <SelectValue placeholder="Select Brand" />
+                <SelectValue placeholder="Sélectionner Marque" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Brands</SelectItem>
+                <SelectItem value="all">Toutes les Marques</SelectItem>
                 {brands.map((brand) => (
                   <SelectItem key={brand.id} value={brand.slug}>
                     {brand.name}
@@ -206,7 +206,7 @@ export default function ProfitAnalyticsPage() {
             </Select>
             <Button onClick={exportAnalytics} className="flex items-center space-x-2">
               <Download className="w-4 h-4" />
-              <span>Export</span>
+              <span>Exporter</span>
             </Button>
           </div>
         </div>
@@ -223,7 +223,7 @@ export default function ProfitAnalyticsPage() {
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Profit</p>
+                      <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Profit Total</p>
                       <p className="text-2xl font-bold text-green-600">
                         {analytics.globalAnalytics.totalProfit.toLocaleString()} DA
                       </p>
@@ -243,7 +243,7 @@ export default function ProfitAnalyticsPage() {
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Value</p>
+                      <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Valeur Totale</p>
                       <p className="text-2xl font-bold text-gray-900 dark:text-white">
                         {analytics.globalAnalytics.totalValue.toLocaleString()} DA
                       </p>
@@ -263,7 +263,7 @@ export default function ProfitAnalyticsPage() {
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Avg. Profit Margin</p>
+                      <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Marge de Profit Moy.</p>
                       <p className="text-2xl font-bold text-blue-600">
                         {analytics.globalAnalytics.averageProfitMargin.toFixed(1)}%
                       </p>
@@ -283,7 +283,7 @@ export default function ProfitAnalyticsPage() {
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Categories</p>
+                      <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Catégories</p>
                       <p className="text-2xl font-bold text-gray-900 dark:text-white">
                         {analytics.globalAnalytics.totalCategories}
                       </p>
@@ -299,7 +299,7 @@ export default function ProfitAnalyticsPage() {
         {/* Category Analytics Table */}
         <Card>
           <CardHeader>
-            <CardTitle>Profit by Category</CardTitle>
+            <CardTitle>Profit par Catégorie</CardTitle>
           </CardHeader>
           <CardContent>
             {loading ? (
@@ -309,62 +309,62 @@ export default function ProfitAnalyticsPage() {
             ) : !analytics ? (
               <div className="text-center py-12">
                 <BarChart3 className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No analytics data</h3>
-                <p className="text-gray-600 dark:text-gray-400">Analytics data will appear here once products are added</p>
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Aucune donnée d'analyse</h3>
+                <p className="text-gray-600 dark:text-gray-400">Les données d'analyse apparaîtront ici une fois que les produits seront ajoutés</p>
               </div>
             ) : (
-              <div className="overflow-x-auto">
-                <Table>
+              <div className="overflow-x-auto w-full">
+                <Table className="w-full min-w-[1000px]">
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Category</TableHead>
-                      <TableHead>Brand</TableHead>
-                      <TableHead>Products</TableHead>
-                      <TableHead>Total Stock</TableHead>
-                      <TableHead>Total Value</TableHead>
-                      <TableHead>Total Cost</TableHead>
-                      <TableHead>Total Profit</TableHead>
-                      <TableHead>Avg. Margin</TableHead>
-                      <TableHead>Actions</TableHead>
+                      <TableHead className="w-[200px]">Catégorie</TableHead>
+                      <TableHead className="w-[120px]">Marque</TableHead>
+                      <TableHead className="w-[100px]">Produits</TableHead>
+                      <TableHead className="w-[120px]">Stock Total</TableHead>
+                      <TableHead className="w-[140px]">Valeur Totale</TableHead>
+                      <TableHead className="w-[140px]">Coût Total</TableHead>
+                      <TableHead className="w-[140px]">Profit Total</TableHead>
+                      <TableHead className="w-[120px]">Marge Moy.</TableHead>
+                      <TableHead className="w-[100px]">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {analytics.categoryAnalytics.map((category) => (
                       <TableRow key={category.categoryId}>
-                        <TableCell>
+                        <TableCell className="w-[200px]">
                           <div>
-                            <p className="font-medium text-gray-900 dark:text-white">{category.categoryName}</p>
+                            <p className="font-medium text-gray-900 dark:text-white truncate">{category.categoryName}</p>
                             {category.categoryNameAr && (
-                              <p className="text-sm text-gray-500 dark:text-gray-400">{category.categoryNameAr}</p>
+                              <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{category.categoryNameAr}</p>
                             )}
                           </div>
                         </TableCell>
-                        <TableCell>
-                          <Badge variant="secondary">{category.brandName}</Badge>
+                        <TableCell className="w-[120px]">
+                          <Badge variant="secondary" className="truncate">{category.brandName}</Badge>
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="w-[100px]">
                           <span className="font-medium">{category.totalProducts}</span>
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="w-[120px]">
                           <span className="font-medium">{category.totalStock}</span>
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="w-[140px]">
                           <span className="font-medium">{category.totalValue.toLocaleString()} DA</span>
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="w-[140px]">
                           <span className="font-medium text-gray-600">{category.totalCost.toLocaleString()} DA</span>
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="w-[140px]">
                           <span className={`font-medium ${category.totalProfit > 0 ? 'text-green-600' : 'text-red-600'}`}>
                             {category.totalProfit.toLocaleString()} DA
                           </span>
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="w-[120px]">
                           <Badge variant={category.averageProfitMargin > 0 ? "default" : "destructive"}>
                             {category.averageProfitMargin.toFixed(1)}%
                           </Badge>
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="w-[100px]">
                           <Button variant="ghost" size="sm">
                             <BarChart3 className="w-4 h-4" />
                           </Button>

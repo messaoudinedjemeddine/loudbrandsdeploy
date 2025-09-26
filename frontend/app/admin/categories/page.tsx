@@ -126,7 +126,7 @@ export default function AdminCategoriesPage() {
           <div className="flex items-center justify-center h-64">
             <div className="text-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-4"></div>
-              <p className="text-muted-foreground">Loading categories...</p>
+              <p className="text-muted-foreground">Chargement des catégories...</p>
             </div>
           </div>
         </div>
@@ -140,9 +140,9 @@ export default function AdminCategoriesPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold">Categories</h1>
+            <h1 className="text-3xl font-bold">Catégories</h1>
             <p className="text-muted-foreground">
-              Manage product categories and organization
+              Gérez les catégories de produits et l'organisation
             </p>
           </div>
           
@@ -151,19 +151,19 @@ export default function AdminCategoriesPage() {
             <Link href="/admin/categories/loudim">
               <Button variant="outline" className="flex items-center space-x-2">
                 <Tag className="w-4 h-4" />
-                <span>LOUDIM Categories</span>
+                <span>Catégories LOUDIM</span>
               </Button>
             </Link>
             <Link href="/admin/categories/loud-styles">
               <Button variant="outline" className="flex items-center space-x-2">
                 <Tag className="w-4 h-4" />
-                <span>LOUD STYLES Categories</span>
+                <span>Catégories LOUD STYLES</span>
               </Button>
             </Link>
             <Button className="elegant-gradient" asChild>
               <Link href="/admin/categories/new">
                 <Plus className="w-4 h-4 mr-2" />
-                Add Category
+                Ajouter Catégorie
               </Link>
             </Button>
           </div>
@@ -178,13 +178,13 @@ export default function AdminCategoriesPage() {
           >
             <Card>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Total Categories</CardTitle>
+                <CardTitle className="text-sm font-medium">Total Catégories</CardTitle>
                 <Tag className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{categories.length}</div>
                 <p className="text-xs text-muted-foreground">
-                  Active categories
+                  Catégories actives
                 </p>
               </CardContent>
             </Card>
@@ -197,7 +197,7 @@ export default function AdminCategoriesPage() {
           >
             <Card>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Total Products</CardTitle>
+                <CardTitle className="text-sm font-medium">Total Produits</CardTitle>
                 <Package className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
@@ -205,7 +205,7 @@ export default function AdminCategoriesPage() {
                   {categories.reduce((sum, c) => sum + (c.productCount || 0), 0)}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Across all categories
+                  Dans toutes les catégories
                 </p>
               </CardContent>
             </Card>
@@ -218,7 +218,7 @@ export default function AdminCategoriesPage() {
           >
             <Card>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Avg Products</CardTitle>
+                <CardTitle className="text-sm font-medium">Moy Produits</CardTitle>
                 <Tag className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
@@ -226,7 +226,7 @@ export default function AdminCategoriesPage() {
                   {categories.length > 0 ? Math.round(categories.reduce((sum, c) => sum + (c.productCount || 0), 0) / categories.length) : 0}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Per category
+                  Par catégorie
                 </p>
               </CardContent>
             </Card>
@@ -238,14 +238,14 @@ export default function AdminCategoriesPage() {
           <CardHeader>
             <CardTitle className="flex items-center">
               <Search className="w-5 h-5 mr-2" />
-              Search Categories
+              Rechercher Catégories
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="relative max-w-md">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
               <Input
-                placeholder="Search categories..."
+                placeholder="Rechercher catégories..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10"
@@ -274,7 +274,7 @@ export default function AdminCategoriesPage() {
                   <div className="absolute inset-0 bg-black/40" />
                   <div className="absolute top-4 right-4">
                     <div className="bg-white/90 text-black px-2 py-1 rounded text-sm font-medium">
-                      {category.productCount} products
+                      {category.productCount} produits
                     </div>
                   </div>
                   <div className="absolute bottom-4 left-4 right-4">
@@ -304,7 +304,7 @@ export default function AdminCategoriesPage() {
 
                   <div className="flex items-center justify-between">
                     <div className="text-sm text-muted-foreground">
-                      Created: {new Date(category.createdAt).toLocaleDateString()}
+                      Créé le: {new Date(category.createdAt).toLocaleDateString()}
                     </div>
                   </div>
 
@@ -312,13 +312,13 @@ export default function AdminCategoriesPage() {
                     <Button variant="outline" size="sm" asChild className="flex-1">
                       <Link href={`/categories/${category.slug}`}>
                         <Eye className="w-4 h-4 mr-1" />
-                        View
+                        Voir
                       </Link>
                     </Button>
                     <Button variant="outline" size="sm" asChild className="flex-1">
                       <Link href={`/admin/categories/${category.id}/edit`}>
                         <Edit className="w-4 h-4 mr-1" />
-                        Edit
+                        Modifier
                       </Link>
                     </Button>
                     <Button
@@ -339,12 +339,12 @@ export default function AdminCategoriesPage() {
         {filteredCategories.length === 0 && (
           <div className="text-center py-16">
             <Tag className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-xl font-semibold mb-2">No categories found</h3>
+            <h3 className="text-xl font-semibold mb-2">Aucune catégorie trouvée</h3>
             <p className="text-muted-foreground mb-6">
-              {searchQuery ? 'Try adjusting your search criteria' : 'Get started by creating your first category'}
+              {searchQuery ? 'Essayez d\'ajuster vos critères de recherche' : 'Commencez par créer votre première catégorie'}
             </p>
             <Button asChild>
-              <Link href="/admin/categories/new">Add Category</Link>
+              <Link href="/admin/categories/new">Ajouter Catégorie</Link>
             </Button>
           </div>
         )}

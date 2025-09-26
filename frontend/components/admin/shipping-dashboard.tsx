@@ -65,10 +65,10 @@ const statusColors = {
 };
 
 const statusLabels = {
-  NOT_READY: 'Not Ready',
-  READY: 'Ready',
-  IN_TRANSIT: 'In Transit',
-  DONE: 'Delivered'
+  NOT_READY: 'Pas Prêt',
+  READY: 'Prêt',
+  IN_TRANSIT: 'En Transit',
+  DONE: 'Livré'
 };
 
 // Helper function to format Yalidine dates
@@ -192,9 +192,10 @@ export function ShippingDashboard() {
   // Shipment form
   const [shipmentForm, setShipmentForm] = useState<Partial<ShipmentData>>({
     orderId: '',
-    customerName: '',
-    customerPhone: '',
-    customerAddress: '',
+    firstname: '',
+    familyname: '',
+    contactPhone: '',
+    address: '',
     fromWilayaName: 'Alger',
     toWilayaName: '',
     toCommuneName: '',
@@ -379,9 +380,10 @@ export function ShippingDashboard() {
 
     setShipmentForm({
       orderId: order.orderNumber,
-      customerName: order.customerName,
-      customerPhone: order.customerPhone,
-      customerAddress: order.deliveryAddress || '',
+      firstname: order.customerName.split(' ')[0] || '',
+      familyname: order.customerName.split(' ').slice(1).join(' ') || '',
+      contactPhone: order.customerPhone,
+      address: order.deliveryAddress || '',
       fromWilayaName: 'Batna',
       toWilayaName: order.city.name,
       toCommuneName: order.deliveryDesk?.name || '',
@@ -482,45 +484,45 @@ export function ShippingDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Confirmed Orders</CardTitle>
+            <CardTitle className="text-sm font-medium">Commandes Confirmées</CardTitle>
             <Clock className="h-4 w-4 text-slate-500" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-slate-600">{stats.confirmedOrders}</div>
-            <p className="text-xs text-muted-foreground">Ready for shipping</p>
+            <p className="text-xs text-muted-foreground">Prêt pour l'expédition</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Ready Orders</CardTitle>
+            <CardTitle className="text-sm font-medium">Commandes Prêtes</CardTitle>
             <Package className="h-4 w-4 text-amber-500" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-amber-600">{stats.readyOrders}</div>
-            <p className="text-xs text-muted-foreground">Shipment created</p>
+            <p className="text-xs text-muted-foreground">Expédition créée</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">In Transit</CardTitle>
+            <CardTitle className="text-sm font-medium">En Transit</CardTitle>
             <Truck className="h-4 w-4 text-sky-500" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-sky-600">{stats.inTransitOrders}</div>
-            <p className="text-xs text-muted-foreground">On the way</p>
+            <p className="text-xs text-muted-foreground">En route</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Delivered</CardTitle>
+            <CardTitle className="text-sm font-medium">Livré</CardTitle>
             <CheckCircle className="h-4 w-4 text-emerald-500" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-emerald-600">{stats.deliveredOrders}</div>
-            <p className="text-xs text-muted-foreground">Completed</p>
+            <p className="text-xs text-muted-foreground">Terminé</p>
           </CardContent>
         </Card>
 
@@ -539,58 +541,59 @@ export function ShippingDashboard() {
       {/* Tabs for Orders and Yalidine Shipments */}
       <Tabs defaultValue="orders" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="orders">Confirmed Orders ({orders.length})</TabsTrigger>
-          <TabsTrigger value="yalidine">Yalidine Shipments ({yalidineShipments.length})</TabsTrigger>
+          <TabsTrigger value="orders">Commandes Confirmées ({orders.length})</TabsTrigger>
+          <TabsTrigger value="yalidine">Expéditions Yalidine ({yalidineShipments.length})</TabsTrigger>
         </TabsList>
 
         <TabsContent value="orders" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Confirmed Orders Ready for Shipping</CardTitle>
+              <CardTitle>Commandes Confirmées Prêtes pour l'Expédition</CardTitle>
             </CardHeader>
         <CardContent>
-          <Table>
+          <div className="overflow-x-auto w-full">
+            <Table className="w-full min-w-[800px]">
             <TableHeader>
               <TableRow>
-                <TableHead>Order #</TableHead>
-                <TableHead>Customer</TableHead>
-                <TableHead>Delivery</TableHead>
-                <TableHead>Total</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Actions</TableHead>
+                <TableHead className="w-[120px]">Commande #</TableHead>
+                <TableHead className="w-[200px]">Client</TableHead>
+                <TableHead className="w-[150px]">Livraison</TableHead>
+                <TableHead className="w-[100px]">Total</TableHead>
+                <TableHead className="w-[120px]">Statut</TableHead>
+                <TableHead className="w-[150px]">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {orders.map((order) => (
                 <TableRow key={order.id}>
-                  <TableCell className="font-medium">{order.orderNumber}</TableCell>
-                  <TableCell>
+                  <TableCell className="w-[120px] font-medium">{order.orderNumber}</TableCell>
+                  <TableCell className="w-[200px]">
                     <div>
-                      <div className="font-medium">{order.customerName}</div>
-                      <div className="text-sm text-muted-foreground">{order.customerPhone}</div>
+                      <div className="font-medium truncate">{order.customerName}</div>
+                      <div className="text-sm text-muted-foreground truncate">{order.customerPhone}</div>
                     </div>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="w-[150px]">
                     <div>
-                      <div className="font-medium">
-                        {order.deliveryType === 'HOME_DELIVERY' ? 'Home Delivery' : 'Pickup'}
+                      <div className="font-medium truncate">
+                        {order.deliveryType === 'HOME_DELIVERY' ? 'Livraison à Domicile' : 'Retrait'}
                       </div>
-                      <div className="text-sm text-muted-foreground">
+                      <div className="text-sm text-muted-foreground truncate">
                         {order.deliveryType === 'HOME_DELIVERY' 
                           ? order.deliveryAddress 
                           : order.deliveryDesk?.name
                         }
                       </div>
-                      <div className="text-sm text-muted-foreground">{order.city.name}</div>
+                      <div className="text-sm text-muted-foreground truncate">{order.city.name}</div>
                     </div>
                   </TableCell>
-                  <TableCell>{order.total.toLocaleString()} DA</TableCell>
-                  <TableCell>
+                  <TableCell className="w-[100px]">{order.total.toLocaleString()} DA</TableCell>
+                  <TableCell className="w-[120px]">
                     <Badge className={statusColors[order.deliveryStatus]}>
                       {statusLabels[order.deliveryStatus]}
                     </Badge>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="w-[150px]">
                     <div className="flex space-x-2">
                       {order.deliveryStatus === 'NOT_READY' && (
                         <Button
@@ -598,7 +601,7 @@ export function ShippingDashboard() {
                           onClick={() => handleCreateShipment(order)}
                         >
                           <Plus className="h-4 w-4 mr-1" />
-                          Create Shipment
+                          Créer Expédition
                         </Button>
                       )}
                       
@@ -609,7 +612,7 @@ export function ShippingDashboard() {
                           onClick={() => updateDeliveryStatus(order.id, 'IN_TRANSIT')}
                         >
                           <Truck className="h-4 w-4 mr-1" />
-                          Mark In Transit
+                          Marquer En Transit
                         </Button>
                       )}
                       
@@ -620,7 +623,7 @@ export function ShippingDashboard() {
                           onClick={() => updateDeliveryStatus(order.id, 'DONE')}
                         >
                           <CheckCircle className="h-4 w-4 mr-1" />
-                          Mark Delivered
+                          Marquer Livré
                         </Button>
                       )}
                     </div>
@@ -629,6 +632,7 @@ export function ShippingDashboard() {
               ))}
             </TableBody>
           </Table>
+          </div>
         </CardContent>
         </Card>
         </TabsContent>
@@ -640,7 +644,7 @@ export function ShippingDashboard() {
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center">
                   <Filter className="w-5 h-5 mr-2" />
-                  Filters
+                  Filtres
                 </CardTitle>
                 <div className="flex space-x-2">
                   <Button
@@ -648,14 +652,14 @@ export function ShippingDashboard() {
                     size="sm"
                     onClick={() => setShowFilters(!showFilters)}
                   >
-                    {showFilters ? 'Hide Filters' : 'Show Filters'}
+                    {showFilters ? 'Masquer Filtres' : 'Afficher Filtres'}
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={clearFilters}
                   >
-                    Clear All
+                    Tout Effacer
                   </Button>
                 </div>
               </div>
@@ -664,13 +668,13 @@ export function ShippingDashboard() {
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   <div>
-                    <label className="text-sm font-medium">Status</label>
+                    <label className="text-sm font-medium">Statut</label>
                     <select
                       className="w-full p-2 border rounded mt-1"
                       value={shipmentFilters.status}
                       onChange={(e) => handleFilterChange('status', e.target.value)}
                     >
-                      <option value="">All Statuses</option>
+                      <option value="">Tous les Statuts</option>
                       {yalidineStatuses.map((status) => (
                         <option key={status.value} value={status.value}>
                           {status.label}
@@ -680,10 +684,10 @@ export function ShippingDashboard() {
                   </div>
 
                   <div>
-                    <label className="text-sm font-medium">Tracking Number</label>
+                    <label className="text-sm font-medium">Numéro de Suivi</label>
                     <input
                       type="text"
-                      placeholder="Enter tracking number"
+                      placeholder="Saisir le numéro de suivi"
                       className="w-full p-2 border rounded mt-1"
                       value={shipmentFilters.tracking}
                       onChange={(e) => handleFilterChange('tracking', e.target.value)}
@@ -691,10 +695,10 @@ export function ShippingDashboard() {
                   </div>
 
                   <div>
-                    <label className="text-sm font-medium">Order ID</label>
+                    <label className="text-sm font-medium">ID Commande</label>
                     <input
                       type="text"
-                      placeholder="Enter order ID"
+                      placeholder="Saisir l'ID de commande"
                       className="w-full p-2 border rounded mt-1"
                       value={shipmentFilters.order_id}
                       onChange={(e) => handleFilterChange('order_id', e.target.value)}
@@ -702,10 +706,10 @@ export function ShippingDashboard() {
                   </div>
 
                   <div>
-                    <label className="text-sm font-medium">Commune Name</label>
+                    <label className="text-sm font-medium">Nom de la Commune</label>
                     <input
                       type="text"
-                      placeholder="Enter commune name"
+                      placeholder="Saisir le nom de la commune"
                       className="w-full p-2 border rounded mt-1"
                       value={shipmentFilters.to_commune_name}
                       onChange={(e) => handleFilterChange('to_commune_name', e.target.value)}
@@ -713,7 +717,7 @@ export function ShippingDashboard() {
                   </div>
 
                   <div>
-                    <label className="text-sm font-medium">Creation Date</label>
+                    <label className="text-sm font-medium">Date de Création</label>
                     <input
                       type="date"
                       className="w-full p-2 border rounded mt-1"
@@ -723,7 +727,7 @@ export function ShippingDashboard() {
                   </div>
 
                   <div>
-                    <label className="text-sm font-medium">Last Status Date</label>
+                    <label className="text-sm font-medium">Date du Dernier Statut</label>
                     <input
                       type="date"
                       className="w-full p-2 border rounded mt-1"
@@ -733,7 +737,7 @@ export function ShippingDashboard() {
                   </div>
 
                   <div>
-                    <label className="text-sm font-medium">Month</label>
+                    <label className="text-sm font-medium">Mois</label>
                     <select
                       className="w-full p-2 border rounded mt-1"
                       value={shipmentFilters.month}
@@ -750,7 +754,7 @@ export function ShippingDashboard() {
 
                 <div className="flex justify-end mt-4">
                   <Button onClick={applyFilters} className="ml-2">
-                    Apply Filters
+                    Appliquer Filtres
                   </Button>
                 </div>
               </CardContent>
@@ -761,13 +765,13 @@ export function ShippingDashboard() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Total Shipments</CardTitle>
+                <CardTitle className="text-sm font-medium">Total Expéditions</CardTitle>
                 <Package className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{shipmentPagination.total_data || yalidineShipments.length}</div>
                 <p className="text-xs text-muted-foreground">
-                  {shipmentPagination.total_data > 0 ? `All shipments in Yalidine (page ${shipmentPagination.current_page} of ${shipmentPagination.total_pages})` : 'All shipments in Yalidine'}
+                  {shipmentPagination.total_data > 0 ? `Toutes les expéditions dans Yalidine (page ${shipmentPagination.current_page} sur ${shipmentPagination.total_pages})` : 'Toutes les expéditions dans Yalidine'}
                 </p>
               </CardContent>
             </Card>
@@ -782,7 +786,7 @@ export function ShippingDashboard() {
                   {yalidineShipments.filter(s => s.last_status === 'En préparation').length}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Being prepared
+                  En préparation
                 </p>
               </CardContent>
             </Card>
@@ -797,7 +801,7 @@ export function ShippingDashboard() {
                   {yalidineShipments.filter(s => s.last_status === 'Sorti en livraison').length}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Out for delivery
+                  En livraison
                 </p>
               </CardContent>
             </Card>
@@ -812,7 +816,7 @@ export function ShippingDashboard() {
                   {yalidineShipments.filter(s => s.last_status === 'Livré').length}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Successfully delivered
+                  Livré avec succès
                 </p>
               </CardContent>
             </Card>
@@ -823,11 +827,11 @@ export function ShippingDashboard() {
                 <div>
                   <CardTitle className="flex items-center">
                     <Package className="w-5 h-5 mr-2" />
-                    All Yalidine Shipments
+                    Toutes les Expéditions Yalidine
                   </CardTitle>
                   <p className="text-sm text-muted-foreground">
-                    View all shipments from your Yalidine account ({shipmentPagination.total_data || yalidineShipments.length} total)
-                    {shipmentPagination.total_pages > 1 && ` • Page ${shipmentPagination.current_page} of ${shipmentPagination.total_pages}`}
+                    Voir toutes les expéditions de votre compte Yalidine ({shipmentPagination.total_data || yalidineShipments.length} total)
+                    {shipmentPagination.total_pages > 1 && ` • Page ${shipmentPagination.current_page} sur ${shipmentPagination.total_pages}`}
                   </p>
                 </div>
                 <Button 
@@ -837,7 +841,7 @@ export function ShippingDashboard() {
                   size="sm"
                 >
                   <Loader2 className={`h-4 w-4 mr-2 ${loadingShipments ? 'animate-spin' : ''}`} />
-                  Refresh
+                  Actualiser
                 </Button>
               </div>
             </CardHeader>
@@ -845,13 +849,13 @@ export function ShippingDashboard() {
               {loadingShipments ? (
                 <div className="flex items-center justify-center h-32">
                   <Loader2 className="h-6 w-6 animate-spin" />
-                  <span className="ml-2">Loading shipments from Yalidine...</span>
+                  <span className="ml-2">Chargement des expéditions depuis Yalidine...</span>
                 </div>
               ) : yalidineShipments.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
                   <Package className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                  <p>No shipments found in Yalidine account</p>
-                  <p className="text-sm">Create shipments from confirmed orders to see them here</p>
+                  <p>Aucune expédition trouvée dans le compte Yalidine</p>
+                  <p className="text-sm">Créez des expéditions à partir des commandes confirmées pour les voir ici</p>
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -1051,14 +1055,14 @@ export function ShippingDashboard() {
               </div>
               <div>
                 <label className="text-sm font-medium">Customer Name</label>
-                <div className="text-sm text-muted-foreground">{shipmentForm.customerName}</div>
+                <div className="text-sm text-muted-foreground">{shipmentForm.firstname} {shipmentForm.familyname}</div>
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="text-sm font-medium">Customer Phone</label>
-                <div className="text-sm text-muted-foreground">{shipmentForm.customerPhone}</div>
+                <div className="text-sm text-muted-foreground">{shipmentForm.contactPhone}</div>
               </div>
               <div>
                 <label className="text-sm font-medium">Total Amount</label>
@@ -1107,7 +1111,7 @@ export function ShippingDashboard() {
              <div>
                <label className="text-sm font-medium">Delivery Address</label>
                <div className="text-sm text-muted-foreground p-2 bg-gray-50 rounded">
-                 {shipmentForm.customerAddress || 'No address provided'}
+                  {shipmentForm.address || 'No address provided'}
                </div>
              </div>
 

@@ -1,180 +1,83 @@
-# 🛍️ Loudin - E-commerce Platform
+# 🛍️ LOUD BRANDS - E-commerce Platform
 
-A modern, full-stack e-commerce platform built with Next.js, Express.js, and PostgreSQL, featuring Yalidine shipping integration for Algeria.
+A modern e-commerce platform for traditional Algerian fashion with two distinct brands: LOUDIM and LOUD STYLES.
 
-## 🚀 Features
+## 🚀 Deployment
 
-- **Modern E-commerce**: Complete shopping experience with cart, checkout, and order management
-- **Yalidine Integration**: Real-time shipping calculations and delivery tracking for Algeria
-- **Admin Dashboard**: Comprehensive admin panel with analytics and order management
-- **PWA Support**: Progressive Web App with offline capabilities
-- **Multi-language**: RTL/LTR support with Arabic and English
-- **Responsive Design**: Mobile-first design with Tailwind CSS
-- **Secure Authentication**: JWT-based authentication system
-- **Image Management**: Product image upload and management
-- **Order Tracking**: Real-time order status tracking
-
-## 🛠️ Tech Stack
-
-### Frontend
-- **Next.js 14** - React framework with App Router
-- **TypeScript** - Type-safe development
-- **Tailwind CSS** - Utility-first CSS framework
-- **Framer Motion** - Animation library
-- **Zustand** - State management
-- **React Hook Form** - Form handling
-- **Lucide React** - Icon library
-
-### Backend
-- **Express.js** - Node.js web framework
-- **Prisma** - Database ORM
-- **PostgreSQL** - Database
-- **JWT** - Authentication
-- **Multer** - File upload handling
-- **Zod** - Schema validation
-
-### External Services
-- **Yalidine API** - Shipping and delivery services
-- **Cloudinary** - Image hosting (optional)
-
-## 📦 Installation
-
-### Prerequisites
-- Node.js 18+ 
-- PostgreSQL 12+
-- npm or yarn
-
-### Quick Start
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/messaoudinedjemeddine/loudinfinal.git
-   cd loudinfinal
-   ```
-
-2. **Install dependencies**
-   ```bash
-   # Install backend dependencies
-   cd backend
-   npm install
-   
-   # Install frontend dependencies
-   cd ../frontend
-   npm install
-   ```
-
-3. **Set up environment variables**
-   
-   **Backend** (`backend/.env`):
-   ```env
-   DATABASE_URL="postgresql://username:password@localhost:5432/ecommerce_db"
-   JWT_SECRET="your-super-secret-jwt-key"
-   JWT_EXPIRES_IN="7d"
-   ADMIN_EMAIL="admin@example.com"
-   ADMIN_PASSWORD="admin123"
-   FRONTEND_URL="http://localhost:3000"
-   YALIDINE_API_ID="your-yalidine-api-id"
-   YALIDINE_API_TOKEN="your-yalidine-api-token"
-   ```
-   
-   **Frontend** (`frontend/.env.local`):
-   ```env
-   NEXT_PUBLIC_API_URL="http://localhost:5000/api"
-   ```
-
-4. **Set up the database**
-   ```bash
-   cd backend
-   npx prisma migrate dev
-   npx prisma db seed
-   ```
-
-5. **Start the development servers**
-   ```bash
-   # Start backend (in backend directory)
-   npm run dev
-   
-   # Start frontend (in frontend directory)
-   npm run dev
-   ```
-
-6. **Access the application**
-   - Frontend: http://localhost:3000
-   - Backend API: http://localhost:5000
-   - Admin Panel: http://localhost:3000/admin
-
-## 🔧 Configuration
-
-### Yalidine Shipping Setup
-1. Get your API credentials from [Yalidine Developer Dashboard](https://yalidine.app)
-2. Add your credentials to `backend/.env`
-3. Test the integration using the provided setup guide
-
-### Database Setup
-1. Create a PostgreSQL database
-2. Update the `DATABASE_URL` in `backend/.env`
-3. Run migrations: `npx prisma migrate dev`
-4. Seed the database: `npx prisma db seed`
+This application is deployed using:
+- **Frontend**: Vercel (Next.js)
+- **Backend**: Heroku (Node.js + Express)
+- **Database**: PostgreSQL (Heroku Postgres)
+- **Domain**: loudbrandss.com
 
 ## 📁 Project Structure
 
 ```
-loudinfinal/
-├── frontend/                 # Next.js frontend application
-│   ├── app/                 # App Router pages
-│   ├── components/          # Reusable UI components
-│   ├── lib/                 # Utilities and API clients
-│   └── public/              # Static assets
-├── backend/                 # Express.js backend API
-│   ├── src/
-│   │   ├── routes/          # API routes
-│   │   ├── services/        # Business logic
-│   │   ├── middleware/      # Express middleware
-│   │   └── utils/           # Utility functions
-│   ├── prisma/              # Database schema and migrations
-│   └── uploads/             # File uploads
-├── SETUP.md                 # Detailed setup instructions
-├── YALIDINE_SETUP.md        # Yalidine integration guide
-└── README.md               # This file
+├── frontend/          # Next.js frontend application
+├── backend/           # Node.js backend API
+├── README.md         # This file
+└── DEPLOYMENT.md     # Deployment instructions
 ```
 
-## 🚀 Deployment
+## 🛠️ Technologies Used
 
-### Backend Deployment
-1. Set up a PostgreSQL database (e.g., on Railway, Supabase, or AWS RDS)
-2. Deploy to your preferred platform (Railway, Heroku, DigitalOcean, etc.)
-3. Set environment variables in your deployment platform
+### Frontend
+- Next.js 14
+- React 18
+- TypeScript
+- Tailwind CSS
+- Framer Motion
+- Prisma Client
+
+### Backend
+- Node.js
+- Express.js
+- Prisma ORM
+- PostgreSQL
+- JWT Authentication
+- Yalidine API Integration
+
+## 🌐 Live Application
+
+- **Website**: https://www.loudbrandss.com
+- **Admin Panel**: https://www.loudbrandss.com/admin
+- **API**: https://loudbrands-api.herokuapp.com
+
+## 📱 Features
+
+- **Responsive Design**: Mobile-first approach
+- **PWA Support**: Progressive Web App capabilities
+- **Multi-language**: Arabic and French support
+- **Admin Dashboard**: Complete management system
+- **Order Tracking**: Yalidine integration
+- **Payment Integration**: Multiple payment methods
+- **Inventory Management**: Real-time stock tracking
+
+## 🔧 Development
+
+### Prerequisites
+- Node.js 18+
+- PostgreSQL
+- Git
+
+### Installation
+
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   # Frontend
+   cd frontend
+   npm install
+   
+   # Backend
+   cd ../backend
+   npm install
+   ```
+
+3. Set up environment variables
 4. Run database migrations
-
-### Frontend Deployment
-1. Build the application: `npm run build`
-2. Deploy to Vercel, Netlify, or your preferred platform
-3. Set environment variables for production API URL
-
-## 📚 Documentation
-
-- [Setup Guide](SETUP.md) - Detailed setup instructions
-- [Yalidine Integration](YALIDINE_SETUP.md) - Shipping API setup
-- [Project Summary](PROJECT_SUMMARY.md) - Feature overview
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
+5. Start development servers
 
 ## 📄 License
 
-This project is licensed under the MIT License.
-
-## 🆘 Support
-
-For support and questions:
-- Create an issue on GitHub
-- Check the documentation in the `/docs` folder
-- Review the setup guides
-
----
-
-**Built with ❤️ for the Algerian e-commerce community**
+MIT License - see LICENSE file for details.

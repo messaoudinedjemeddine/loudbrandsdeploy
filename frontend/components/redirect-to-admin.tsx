@@ -28,12 +28,17 @@ export function RedirectToAdmin({ tab, role, title }: RedirectToAdminProps) {
     <div className="min-h-screen bg-background flex items-center justify-center">
       <div className="text-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-        <p className="text-muted-foreground">Redirecting to Admin Dashboard...</p>
-        <p className="text-sm text-muted-foreground mt-2">You will be redirected to the {title} section</p>
+        <p className="text-muted-foreground">Redirection vers le Tableau de Bord Admin...</p>
+        <p className="text-sm text-muted-foreground mt-2">Vous serez redirigé vers la section {title}</p>
       </div>
     </div>
   )
 }
+
+
+
+
+
 
 
 

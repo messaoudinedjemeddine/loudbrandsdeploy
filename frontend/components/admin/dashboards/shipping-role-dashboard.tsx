@@ -192,9 +192,10 @@ export function ShippingRoleDashboard() {
   // Shipment form
   const [shipmentForm, setShipmentForm] = useState<Partial<ShipmentData>>({
     orderId: '',
-    customerName: '',
-    customerPhone: '',
-    customerAddress: '',
+    firstname: '',
+    familyname: '',
+    contactPhone: '',
+    address: '',
     fromWilayaName: 'Alger',
     toWilayaName: '',
     toCommuneName: '',
@@ -307,9 +308,10 @@ export function ShippingRoleDashboard() {
     setSelectedOrder(order);
     setShipmentForm({
       orderId: order.orderNumber,
-      customerName: order.customerName,
-      customerPhone: order.customerPhone,
-      customerAddress: order.deliveryAddress || '',
+      firstname: order.customerName.split(' ')[0] || '',
+      familyname: order.customerName.split(' ').slice(1).join(' ') || '',
+      contactPhone: order.customerPhone,
+      address: order.deliveryAddress || '',
       fromWilayaName: 'Alger',
       toWilayaName: order.city.name,
       toCommuneName: order.deliveryDesk?.name || '',
@@ -334,9 +336,10 @@ export function ShippingRoleDashboard() {
       
       const shipmentData: ShipmentData = {
         orderId: shipmentForm.orderId!,
-        customerName: shipmentForm.customerName!,
-        customerPhone: shipmentForm.customerPhone!,
-        customerAddress: shipmentForm.customerAddress!,
+        firstname: shipmentForm.firstname!,
+        familyname: shipmentForm.familyname!,
+        contactPhone: shipmentForm.contactPhone!,
+        address: shipmentForm.address!,
         fromWilayaName: shipmentForm.fromWilayaName!,
         toWilayaName: shipmentForm.toWilayaName!,
         toCommuneName: shipmentForm.toCommuneName!,
@@ -881,11 +884,20 @@ export function ShippingRoleDashboard() {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium">Customer Name</label>
+                <label className="text-sm font-medium">First Name</label>
                 <input
                   type="text"
-                  value={shipmentForm.customerName}
-                  onChange={(e) => setShipmentForm(prev => ({ ...prev, customerName: e.target.value }))}
+                  value={shipmentForm.firstname || ''}
+                  onChange={(e) => setShipmentForm(prev => ({ ...prev, firstname: e.target.value }))}
+                  className="w-full mt-1 p-2 border rounded-md"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Family Name</label>
+                <input
+                  type="text"
+                  value={shipmentForm.familyname || ''}
+                  onChange={(e) => setShipmentForm(prev => ({ ...prev, familyname: e.target.value }))}
                   className="w-full mt-1 p-2 border rounded-md"
                 />
               </div>
@@ -893,8 +905,8 @@ export function ShippingRoleDashboard() {
                 <label className="text-sm font-medium">Customer Phone</label>
                 <input
                   type="text"
-                  value={shipmentForm.customerPhone}
-                  onChange={(e) => setShipmentForm(prev => ({ ...prev, customerPhone: e.target.value }))}
+                  value={shipmentForm.contactPhone || ''}
+                  onChange={(e) => setShipmentForm(prev => ({ ...prev, contactPhone: e.target.value }))}
                   className="w-full mt-1 p-2 border rounded-md"
                 />
               </div>
@@ -912,8 +924,8 @@ export function ShippingRoleDashboard() {
             <div>
               <label className="text-sm font-medium">Customer Address</label>
               <textarea
-                value={shipmentForm.customerAddress}
-                onChange={(e) => setShipmentForm(prev => ({ ...prev, customerAddress: e.target.value }))}
+                value={shipmentForm.address || ''}
+                onChange={(e) => setShipmentForm(prev => ({ ...prev, address: e.target.value }))}
                 className="w-full mt-1 p-2 border rounded-md"
                 rows={3}
               />

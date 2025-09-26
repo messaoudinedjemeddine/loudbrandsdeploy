@@ -26,28 +26,27 @@ import {
 } from 'lucide-react'
 import { useAuthStore } from '@/lib/store'
 import { useTheme } from 'next-themes'
-import { LanguageSwitcher } from '@/components/language-switcher'
-import { useLocaleStore } from '@/lib/locale-store'
 
 // Role-based navigation configuration
-const getNavigationByRole = (role: string, t: any) => {
+const getNavigationByRole = (role: string) => {
   switch (role) {
     case 'ADMIN':
       return [
-        { name: t?.admin?.dashboard || 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
-        { name: t?.admin?.products || 'Products', href: '/admin/products', icon: Package },
-        { name: t?.admin?.inventory || 'Inventory', href: '/admin/inventory', icon: Package },
-        { name: t?.admin?.orders || 'Orders', href: '/admin/orders', icon: ShoppingCart },
-        { name: t?.admin?.categories || 'Categories', href: '/admin/categories', icon: Tag },
-        { name: t?.admin?.users || 'Users', href: '/admin/users', icon: Users },
-        { name: t?.admin?.shipping || 'Shipping', href: '/admin/shipping', icon: Truck },
-        { name: t?.admin?.analytics || 'Analytics', href: '/admin/analytics', icon: BarChart3 },
-        { name: 'Profit Analytics', href: '/admin/analytics/profit', icon: BarChart3 },
-        { name: t?.admin?.settings || 'Settings', href: '/admin/settings', icon: Settings },
+        { name: 'Tableau de Bord', href: '/admin/dashboard', icon: LayoutDashboard },
+        { name: 'Produits', href: '/admin/products', icon: Package },
+        { name: 'Inventaire', href: '/admin/inventory', icon: Package },
+        { name: 'Commandes', href: '/admin/orders', icon: ShoppingCart },
+        { name: 'Catégories', href: '/admin/categories', icon: Tag },
+        { name: 'Utilisateurs', href: '/admin/users', icon: Users },
+        { name: 'Expédition', href: '/admin/shipping', icon: Truck },
+        { name: 'Analyses', href: '/admin/analytics', icon: BarChart3 },
+        { name: 'Analyses de Profit', href: '/admin/analytics/profit', icon: BarChart3 },
+        { name: 'Paramètres', href: '/admin/settings', icon: Settings },
       ]
     case 'CONFIRMATRICE':
       return [
         { name: 'Dashboard Confirmatrice', href: '/confirmatrice/dashboard', icon: LayoutDashboard },
+        { name: 'Commandes', href: '/admin/orders', icon: ShoppingCart },
       ]
     case 'AGENT_LIVRAISON':
       return [
@@ -55,15 +54,15 @@ const getNavigationByRole = (role: string, t: any) => {
       ]
     default:
       return [
-        { name: t?.admin?.dashboard || 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
-        { name: t?.admin?.orders || 'Orders', href: '/admin/orders', icon: ShoppingCart },
-        { name: t?.admin?.settings || 'Settings', href: '/admin/settings', icon: Settings },
+        { name: 'Tableau de Bord', href: '/admin/dashboard', icon: LayoutDashboard },
+        { name: 'Commandes', href: '/admin/orders', icon: ShoppingCart },
+        { name: 'Paramètres', href: '/admin/settings', icon: Settings },
       ]
   }
 }
 
 // Role display names
-const getRoleDisplayName = (role: string, t: any) => {
+const getRoleDisplayName = (role: string) => {
   switch (role) {
     case 'ADMIN':
       return 'Administrateur'
@@ -86,11 +85,12 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   const router = useRouter()
   const { user, logout, isAuthenticated } = useAuthStore()
   const { theme, setTheme } = useTheme()
-  const { t, isRTL, direction } = useLocaleStore()
 
   useEffect(() => {
     setMounted(true)
-  }, [])
+    // Force dark mode for admin dashboard
+    setTheme('dark')
+  }, [setTheme])
 
   useEffect(() => {
     // Check authentication after mount
@@ -111,9 +111,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     router.push('/admin/login')
   }
 
-  const toggleTheme = () => {
-    setTheme(theme === 'dark' ? 'light' : 'dark')
-  }
+  // Remove theme toggle for admin dashboard - always dark mode
 
   if (!mounted) return null
 
@@ -123,7 +121,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-muted-foreground">{t?.common?.loading || 'Loading...'}</p>
+          <p className="text-muted-foreground">Chargement...</p>
         </div>
       </div>
     )
@@ -134,50 +132,62 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-muted-foreground">{t?.common?.loading || 'Loading...'}</p>
+          <p className="text-muted-foreground">Chargement...</p>
         </div>
       </div>
     )
   }
 
-  const navigation = getNavigationByRole(user.role, t)
-  const roleDisplayName = getRoleDisplayName(user.role, t)
+  const navigation = getNavigationByRole(user.role)
+  const roleDisplayName = getRoleDisplayName(user.role)
 
   const Sidebar = ({ className = '' }: { className?: string }) => (
-    <div className={`flex flex-col h-full ${className}`} dir={direction}>
+    <div className={`flex flex-col h-full ${className}`}>
       {/* Logo */}
-      <div className={`flex items-center px-6 py-4 border-b ${isRTL ? 'border-l' : 'border-r'}`}>
-        <Link href={`/admin/dashboard/${user.role.toLowerCase()}`} className={`flex items-center ${isRTL ? 'space-x-reverse space-x-3' : 'space-x-3'}`}>
-          <div className="relative w-10 h-10 flex-shrink-0">
+      <div className="flex items-center px-4 py-3 border-b border-r">
+        <Link href={`/admin/dashboard/${user.role.toLowerCase()}`} className="flex items-center space-x-2">
+          <div className="relative w-8 h-8 flex-shrink-0">
             <Image
-              src={theme === 'dark' ? '/logos/logo-light.png' : '/logos/logo-dark.png'}
+              src="/logos/logo-light.png"
               alt="Loudim Logo"
               fill
               className="object-contain"
             />
           </div>
           <div className="min-w-0 flex-1">
-            <span className="text-xl font-bold block truncate">{t?.admin?.sidebarTitle || 'Admin Dashboard'}</span>
+            <span className="text-sm font-bold block truncate">Tableau de Bord Admin</span>
             <p className="text-xs text-muted-foreground truncate">{roleDisplayName}</p>
           </div>
         </Link>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-4 py-6 space-y-2">
+      <nav className="flex-1 px-3 py-4 space-y-1">
         {navigation.map((item) => {
-          const isActive = pathname === item.href
+          // Check if current path starts with the navigation item's href
+          // This handles nested routes like /admin/products/new, /admin/products/123/edit, etc.
+          // For dashboard, only match exact path or dashboard-specific routes
+          const isActive = item.href === '/admin/dashboard' 
+            ? (pathname === item.href || pathname.startsWith('/admin/dashboard/'))
+            : (pathname === item.href || pathname.startsWith(item.href + '/'))
+          
+
+          
           return (
             <Link
               key={item.name}
               href={item.href}
-              className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+              className={`flex items-center py-2 rounded-lg text-sm font-medium transition-all duration-200 relative ${
                 isActive
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                  ? 'bg-blue-600 text-white shadow-md border border-blue-500/20 pl-3 pr-2'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/50 hover:shadow-sm px-2'
               }`}
             >
-              <item.icon className={`w-5 h-5 ${isRTL ? 'ml-3' : 'mr-3'} flex-shrink-0`} />
+              {/* Active indicator bar */}
+              {isActive && (
+                <div className="absolute top-0 bottom-0 w-1 bg-white rounded-full left-0" />
+              )}
+              <item.icon className="w-4 h-4 mr-2 flex-shrink-0" />
               <span className="truncate">{item.name}</span>
             </Link>
           )
@@ -185,45 +195,30 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       </nav>
 
       {/* User Profile & Actions */}
-      <div className={`p-4 border-t ${isRTL ? 'border-l' : 'border-r'}`}>
-        <div className={`flex items-center ${isRTL ? 'space-x-reverse space-x-3' : 'space-x-3'} mb-4`}>
-          <Avatar className="w-10 h-10 flex-shrink-0">
+      <div className="p-3 border-t border-r">
+        <div className="flex items-center space-x-2 mb-3">
+          <Avatar className="w-8 h-8 flex-shrink-0">
             <AvatarImage src={user.avatar} alt={user.firstName} />
-            <AvatarFallback>
+            <AvatarFallback className="text-xs">
               {user.firstName?.charAt(0)}{user.lastName?.charAt(0)}
             </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate">
+            <p className="text-xs font-medium truncate">
               {user.firstName} {user.lastName}
             </p>
             <p className="text-xs text-muted-foreground truncate">{user.email}</p>
           </div>
         </div>
         
-        <div className={`flex items-center ${isRTL ? 'space-x-reverse space-x-2' : 'space-x-2'}`}>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={toggleTheme}
-            className="flex-1"
-          >
-            {theme === 'dark' ? (
-              <Sun className="w-4 h-4" />
-            ) : (
-              <Moon className="w-4 h-4" />
-            )}
-          </Button>
-          
-          <LanguageSwitcher />
-          
+        <div className="flex items-center space-x-2">
           <Button
             variant="ghost"
             size="sm"
             onClick={handleLogout}
-            className="flex-1"
+            className="flex-1 h-8"
           >
-            <LogOut className="w-4 h-4" />
+            <LogOut className="w-3 h-3" />
           </Button>
         </div>
       </div>
@@ -231,10 +226,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   )
 
   return (
-    <div className="min-h-screen bg-background" dir={direction}>
+    <div className="min-h-screen bg-background dark">
       <div className="flex">
         {/* Sidebar */}
-        <div className={`hidden lg:flex lg:w-64 lg:flex-col lg:fixed lg:inset-y-0 ${isRTL ? 'lg:right-0' : 'lg:left-0'}`}>
+        <div className="hidden lg:flex lg:w-60 lg:flex-col lg:fixed lg:inset-y-0 lg:left-0">
           <Sidebar className="bg-card" />
         </div>
 
@@ -244,9 +239,11 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         </div>
 
         {/* Main content */}
-        <div className={`lg:flex-1 ${isRTL ? 'lg:pr-64' : 'lg:pl-64'}`}>
-          <main className="p-6">
-            {children}
+        <div className="lg:flex-1 lg:pl-60 min-w-0">
+          <main className="p-4 lg:p-6">
+            <div className="w-full max-w-full overflow-x-auto">
+              {children}
+            </div>
           </main>
         </div>
       </div>

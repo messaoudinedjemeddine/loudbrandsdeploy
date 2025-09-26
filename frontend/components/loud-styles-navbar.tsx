@@ -42,6 +42,17 @@ export function LoudStylesNavbar() {
   const { t, isRTL } = useLocaleStore()
   const { theme, setTheme } = useTheme()
 
+  // Pages that need visible navbar (light backgrounds)
+  const needsVisibleNavbar = pathname.startsWith('/loud-styles') ||
+    pathname.includes('/products/') || 
+    pathname.includes('/categories') ||
+    pathname.includes('/about') ||
+    pathname.includes('/contact') ||
+    pathname.includes('/faq') ||
+    pathname.includes('/wishlist') ||
+    pathname.includes('/checkout') ||
+    pathname.includes('/track-order')
+
   const totalItems = getTotalItems()
   const wishlistCount = getWishlistCount()
 
@@ -50,8 +61,6 @@ export function LoudStylesNavbar() {
     { name: isRTL ? 'الرئيسية' : 'Home', href: '/' },
     { name: isRTL ? 'المنتجات' : 'Products', href: '/loud-styles/products' },
     { name: isRTL ? 'الفئات' : 'Categories', href: '/loud-styles/categories' },
-    { name: isRTL ? 'من نحن' : 'About', href: '/about' },
-    { name: isRTL ? 'اتصلي بنا' : 'Contact', href: '/contact' },
   ]
 
   const logoText = 'LOUD'
@@ -66,9 +75,14 @@ export function LoudStylesNavbar() {
       setIsScrolled(window.scrollY > 0)
     }
     
+    // If we're on a page that needs visible navbar, set scrolled to true immediately
+    if (needsVisibleNavbar) {
+      setIsScrolled(true)
+    }
+    
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
+  }, [needsVisibleNavbar])
 
   if (!mounted) return null
 
@@ -86,30 +100,7 @@ export function LoudStylesNavbar() {
     setTheme(theme === 'dark' ? 'light' : 'dark')
   }
 
-  const clearCache = () => {
-    console.log('🧹 Clearing frontend cache...');
-    
-    // Clear localStorage
-    localStorage.clear();
-    console.log('✅ localStorage cleared');
-    
-    // Clear sessionStorage
-    sessionStorage.clear();
-    console.log('✅ sessionStorage cleared');
-    
-    // Clear any cached data in memory
-    if (window.caches) {
-      caches.keys().then(function(names) {
-        for (let name of names) {
-          caches.delete(name);
-        }
-      });
-      console.log('✅ Cache storage cleared');
-    }
-    
-    // Reload the page to ensure fresh data
-    window.location.reload();
-  };
+;
 
   return (
     <>
@@ -118,7 +109,7 @@ export function LoudStylesNavbar() {
          animate={{ y: 0 }}
          transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
          className={`w-full z-50 transition-all duration-300 h-16 ${
-           isScrolled 
+           isScrolled || needsVisibleNavbar || needsVisibleNavbar
              ? 'bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-200 dark:bg-gray-900/95 dark:border-gray-700' 
              : 'bg-transparent'
          }`}
@@ -136,9 +127,9 @@ export function LoudStylesNavbar() {
                 >
                                      <h1 className="text-xl md:text-2xl tracking-wider cursor-pointer font-semibold">
                      <span className="inline-block">
-                       <span className={`transition-colors duration-300 group-hover:text-white font-bold ${isScrolled ? 'text-gray-900 dark:text-white' : 'text-white'}`}>{logoText}</span>
+                       <span className={`transition-colors duration-300 group-hover:text-white font-bold ${isScrolled || needsVisibleNavbar ? 'text-gray-800 dark:text-white' : 'text-white'}`}>{logoText}</span>
                        <span className="relative inline-block ml-2">
-                         <span className={`transition-colors duration-300 group-hover:text-primary font-light ${isScrolled ? 'text-gray-600 dark:text-gray-300' : 'text-white'}`}>{logoSubtext}</span>
+                         <span className={`transition-colors duration-300 group-hover:text-primary font-light ${isScrolled || needsVisibleNavbar ? 'text-gray-700 dark:text-gray-300' : 'text-white'}`}>{logoSubtext}</span>
                          <motion.span
                            className="absolute inset-0 bg-primary origin-left"
                            initial={{ scaleX: 0 }}
@@ -147,7 +138,7 @@ export function LoudStylesNavbar() {
                            style={{ zIndex: -1 }}
                          />
                        </span>
-                       <span className={`transition-colors duration-300 group-hover:text-white font-light text-xs ml-1 ${isScrolled ? 'text-gray-600 dark:text-gray-300' : 'text-white'}`}>®</span>
+                       <span className={`transition-colors duration-300 group-hover:text-white font-light text-xs ml-1 ${isScrolled || needsVisibleNavbar ? 'text-gray-700 dark:text-gray-300' : 'text-white'}`}>®</span>
                      </span>
                    </h1>
                 </motion.div>
@@ -163,8 +154,8 @@ export function LoudStylesNavbar() {
                      href={item.href}
                      className={`relative px-4 py-2 rounded-lg font-semibold text-base transition-all duration-300 group
                        ${pathname === item.href 
-                         ? `${isScrolled ? 'text-primary bg-primary/10' : 'text-white bg-primary/30'}` 
-                         : `${isScrolled ? 'text-gray-700 dark:text-gray-300 hover:text-primary hover:bg-primary/10' : 'text-white hover:text-primary hover:bg-primary/20'}`
+                         ? `${isScrolled || needsVisibleNavbar ? 'text-primary bg-primary/10' : 'text-white bg-primary/30'}` 
+                         : `${isScrolled || needsVisibleNavbar ? 'text-gray-800 dark:text-gray-300 hover:text-primary hover:bg-primary/10' : 'text-white hover:text-primary hover:bg-primary/20'}`
                        }
                      `}
                    >
@@ -183,8 +174,8 @@ export function LoudStylesNavbar() {
                  size="sm"
                  onClick={() => setIsSearchOpen(true)}
                  className={`relative p-2 rounded-lg transition-all duration-300 hover:scale-105 ${
-                   isScrolled 
-                     ? 'text-gray-700 dark:text-gray-300 hover:text-primary hover:bg-primary/10' 
+                   isScrolled || needsVisibleNavbar 
+                     ? 'text-gray-800 dark:text-gray-300 hover:text-primary hover:bg-primary/10' 
                      : 'text-white hover:text-primary hover:bg-primary/20'
                  }`}
                >
@@ -197,41 +188,25 @@ export function LoudStylesNavbar() {
                  size="sm"
                  onClick={toggleTheme}
                  className={`p-2 rounded-lg transition-all duration-300 hover:scale-105 ${
-                   isScrolled 
-                     ? 'text-gray-700 dark:text-gray-300 hover:text-primary hover:bg-primary/10' 
+                   isScrolled || needsVisibleNavbar 
+                     ? 'text-gray-800 dark:text-gray-300 hover:text-primary hover:bg-primary/10' 
                      : 'text-white hover:text-primary hover:bg-primary/20'
                  }`}
                >
                 {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
               </Button>
 
-              {/* Cache Clear Button */}
-                             <Button
-                 variant="ghost"
-                 size="sm"
-                 onClick={clearCache}
-                 className={`p-2 rounded-lg transition-all duration-300 hover:scale-105 ${
-                   isScrolled 
-                     ? 'text-gray-700 dark:text-gray-300 hover:text-primary hover:bg-primary/10' 
-                     : 'text-white hover:text-primary hover:bg-primary/20'
-                 }`}
-                 title="Clear cache and reload fresh data"
-               >
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                </svg>
-              </Button>
 
               {/* Language Switcher */}
-              <LanguageSwitcher isTransparent={false} />
+              <LanguageSwitcher isTransparent={false} isLightBackground={isScrolled || needsVisibleNavbar} />
 
               {/* Wishlist */}
                              <Button 
                  variant="ghost" 
                  size="sm" 
                  className={`relative p-2 rounded-lg transition-all duration-300 hover:scale-105 ${
-                   isScrolled 
-                     ? 'text-gray-700 dark:text-gray-300 hover:text-primary hover:bg-primary/10' 
+                   isScrolled || needsVisibleNavbar 
+                     ? 'text-gray-800 dark:text-gray-300 hover:text-primary hover:bg-primary/10' 
                      : 'text-white hover:text-primary hover:bg-primary/20'
                  }`}
                  onClick={() => router.push('/wishlist')}
@@ -249,8 +224,8 @@ export function LoudStylesNavbar() {
                  variant="ghost" 
                  size="sm" 
                  className={`relative p-2 rounded-lg transition-all duration-300 hover:scale-105 ${
-                   isScrolled 
-                     ? 'text-gray-700 dark:text-gray-300 hover:text-primary hover:bg-primary/10' 
+                   isScrolled || needsVisibleNavbar 
+                     ? 'text-gray-800 dark:text-gray-300 hover:text-primary hover:bg-primary/10' 
                      : 'text-white hover:text-primary hover:bg-primary/20'
                  }`}
                  onClick={() => setIsCartOpen(true)}
@@ -270,8 +245,8 @@ export function LoudStylesNavbar() {
                      variant="ghost"
                      size="sm"
                      className={`lg:hidden p-2 rounded-lg transition-all duration-300 hover:scale-105 ${
-                       isScrolled 
-                         ? 'text-gray-700 dark:text-gray-300 hover:text-primary hover:bg-primary/10' 
+                       isScrolled || needsVisibleNavbar 
+                         ? 'text-gray-800 dark:text-gray-300 hover:text-primary hover:bg-primary/10' 
                          : 'text-white hover:text-primary hover:bg-primary/20'
                      }`}
                    >
@@ -321,7 +296,7 @@ export function LoudStylesNavbar() {
                     {/* Mobile Footer */}
                     <div className="border-t border-gray-300 pt-4">
                       <div className="flex items-center justify-between">
-                        <LanguageSwitcher isTransparent={false} />
+                        <LanguageSwitcher isTransparent={false} isLightBackground={true} />
                         <Button
                           variant="ghost"
                           size="sm"

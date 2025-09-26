@@ -55,6 +55,7 @@ interface Product {
   name: string
   nameAr: string
   price: number
+  costPrice?: number
   oldPrice?: number
   stock: number
   category: {
@@ -277,15 +278,15 @@ export default function AdminInventoryPage() {
         <div className="space-y-8">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-              <h1 className="text-3xl font-bold">Inventory Management</h1>
+              <h1 className="text-3xl font-bold">Gestion d'Inventaire</h1>
               <p className="text-muted-foreground">
-                Manage your product inventory, track stock levels, and import/export data
+                Gérez votre inventaire de produits, suivez les niveaux de stock et importez/exportez des données
               </p>
             </div>
           </div>
           <div className="text-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-            <p className="mt-2 text-muted-foreground">Loading inventory...</p>
+            <p className="mt-2 text-muted-foreground">Chargement de l'inventaire...</p>
           </div>
         </div>
       </AdminLayout>
@@ -298,9 +299,9 @@ export default function AdminInventoryPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold">Inventory Management</h1>
+            <h1 className="text-3xl font-bold">Gestion d'Inventaire</h1>
             <p className="text-muted-foreground">
-              Manage your product inventory, track stock levels, and import/export data
+              Gérez votre inventaire de produits, suivez les niveaux de stock et importez/exportez des données
             </p>
           </div>
           
@@ -309,13 +310,13 @@ export default function AdminInventoryPage() {
             <Link href="/admin/inventory/loudim">
               <Button variant="outline" className="flex items-center space-x-2">
                 <Package className="w-4 h-4" />
-                <span>LOUDIM Inventory</span>
+                <span>Inventaire LOUDIM</span>
               </Button>
             </Link>
             <Link href="/admin/inventory/loud-styles">
               <Button variant="outline" className="flex items-center space-x-2">
                 <Package className="w-4 h-4" />
-                <span>LOUD STYLES Inventory</span>
+                <span>Inventaire LOUD STYLES</span>
               </Button>
             </Link>
           </div>
@@ -324,12 +325,12 @@ export default function AdminInventoryPage() {
               <DialogTrigger asChild>
                 <Button variant="outline">
                   <Upload className="w-4 h-4 mr-2" />
-                  Import Excel
+                  Importer Excel
                 </Button>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Import Products from Excel</DialogTitle>
+                  <DialogTitle>Importer des Produits depuis Excel</DialogTitle>
                   <DialogDescription>
                     Upload a CSV file with product data. Make sure the file has the correct format.
                   </DialogDescription>
@@ -349,12 +350,12 @@ export default function AdminInventoryPage() {
             </Dialog>
             <Button onClick={exportToExcel}>
               <Download className="w-4 h-4 mr-2" />
-              Export Excel
+              Exporter Excel
             </Button>
             <Button asChild>
               <Link href="/admin/products/new">
                 <Plus className="w-4 h-4 mr-2" />
-                Add Product
+                Ajouter Produit
               </Link>
             </Button>
           </div>
@@ -369,7 +370,7 @@ export default function AdminInventoryPage() {
           >
             <Card>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Total Products</CardTitle>
+                <CardTitle className="text-sm font-medium">Total Produits</CardTitle>
                 <Package className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
@@ -388,7 +389,7 @@ export default function AdminInventoryPage() {
           >
             <Card>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Total Stock</CardTitle>
+                <CardTitle className="text-sm font-medium">Stock Total</CardTitle>
                 <Package className="h-4 w-4 text-blue-500" />
               </CardHeader>
               <CardContent>
@@ -407,13 +408,13 @@ export default function AdminInventoryPage() {
           >
             <Card>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Low Stock</CardTitle>
+                <CardTitle className="text-sm font-medium">Stock Faible</CardTitle>
                 <AlertTriangle className="h-4 w-4 text-yellow-500" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-yellow-600">{stats.lowStockProducts}</div>
                 <p className="text-xs text-muted-foreground">
-                  Products with ≤5 units
+                  Produits avec ≤5 unités
                 </p>
               </CardContent>
             </Card>
@@ -426,13 +427,13 @@ export default function AdminInventoryPage() {
           >
             <Card>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Out of Stock</CardTitle>
+                <CardTitle className="text-sm font-medium">Rupture de Stock</CardTitle>
                 <TrendingDown className="h-4 w-4 text-red-500" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-red-600">{stats.outOfStockProducts}</div>
                 <p className="text-xs text-muted-foreground">
-                  Products with 0 units
+                  Produits avec 0 unités
                 </p>
               </CardContent>
             </Card>
@@ -463,20 +464,20 @@ export default function AdminInventoryPage() {
         {/* Filters */}
         <Card>
           <CardHeader>
-            <CardTitle>Filters</CardTitle>
+            <CardTitle>Filtres</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium">Search</label>
+                <label className="text-sm font-medium">Recherche</label>
                 <Input
-                  placeholder="Search products..."
+                  placeholder="Rechercher des produits..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Category</label>
+                <label className="text-sm font-medium">Catégorie</label>
                 <Select value={categoryFilter} onValueChange={setCategoryFilter}>
                   <SelectTrigger>
                     <SelectValue placeholder="All categories" />
@@ -492,29 +493,29 @@ export default function AdminInventoryPage() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Stock Status</label>
+                <label className="text-sm font-medium">Statut du Stock</label>
                 <Select value={stockFilter} onValueChange={setStockFilter}>
                   <SelectTrigger>
                     <SelectValue placeholder="All stock levels" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All stock levels</SelectItem>
-                    <SelectItem value="in">In stock (&gt;5)</SelectItem>
-                    <SelectItem value="low">Low stock (≤5)</SelectItem>
-                    <SelectItem value="out">Out of stock</SelectItem>
+                    <SelectItem value="all">Tous les niveaux de stock</SelectItem>
+                    <SelectItem value="in">En stock (&gt;5)</SelectItem>
+                    <SelectItem value="low">Stock faible (≤5)</SelectItem>
+                    <SelectItem value="out">Rupture de stock</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Status</label>
+                <label className="text-sm font-medium">Statut</label>
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
                   <SelectTrigger>
-                    <SelectValue placeholder="All statuses" />
+                    <SelectValue placeholder="Tous les statuts" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All statuses</SelectItem>
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="inactive">Inactive</SelectItem>
+                    <SelectItem value="all">Tous les statuts</SelectItem>
+                    <SelectItem value="active">Actif</SelectItem>
+                    <SelectItem value="inactive">Inactif</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -525,26 +526,27 @@ export default function AdminInventoryPage() {
         {/* Inventory Table */}
         <Card>
           <CardHeader>
-            <CardTitle>Product Inventory</CardTitle>
+            <CardTitle>Inventaire des Produits</CardTitle>
             <p className="text-sm text-muted-foreground">
-              Showing {filteredProducts.length} of {products.length} products
+              Affichage de {filteredProducts.length} sur {products.length} produits
             </p>
           </CardHeader>
           <CardContent>
-            <div className="overflow-x-auto">
-              <Table>
+            <div className="overflow-x-auto w-full">
+              <Table className="w-full min-w-[1400px]">
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Image</TableHead>
-                    <TableHead>Reference</TableHead>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Category</TableHead>
-                    <TableHead>Price (DA)</TableHead>
-                    <TableHead>Main Stock</TableHead>
-                    <TableHead>Sizes & Quantities</TableHead>
-                    <TableHead>Total Stock</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Actions</TableHead>
+                    <TableHead className="w-[80px]">Image</TableHead>
+                    <TableHead className="w-[120px]">Référence</TableHead>
+                    <TableHead className="w-[200px]">Nom</TableHead>
+                    <TableHead className="w-[150px]">Catégorie</TableHead>
+                    <TableHead className="w-[120px]">Prix d'Achat (DA)</TableHead>
+                    <TableHead className="w-[120px]">Prix de Vente (DA)</TableHead>
+                    <TableHead className="w-[100px]">Stock Principal</TableHead>
+                    <TableHead className="w-[200px]">Tailles & Quantités</TableHead>
+                    <TableHead className="w-[100px]">Stock Total</TableHead>
+                    <TableHead className="w-[100px]">Statut</TableHead>
+                    <TableHead className="w-[100px]">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -552,7 +554,7 @@ export default function AdminInventoryPage() {
                     const stockStatus = getStockStatus(product.totalStock || product.stock)
                     return (
                       <TableRow key={product.id}>
-                        <TableCell>
+                        <TableCell className="w-[80px]">
                           <div className="relative w-12 h-12 rounded-lg overflow-hidden">
                             <Image
                               src={product.image || '/placeholder.svg'}
@@ -562,21 +564,26 @@ export default function AdminInventoryPage() {
                             />
                           </div>
                         </TableCell>
-                        <TableCell className="font-mono text-sm">
-                          {product.reference}
+                        <TableCell className="w-[120px] font-mono text-sm">
+                          <div className="truncate">{product.reference}</div>
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="w-[200px]">
                           <div>
-                            <div className="font-medium">{product.name}</div>
+                            <div className="font-medium truncate">{product.name}</div>
                             {product.nameAr && (
-                              <div className="text-sm text-muted-foreground">{product.nameAr}</div>
+                              <div className="text-sm text-muted-foreground truncate">{product.nameAr}</div>
                             )}
                           </div>
                         </TableCell>
-                        <TableCell>
-                          <Badge variant="outline">{product.category?.name}</Badge>
+                        <TableCell className="w-[150px]">
+                          <Badge variant="outline" className="truncate">{product.category?.name}</Badge>
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="w-[120px]">
+                          <div className="font-medium text-blue-600">
+                            {product.costPrice ? product.costPrice.toLocaleString() : '0'} DA
+                          </div>
+                        </TableCell>
+                        <TableCell className="w-[120px]">
                           <div>
                             <div className="font-medium">{product.price.toLocaleString()} DA</div>
                             {product.oldPrice && (
@@ -586,19 +593,19 @@ export default function AdminInventoryPage() {
                             )}
                           </div>
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="w-[100px]">
                           <div className="text-center">
                             <span className="font-medium">{product.stock}</span>
                           </div>
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="w-[200px]">
                           <div className="max-w-xs">
-                            <div className="text-sm text-muted-foreground">
+                            <div className="text-sm text-muted-foreground truncate">
                               {formatSizes(product.sizes)}
                             </div>
                           </div>
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="w-[100px]">
                           <div className="flex items-center space-x-2">
                             <span className="font-medium">{product.totalStock || product.stock}</span>
                             <Badge className={stockStatus.color}>
@@ -606,12 +613,12 @@ export default function AdminInventoryPage() {
                             </Badge>
                           </div>
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="w-[100px]">
                           <Badge variant={product.isActive ? "default" : "secondary"}>
-                            {product.isActive ? 'Active' : 'Inactive'}
+                            {product.isActive ? 'Actif' : 'Inactif'}
                           </Badge>
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="w-[100px]">
                           <div className="flex items-center space-x-2">
                             <Button variant="ghost" size="sm" asChild>
                               <Link href={`/admin/products/${product.id}`}>

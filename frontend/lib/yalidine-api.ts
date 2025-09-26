@@ -57,9 +57,10 @@ export interface ShippingFees {
 
 export interface ShipmentData {
   orderId: string;
-  customerName: string;
-  customerPhone: string;
-  customerAddress: string;
+  firstname: string;
+  familyname: string;
+  contactPhone: string;
+  address: string;
   fromWilayaName: string;
   toWilayaName: string;
   toCommuneName: string;
@@ -179,6 +180,33 @@ class YalidineAPI {
     page?: number;
   }): Promise<{ data: any[]; has_more: boolean; total_data: number }> {
     return api.shipping.getAllShipments(filters) as Promise<{ data: any[]; has_more: boolean; total_data: number }>;
+  }
+
+  // Get shipment statistics
+  async getShipmentStats(): Promise<{
+    enPreparation: number;
+    centre: number;
+    versWilaya: number;
+    sortiEnLivraison: number;
+    livre: number;
+    echecLivraison: number;
+    retourARetirer: number;
+    retourneAuVendeur: number;
+    echangeEchoue: number;
+    totalShipments: number;
+  }> {
+    return api.shipping.getShipmentStats() as Promise<{
+      enPreparation: number;
+      centre: number;
+      versWilaya: number;
+      sortiEnLivraison: number;
+      livre: number;
+      echecLivraison: number;
+      retourARetirer: number;
+      retourneAuVendeur: number;
+      echangeEchoue: number;
+      totalShipments: number;
+    }>;
   }
 
   // Utility methods

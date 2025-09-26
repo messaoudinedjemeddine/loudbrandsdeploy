@@ -2,13 +2,14 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
     const token = request.headers.get('authorization')
     
-    const response = await fetch(`${backendUrl}/api/admin/products/${params.id}`, {
+    const resolvedParams = await params
+    const response = await fetch(`${backendUrl}/api/admin/products/${resolvedParams.id}`, {
       headers: {
         'Authorization': token || '',
         'Content-Type': 'application/json'
@@ -35,14 +36,15 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
     const token = request.headers.get('authorization')
     const body = await request.json()
     
-    const response = await fetch(`${backendUrl}/api/admin/products/${params.id}`, {
+    const resolvedParams = await params
+    const response = await fetch(`${backendUrl}/api/admin/products/${resolvedParams.id}`, {
       method: 'PUT',
       headers: {
         'Authorization': token || '',
@@ -68,13 +70,14 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
     const token = request.headers.get('authorization')
     
-    const response = await fetch(`${backendUrl}/api/admin/products/${params.id}`, {
+    const resolvedParams = await params
+    const response = await fetch(`${backendUrl}/api/admin/products/${resolvedParams.id}`, {
       method: 'DELETE',
       headers: {
         'Authorization': token || '',

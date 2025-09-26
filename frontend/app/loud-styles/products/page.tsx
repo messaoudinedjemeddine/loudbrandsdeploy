@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
@@ -50,7 +50,7 @@ interface Product {
   sizes: Array<{ id: string; size: string; stock: number }> | string[];
 }
 
-export default function LoudStylesProductsPage() {
+function LoudStylesProductsContent() {
   const searchParams = useSearchParams()
   const [mounted, setMounted] = useState(false)
   const [products, setProducts] = useState<Product[]>([])
@@ -174,10 +174,10 @@ export default function LoudStylesProductsPage() {
         }}
         className="group relative h-full"
       >
-        <Card className="overflow-hidden border-0 bg-gradient-to-br from-beige-100 via-beige-200 to-beige-300 dark:from-gray-800 dark:to-gray-900 shadow-lg hover:shadow-2xl transition-all duration-500 h-full flex flex-col">
-          {/* Product Image */}
-          <div className="relative aspect-[4/5] overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 flex-shrink-0">
-                          <Link href={`/loud-styles/products/${product.slug}?brand=loud-styles`} className="block w-full h-full">
+        <Link href={`/loud-styles/products/${product.slug}?brand=loud-styles`} className="block h-full">
+          <Card className="overflow-hidden border-0 bg-gradient-to-br from-beige-100 via-beige-200 to-beige-300 dark:from-gray-800 dark:to-gray-900 shadow-lg hover:shadow-2xl transition-all duration-500 h-full flex flex-col cursor-pointer">
+            {/* Product Image */}
+            <div className="relative aspect-[4/5] overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 flex-shrink-0">
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 transition={{ duration: 0.4, ease: "easeOut" }}
@@ -194,7 +194,7 @@ export default function LoudStylesProductsPage() {
                   }}
                 />
               </motion.div>
-            </Link>
+            </div>
             
             {/* Overlay with actions */}
             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300">
@@ -237,11 +237,13 @@ export default function LoudStylesProductsPage() {
                   size="sm"
                   variant="secondary"
                   className="rounded-full w-10 h-10 p-0 bg-white/90 hover:bg-white shadow-lg"
-                  asChild
+                  onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    window.location.href = `/loud-styles/products/${product.slug}?brand=loud-styles`
+                  }}
                 >
-                  <Link href={`/loud-styles/products/${product.slug}?brand=loud-styles`}>
-                    <Eye className="w-4 h-4" />
-                  </Link>
+                  <Eye className="w-4 h-4" />
                 </Button>
               </div>
             </div>
@@ -297,13 +299,12 @@ export default function LoudStylesProductsPage() {
                 </motion.div>
               )}
             </div>
-          </div>
-          
-          {/* Product Info */}
+            
+            {/* Product Info */}
           <CardContent className="p-4 flex-1 flex flex-col min-h-0">
             <div className="space-y-3 flex-1 flex flex-col">
               {/* Category */}
-              <div className={`flex items-center justify-between ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
+              <div className={`flex items-center justify-center ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
                 <Badge variant="outline" className="text-xs font-medium text-center">
                   {isRTL 
                     ? (typeof product.category === 'string' 
@@ -314,20 +315,12 @@ export default function LoudStylesProductsPage() {
                         : product.category.name)
                   }
                 </Badge>
-                <div className={`flex items-center space-x-1 ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
-                  <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                  <span className="text-sm text-gray-600 dark:text-muted-foreground">
-                    {product.rating?.toFixed(1) || '0.0'}
-                  </span>
-                </div>
               </div>
 
               {/* Product Name */}
-                             <Link href={`/loud-styles/products/${product.slug}?brand=loud-styles`} className="block flex-1 min-h-0">
-                <h3 className="font-semibold text-base leading-tight line-clamp-2 hover:text-primary transition-colors group-hover:text-primary text-center min-h-[2.5rem] flex items-center justify-center">
-                  {isRTL ? product.nameAr || product.name : product.name}
-                </h3>
-              </Link>
+              <h3 className="font-semibold text-base leading-tight line-clamp-2 hover:text-primary transition-colors group-hover:text-primary text-center min-h-[2.5rem] flex items-center justify-center">
+                {isRTL ? product.nameAr || product.name : product.name}
+              </h3>
 
               {/* Sizes Preview */}
               {sizeStrings.length > 0 && (
@@ -396,6 +389,7 @@ export default function LoudStylesProductsPage() {
             </div>
           </CardContent>
         </Card>
+        </Link>
       </motion.div>
     )
   }
@@ -418,7 +412,7 @@ export default function LoudStylesProductsPage() {
             transition={{ duration: 0.8 }}
             className="text-center"
           >
-            <h1 className="text-5xl md:text-6xl font-bold mb-4 bg-secondary bg-clip-text text-transparent text-center leading-tight">
+            <h1 className="text-5xl md:text-6xl font-bold mb-4 text-gray-800 dark:text-white text-center leading-tight">
               {isRTL ? 'أناقة الأزياء التقليدية الجزائرية' : 'LOUD STYLES Collection'}
             </h1>
             <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto text-center leading-relaxed">
@@ -482,5 +476,13 @@ export default function LoudStylesProductsPage() {
         )}
       </div>
     </div>
+  )
+}
+
+export default function LoudStylesProductsPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <LoudStylesProductsContent />
+    </Suspense>
   )
 }

@@ -56,6 +56,8 @@ export function Navbar() {
   
   // Pages that need visible navbar (light backgrounds)
   const needsVisibleNavbar = isProductsPage || 
+    isLoudimPage ||
+    isLoudStylesPage ||
     pathname.includes('/products/') || 
     pathname.includes('/categories') ||
     pathname.includes('/about') ||
@@ -82,8 +84,6 @@ export function Navbar() {
       { name: isRTL ? 'الرئيسية' : 'Home', href: '/' },
       { name: isRTL ? 'المنتجات' : 'Products', href: '/loudim/products' },
       { name: isRTL ? 'الفئات' : 'Categories', href: '/loudim/categories' },
-      { name: isRTL ? 'من نحن' : 'About', href: '/about' },
-      { name: isRTL ? 'اتصلي بنا' : 'Contact', href: '/contact' },
     ]
     logoText = 'LOUD'
     logoSubtext = 'IM'
@@ -92,8 +92,6 @@ export function Navbar() {
       { name: isRTL ? 'الرئيسية' : 'Home', href: '/' },
       { name: isRTL ? 'المنتجات' : 'Products', href: '/loud-styles/products' },
       { name: isRTL ? 'الفئات' : 'Categories', href: '/loud-styles/categories' },
-      { name: isRTL ? 'من نحن' : 'About', href: '/about' },
-      { name: isRTL ? 'اتصلي بنا' : 'Contact', href: '/contact' },
     ]
     logoText = 'LOUD'
     logoSubtext = 'STYLES'
@@ -102,8 +100,6 @@ export function Navbar() {
     navigation = [
       { name: isRTL ? 'الرئيسية' : 'Home', href: '/' },
       { name: isRTL ? 'المنتجات' : 'Products', href: '/products' },
-      { name: isRTL ? 'من نحن' : 'About', href: '/about' },
-      { name: isRTL ? 'اتصلي بنا' : 'Contact', href: '/contact' },
     ]
     logoText = 'LOUD'
     logoSubtext = 'BRANDS'
@@ -149,33 +145,7 @@ export function Navbar() {
     setTheme(theme === 'dark' ? 'light' : 'dark')
   }
 
-  const clearCache = () => {
-    console.log('🧹 Clearing frontend cache...');
-    
-    // Clear localStorage
-    localStorage.clear();
-    console.log('✅ localStorage cleared');
-    
-    // Clear sessionStorage
-    sessionStorage.clear();
-    console.log('✅ sessionStorage cleared');
-    
-    // Clear any cached data in memory
-    if (window.caches) {
-      caches.keys().then(function(names) {
-        for (let name of names) {
-          caches.delete(name);
-        }
-        console.log('✅ Cache storage cleared');
-      });
-    }
-    
-    // Show success message
-    alert('Cache cleared successfully! The page will now reload with fresh data.');
-    
-    // Force page reload to get fresh data
-    window.location.reload();
-  };
+;
 
   return (
     <>
@@ -202,9 +172,9 @@ export function Navbar() {
                 >
                                     <h1 className="text-xl md:text-2xl tracking-wider cursor-pointer font-semibold">
                     <span className="inline-block">
-                      <span className={`transition-colors duration-300 group-hover:text-white font-bold ${isScrolled || needsVisibleNavbar ? 'text-gray-900 dark:text-white' : 'text-white'}`}>{logoText}</span>
+                      <span className={`transition-colors duration-300 group-hover:text-white font-bold ${isScrolled || needsVisibleNavbar ? 'text-gray-800 dark:text-white' : 'text-white'}`}>{logoText}</span>
                       <span className={`relative inline-block ${isLoudimPage ? '' : 'ml-2'}`}>
-                        <span className={`transition-colors duration-300 group-hover:text-primary font-light ${isScrolled || needsVisibleNavbar ? 'text-gray-600 dark:text-gray-300' : 'text-white'}`}>{logoSubtext}</span>
+                        <span className={`transition-colors duration-300 group-hover:text-primary font-light ${isScrolled || needsVisibleNavbar ? 'text-gray-700 dark:text-gray-300' : 'text-white'}`}>{logoSubtext}</span>
                         <motion.span
                           className="absolute inset-0 bg-primary origin-left"
                           initial={{ scaleX: 0 }}
@@ -213,7 +183,7 @@ export function Navbar() {
                           style={{ zIndex: -1 }}
                         />
                       </span>
-                      <span className={`transition-colors duration-300 group-hover:text-white font-light text-xs ml-1 ${isScrolled || needsVisibleNavbar ? 'text-gray-600 dark:text-gray-300' : 'text-white'}`}>®</span>
+                      <span className={`transition-colors duration-300 group-hover:text-white font-light text-xs ml-1 ${isScrolled || needsVisibleNavbar ? 'text-gray-700 dark:text-gray-300' : 'text-white'}`}>®</span>
                     </span>
                   </h1>
                 </motion.div>
@@ -230,7 +200,7 @@ export function Navbar() {
                     className={`relative px-4 py-2 rounded-lg font-semibold text-base transition-all duration-300 group
                       ${pathname === item.href 
                         ? `${isScrolled || needsVisibleNavbar ? 'text-primary bg-primary/10' : 'text-white bg-primary/30'}` 
-                        : `${isScrolled || needsVisibleNavbar ? 'text-gray-700 dark:text-gray-300 hover:text-primary hover:bg-primary/10' : 'text-white hover:text-primary hover:bg-primary/20'}`
+                        : `${isScrolled || needsVisibleNavbar ? 'text-gray-800 dark:text-gray-300 hover:text-primary hover:bg-primary/10' : 'text-white hover:text-primary hover:bg-primary/20'}`
                       }
                     `}
                   >
@@ -250,7 +220,7 @@ export function Navbar() {
                 onClick={() => setIsSearchOpen(true)}
                 className={`relative p-2 rounded-lg transition-all duration-300 hover:scale-105 ${
                   isScrolled || needsVisibleNavbar
-                    ? 'text-gray-700 dark:text-gray-300 hover:text-primary hover:bg-primary/10' 
+                    ? 'text-gray-800 dark:text-gray-300 hover:text-primary hover:bg-primary/10' 
                     : 'text-white hover:text-primary hover:bg-primary/20'
                 }`}
               >
@@ -264,32 +234,16 @@ export function Navbar() {
                 onClick={toggleTheme}
                 className={`p-2 rounded-lg transition-all duration-300 hover:scale-105 ${
                   isScrolled || needsVisibleNavbar
-                    ? 'text-gray-700 dark:text-gray-300 hover:text-primary hover:bg-primary/10' 
+                    ? 'text-gray-800 dark:text-gray-300 hover:text-primary hover:bg-primary/10' 
                     : 'text-white hover:text-primary hover:bg-primary/20'
                 }`}
               >
                 {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
               </Button>
 
-              {/* Cache Clear Button */}
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={clearCache}
-                className={`p-2 rounded-lg transition-all duration-300 hover:scale-105 ${
-                  isScrolled || needsVisibleNavbar
-                    ? 'text-gray-700 dark:text-gray-300 hover:text-primary hover:bg-primary/10' 
-                    : 'text-white hover:text-primary hover:bg-primary/20'
-                }`}
-                title="Clear cache and reload fresh data"
-              >
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                </svg>
-              </Button>
 
               {/* Language Switcher */}
-              <LanguageSwitcher isTransparent={false} />
+              <LanguageSwitcher isTransparent={false} isLightBackground={isScrolled || needsVisibleNavbar} />
 
               {/* Wishlist */}
               <Button 
@@ -297,7 +251,7 @@ export function Navbar() {
                 size="sm" 
                 className={`relative p-2 rounded-lg transition-all duration-300 hover:scale-105 ${
                   isScrolled || needsVisibleNavbar
-                    ? 'text-gray-700 dark:text-gray-300 hover:text-primary hover:bg-primary/10' 
+                    ? 'text-gray-800 dark:text-gray-300 hover:text-primary hover:bg-primary/10' 
                     : 'text-white hover:text-primary hover:bg-primary/20'
                 }`}
                 asChild
@@ -321,7 +275,7 @@ export function Navbar() {
                 onClick={() => setIsCartOpen(true)}
                 className={`relative p-2 rounded-lg transition-all duration-300 hover:scale-105 ${
                   isScrolled || needsVisibleNavbar
-                    ? 'text-gray-700 dark:text-gray-300 hover:text-primary hover:bg-primary/10' 
+                    ? 'text-gray-800 dark:text-gray-300 hover:text-primary hover:bg-primary/10' 
                     : 'text-white hover:text-primary hover:bg-primary/20'
                 }`}
               >
@@ -335,15 +289,15 @@ export function Navbar() {
                 )}
               </Button>
 
-              {/* User Menu */}
-              {user ? (
+              {/* User Menu - Only show when user is logged in */}
+              {user && (
                 <div className={`flex items-center space-x-1 ${isRTL ? 'space-x-reverse' : ''}`}>
                   <Button 
                     variant="ghost" 
                     size="sm" 
                     className={`p-2 rounded-lg transition-all duration-300 hover:scale-105 ${
                       isScrolled || needsVisibleNavbar
-                        ? 'text-gray-700 dark:text-gray-300 hover:text-primary hover:bg-primary/10' 
+                        ? 'text-gray-800 dark:text-gray-300 hover:text-primary hover:bg-primary/10' 
                         : 'text-white hover:text-primary hover:bg-primary/20'
                     }`}
                     asChild
@@ -358,24 +312,13 @@ export function Navbar() {
                     onClick={logout}
                     className={`p-2 rounded-lg transition-all duration-300 hover:scale-105 ${
                       isScrolled || needsVisibleNavbar
-                        ? 'text-gray-700 dark:text-gray-300 hover:text-primary hover:bg-primary/10' 
+                        ? 'text-gray-800 dark:text-gray-300 hover:text-primary hover:bg-primary/10' 
                         : 'text-white hover:text-primary hover:bg-primary/20'
                     }`}
                   >
                     <X className="w-5 h-5" />
                   </Button>
                 </div>
-              ) : (
-                <Button
-                  variant="default"
-                  size="sm"
-                  className="bg-primary/30 hover:bg-primary/50 text-white font-medium px-4 py-2 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg border border-primary/50 hover:scale-105"
-                  asChild
-                >
-                  <Link href="/admin/login">
-                    {isRTL ? 'تسجيل الدخول' : 'Login'}
-                  </Link>
-                </Button>
               )}
 
               {/* Mobile Menu Button */}
@@ -386,7 +329,7 @@ export function Navbar() {
                     size="sm"
                     className={`lg:hidden p-2 rounded-lg transition-all duration-300 hover:scale-105 ${
                       isScrolled || needsVisibleNavbar
-                        ? 'text-gray-700 dark:text-gray-300 hover:text-primary hover:bg-primary/10' 
+                        ? 'text-gray-800 dark:text-gray-300 hover:text-primary hover:bg-primary/10' 
                         : 'text-white hover:text-primary hover:bg-primary/20'
                     }`}
                   >

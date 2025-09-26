@@ -67,9 +67,8 @@ export function Footer() {
             <h3 className="font-semibold mb-4">{t.footer.customerService}</h3>
             <ul className="space-y-3">
               <li><Link href="/contact" className="text-muted-foreground hover:text-primary transition-colors">{t.nav.contact}</Link></li>
-              <li><Link href="/faq" className="text-muted-foreground hover:text-primary transition-colors">{t.nav.faq}</Link></li>
               <li><Link href="/track-order" className="text-muted-foreground hover:text-primary transition-colors">{t.nav.trackOrder}</Link></li>
-              <li><Link href="/returns" className="text-muted-foreground hover:text-primary transition-colors">{isRTL ? 'سياسة الإرجاع' : 'Return Policy'}</Link></li>
+              <li><Link href="/admin/login" className="text-muted-foreground hover:text-primary transition-colors text-xs opacity-60">{isRTL ? 'إدارة' : 'Admin'}</Link></li>
             </ul>
           </div>
           
@@ -85,14 +84,10 @@ export function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-8 py-6 border-t flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
-          <p className="text-sm text-muted-foreground text-center sm:text-left">
-            &copy; {new Date().getFullYear()} E-Shop Algeria. {t.footer.allRightsReserved}.
+        <div className="mt-8 py-6 border-t flex justify-center items-center">
+          <p className="text-sm text-muted-foreground text-center">
+            &copy; {new Date().getFullYear()} LOUD BRANDS. {t.footer.allRightsReserved}.
           </p>
-          <div className={`flex items-center space-x-4 ${isRTL ? 'space-x-reverse' : ''}`}>
-            <Link href="/privacy" className="text-sm text-muted-foreground hover:text-primary transition-colors">{t.footer.privacyPolicy}</Link>
-            <Link href="/terms" className="text-sm text-muted-foreground hover:text-primary transition-colors">{t.footer.termsOfService}</Link>
-          </div>
         </div>
       </div>
     </footer>

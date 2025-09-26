@@ -2,12 +2,13 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
     const { searchParams } = new URL(request.url)
     const brand = searchParams.get('brand')
-    const slug = params.slug
+    const resolvedParams = await params
+    const slug = resolvedParams.slug
 
     const backendUrl = process.env.BACKEND_URL || 'http://localhost:5000'
     const url = brand 

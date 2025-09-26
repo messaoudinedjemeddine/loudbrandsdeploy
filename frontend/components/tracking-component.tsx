@@ -61,7 +61,10 @@ export function TrackingComponent({ initialTrackingNumber }: TrackingComponentPr
       // Get shipment details
       try {
         const details = await yalidineAPI.getShipment(trackingNumber);
-        setShipmentDetails(details);
+        
+        // Handle the data structure - Yalidine returns data in a 'data' array
+        const shipmentData = details.data && details.data.length > 0 ? details.data[0] : details;
+        setShipmentDetails(shipmentData);
       } catch (detailsError) {
         console.warn('Could not fetch shipment details:', detailsError);
         setShipmentDetails(null);
@@ -152,30 +155,43 @@ export function TrackingComponent({ initialTrackingNumber }: TrackingComponentPr
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center gap-4">
-              {getStatusIcon(currentStatus.status)}
-              <div className="flex-1">
-                <Badge className={getStatusColor(currentStatus.status)}>
-                  {currentStatus.status}
-                </Badge>
-                <p className="text-sm text-muted-foreground mt-1">
-                  {formatDate(currentStatus.date_status)}
-                </p>
-                {currentStatus.reason && (
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Reason: {currentStatus.reason}
-                  </p>
-                )}
+            <div className="space-y-4">
+              <div className="flex items-center gap-4">
+                {getStatusIcon(currentStatus.status)}
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Badge className={getStatusColor(currentStatus.status)}>
+                      {currentStatus.status}
+                    </Badge>
+                    <span className="text-sm text-muted-foreground">
+                      {formatDate(currentStatus.date_status)}
+                    </span>
+                  </div>
+                  {currentStatus.reason && (
+                    <p className="text-sm text-muted-foreground">
+                      <strong>Note:</strong> {currentStatus.reason}
+                    </p>
+                  )}
+                </div>
               </div>
+              
+              {currentStatus.center_name && (
+                <div className="p-4 bg-muted/50 rounded-lg border">
+                  <div className="flex items-start gap-3">
+                    <MapPin className="h-4 w-4 text-primary mt-0.5" />
+                    <div>
+                      <p className="text-sm font-medium text-primary">Current Location</p>
+                      <p className="text-sm text-muted-foreground">
+                        {currentStatus.center_name}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {currentStatus.commune_name}, {currentStatus.wilaya_name}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
-            {currentStatus.center_name && (
-              <div className="mt-4 p-3 bg-muted rounded-lg">
-                <p className="text-sm font-medium">Current Location</p>
-                <p className="text-sm text-muted-foreground">
-                  {currentStatus.center_name} - {currentStatus.commune_name}, {currentStatus.wilaya_name}
-                </p>
-              </div>
-            )}
           </CardContent>
         </Card>
       )}
@@ -184,60 +200,163 @@ export function TrackingComponent({ initialTrackingNumber }: TrackingComponentPr
       {shipmentDetails && (
         <Card>
           <CardHeader>
-            <CardTitle>Shipment Details</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <Package className="h-5 w-5" />
+              Order & Shipment Details
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label className="text-sm font-medium">Recipient</Label>
-                <p className="text-sm text-muted-foreground">
-                  {shipmentDetails.firstname} {shipmentDetails.familyname}
-                </p>
+            <div className="space-y-6">
+              {/* Order Information */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-sm font-medium text-primary">Order Number</Label>
+                  <p className="text-sm font-mono bg-muted px-2 py-1 rounded">
+                    {shipmentDetails.order_id || trackingNumber}
+                  </p>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium text-primary">Tracking Number</Label>
+                  <p className="text-sm font-mono bg-muted px-2 py-1 rounded">
+                    {trackingNumber}
+                  </p>
+                </div>
               </div>
+
+              <Separator />
+
+              {/* Customer Information */}
               <div>
-                <Label className="text-sm font-medium">Phone</Label>
-                <p className="text-sm text-muted-foreground">
-                  {shipmentDetails.contact_phone}
-                </p>
-              </div>
-              <div>
-                <Label className="text-sm font-medium">Address</Label>
-                <p className="text-sm text-muted-foreground">
-                  {shipmentDetails.address}
-                </p>
-              </div>
-              <div>
-                <Label className="text-sm font-medium">Destination</Label>
-                <p className="text-sm text-muted-foreground">
-                  {shipmentDetails.to_commune_name}, {shipmentDetails.to_wilaya_name}
-                </p>
-              </div>
-              <div>
-                <Label className="text-sm font-medium">Product</Label>
-                <p className="text-sm text-muted-foreground">
-                  {shipmentDetails.product_list}
-                </p>
-              </div>
-              <div>
-                <Label className="text-sm font-medium">Value</Label>
-                <p className="text-sm text-muted-foreground">
-                  {shipmentDetails.price} DA
-                </p>
-              </div>
-              {shipmentDetails.label && (
+                <h4 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                  <MapPin className="h-4 w-4" />
+                  Customer Information
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-sm font-medium">Recipient Name</Label>
+                  <p className="text-sm text-muted-foreground">
+                    {shipmentDetails.firstname} {shipmentDetails.familyname}
+                  </p>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium">Phone Number</Label>
+                  <p className="text-sm text-muted-foreground font-mono">
+                    {shipmentDetails.contact_phone}
+                  </p>
+                </div>
                 <div className="md:col-span-2">
-                  <Label className="text-sm font-medium">Shipping Label</Label>
-                  <div className="mt-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => window.open(shipmentDetails.label, '_blank')}
-                    >
-                      View Label
-                    </Button>
+                  <Label className="text-sm font-medium">Delivery Address</Label>
+                  <p className="text-sm text-muted-foreground">
+                    {shipmentDetails.address}
+                  </p>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium">Destination City</Label>
+                  <p className="text-sm text-muted-foreground">
+                    {shipmentDetails.to_commune_name}, {shipmentDetails.to_wilaya_name}
+                  </p>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium">Delivery Type</Label>
+                  <Badge variant="outline" className="text-xs">
+                    {shipmentDetails.stopdesk_id ? 'Pickup Point' : 'Home Delivery'}
+                  </Badge>
+                </div>
+                {shipmentDetails.stopdesk_name && (
+                  <div>
+                    <Label className="text-sm font-medium">Pickup Point</Label>
+                    <p className="text-sm text-muted-foreground">
+                      {shipmentDetails.stopdesk_name}
+                    </p>
+                  </div>
+                )}
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Product & Value Information */}
+              <div>
+                <h4 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                  <Package className="h-4 w-4" />
+                  Product & Value Details
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-sm font-medium">Products Ordered</Label>
+                    <p className="text-sm text-muted-foreground">
+                      {shipmentDetails.product_list}
+                    </p>
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium">Order Value</Label>
+                    <p className="text-lg font-bold text-primary">
+                      {shipmentDetails.price} DA
+                    </p>
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium">Declared Value</Label>
+                    <p className="text-sm text-muted-foreground">
+                      {shipmentDetails.declared_value} DA
+                    </p>
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium">Insurance</Label>
+                    <Badge variant={shipmentDetails.do_insurance ? "default" : "secondary"} className="text-xs">
+                      {shipmentDetails.do_insurance ? 'Insured' : 'Not Insured'}
+                    </Badge>
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium">Delivery Fee</Label>
+                    <p className="text-sm text-muted-foreground">
+                      {shipmentDetails.delivery_fee} DA
+                    </p>
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium">Free Shipping</Label>
+                    <Badge variant={shipmentDetails.freeshipping ? "default" : "secondary"} className="text-xs">
+                      {shipmentDetails.freeshipping ? 'Yes' : 'No'}
+                    </Badge>
                   </div>
                 </div>
-              )}
+              </div>
+
+              <Separator />
+
+              {/* Package Information */}
+              <div>
+                <h4 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                  <Package className="h-4 w-4" />
+                  Package Specifications
+                </h4>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div>
+                    <Label className="text-sm font-medium">Weight</Label>
+                    <p className="text-sm text-muted-foreground">
+                      {shipmentDetails.weight} kg
+                    </p>
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium">Length</Label>
+                    <p className="text-sm text-muted-foreground">
+                      {shipmentDetails.length} cm
+                    </p>
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium">Width</Label>
+                    <p className="text-sm text-muted-foreground">
+                      {shipmentDetails.width} cm
+                    </p>
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium">Height</Label>
+                    <p className="text-sm text-muted-foreground">
+                      {shipmentDetails.height} cm
+                    </p>
+                  </div>
+                </div>
+              </div>
+
             </div>
           </CardContent>
         </Card>

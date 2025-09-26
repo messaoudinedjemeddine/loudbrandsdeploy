@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
@@ -46,7 +46,7 @@ interface OrderDetails {
   orderDate: string
 }
 
-export default function OrderSuccessPage() {
+function OrderSuccessContent() {
   const searchParams = useSearchParams()
   const [mounted, setMounted] = useState(false)
   const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(null)
@@ -81,41 +81,41 @@ export default function OrderSuccessPage() {
       // Add subtitle
       doc.setFontSize(12)
       doc.setFont('helvetica', 'normal')
-      doc.text('Traditional Modern Fashion', 105, 30, { align: 'center' })
+      doc.text('Mode Traditionnelle Moderne', 105, 30, { align: 'center' })
       
       // Add receipt title
       doc.setFontSize(18)
       doc.setFont('helvetica', 'bold')
-      doc.text('ORDER RECEIPT', 105, 45, { align: 'center' })
+      doc.text('REÇU DE COMMANDE', 105, 45, { align: 'center' })
       
       // Add order details
       doc.setFontSize(12)
       doc.setFont('helvetica', 'normal')
-      doc.text(`Order Number: ${orderDetails.orderNumber}`, 20, 60)
-      doc.text(`Date: ${new Date(orderDetails.orderDate).toLocaleDateString()}`, 20, 70)
-      doc.text(`Time: ${new Date(orderDetails.orderDate).toLocaleTimeString()}`, 20, 80)
+      doc.text(`Numéro de Commande: ${orderDetails.orderNumber}`, 20, 60)
+      doc.text(`Date: ${new Date(orderDetails.orderDate).toLocaleDateString('fr-FR')}`, 20, 70)
+      doc.text(`Heure: ${new Date(orderDetails.orderDate).toLocaleTimeString('fr-FR')}`, 20, 80)
       
       // Add customer info section
       doc.setFontSize(14)
       doc.setFont('helvetica', 'bold')
-      doc.text('Customer Information', 20, 100)
+      doc.text('Informations Client', 20, 100)
       
       doc.setFontSize(10)
       doc.setFont('helvetica', 'normal')
-      doc.text(`Name: ${orderDetails.customerName}`, 20, 110)
-      doc.text(`Phone: ${orderDetails.customerPhone}`, 20, 120)
+      doc.text(`Nom: ${orderDetails.customerName}`, 20, 110)
+      doc.text(`Téléphone: ${orderDetails.customerPhone}`, 20, 120)
       doc.text(`Email: ${orderDetails.customerEmail || 'N/A'}`, 20, 130)
       
       // Add delivery information
       const deliveryInfo = orderDetails.deliveryType === 'HOME_DELIVERY' 
-        ? `Address: ${orderDetails.deliveryAddress}`
-        : `Pickup: ${orderDetails.deliveryDeskName}`
+        ? `Adresse: ${orderDetails.deliveryAddress}`
+        : `Point de Retrait: ${orderDetails.deliveryDeskName}`
       doc.text(deliveryInfo, 20, 140)
       
       // Add order summary
       doc.setFontSize(14)
       doc.setFont('helvetica', 'bold')
-      doc.text('Order Summary', 20, 160)
+      doc.text('Résumé de la Commande', 20, 160)
       
       doc.setFontSize(10)
       doc.setFont('helvetica', 'normal')
@@ -125,7 +125,7 @@ export default function OrderSuccessPage() {
       orderDetails.items.forEach((item, index) => {
         const itemText = `${item.name} (${item.quantity}x) - ${item.price.toFixed(2)} DA`
         if (item.size) {
-          doc.text(`${itemText} - Size: ${item.size}`, 20, yPosition)
+          doc.text(`${itemText} - Taille: ${item.size}`, 20, yPosition)
         } else {
           doc.text(itemText, 20, yPosition)
         }
@@ -134,9 +134,9 @@ export default function OrderSuccessPage() {
       
       // Add totals
       yPosition += 5
-      doc.text(`Subtotal: ${orderDetails.subtotal.toFixed(2)} DA`, 20, yPosition)
+      doc.text(`Sous-total: ${orderDetails.subtotal.toFixed(2)} DA`, 20, yPosition)
       yPosition += 8
-      doc.text(`Delivery Fee: ${orderDetails.deliveryFee.toFixed(2)} DA`, 20, yPosition)
+      doc.text(`Frais de Livraison: ${orderDetails.deliveryFee.toFixed(2)} DA`, 20, yPosition)
       yPosition += 8
       doc.setFont('helvetica', 'bold')
       doc.text(`Total: ${orderDetails.total.toFixed(2)} DA`, 20, yPosition)
@@ -155,13 +155,13 @@ export default function OrderSuccessPage() {
       // Add QR code to PDF
       doc.addImage(qrCodeDataURL, 'PNG', 150, 100, 30, 30)
       doc.setFontSize(8)
-      doc.text('Scan for contact', 150, 135)
+      doc.text('Scanner pour contact', 150, 135)
       
       // Add footer
       doc.setFontSize(10)
       doc.setFont('helvetica', 'normal')
-      doc.text('Thank you for your order!', 105, 250, { align: 'center' })
-      doc.text('For support: +213 XXX XXX XXX', 105, 255, { align: 'center' })
+      doc.text('Merci pour votre commande !', 105, 250, { align: 'center' })
+      doc.text('Pour le support : +213 XXX XXX XXX', 105, 255, { align: 'center' })
       
       // Save the PDF
       doc.save(`receipt-${orderDetails.orderNumber}.pdf`)
@@ -192,20 +192,20 @@ export default function OrderSuccessPage() {
             </div>
 
             {/* Success Message */}
-            <h1 className="text-4xl font-bold mb-4">Order Placed Successfully!</h1>
+            <h1 className="text-4xl font-bold mb-4">Commande Passée avec Succès !</h1>
             <p className="text-lg text-muted-foreground mb-8">
-              Thank you for your order. We&apos;ve received your order and will process it shortly.
+              Merci pour votre commande. Nous avons reçu votre commande et la traiterons sous peu.
             </p>
 
             {/* Order Details */}
             <Card className="mb-8">
               <CardHeader>
-                <CardTitle>Order Details</CardTitle>
+                <CardTitle>Détails de la Commande</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-center space-x-2">
                   <Package className="w-5 h-5 text-primary" />
-                  <span className="font-medium">Order Number:</span>
+                  <span className="font-medium">Numéro de Commande :</span>
                   <span className="font-bold text-primary">
                     {orderDetails?.orderNumber || searchParams.get('orderNumber') || 'ORD-123456'}
                   </span>
@@ -214,20 +214,20 @@ export default function OrderSuccessPage() {
                 {orderDetails && (
                   <div className="text-left space-y-2 mt-4 p-4 bg-muted/30 rounded-lg">
                     <div className="flex justify-between">
-                      <span className="font-medium">Customer:</span>
+                      <span className="font-medium">Client :</span>
                       <span>{orderDetails.customerName}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="font-medium">Phone:</span>
+                      <span className="font-medium">Téléphone :</span>
                       <span>{orderDetails.customerPhone}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="font-medium">Total Amount:</span>
+                      <span className="font-medium">Montant Total :</span>
                       <span className="font-bold text-primary">{orderDetails.total.toFixed(2)} DA</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="font-medium">Items:</span>
-                      <span>{orderDetails.items.length} item(s)</span>
+                      <span className="font-medium">Articles :</span>
+                      <span>{orderDetails.items.length} article(s)</span>
                     </div>
                   </div>
                 )}
@@ -235,14 +235,14 @@ export default function OrderSuccessPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
                   <div className="text-center p-4 bg-muted/50 rounded-lg">
                     <Truck className="w-8 h-8 text-primary mx-auto mb-2" />
-                    <h3 className="font-semibold">Estimated Delivery</h3>
-                    <p className="text-sm text-muted-foreground">1-2 days</p>
+                    <h3 className="font-semibold">Livraison Estimée</h3>
+                    <p className="text-sm text-muted-foreground">1-2 jours</p>
                   </div>
                   
                   <div className="text-center p-4 bg-muted/50 rounded-lg">
                     <Phone className="w-8 h-8 text-primary mx-auto mb-2" />
-                    <h3 className="font-semibold">Order Confirmation</h3>
-                    <p className="text-sm text-muted-foreground">We&apos;ll call you soon</p>
+                    <h3 className="font-semibold">Confirmation de Commande</h3>
+                    <p className="text-sm text-muted-foreground">Nous vous appellerons bientôt</p>
                   </div>
                 </div>
               </CardContent>
@@ -251,7 +251,7 @@ export default function OrderSuccessPage() {
             {/* Next Steps */}
             <Card className="mb-8">
               <CardHeader>
-                <CardTitle>What&apos;s Next?</CardTitle>
+                <CardTitle>Prochaines Étapes</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4 text-left">
@@ -260,12 +260,12 @@ export default function OrderSuccessPage() {
                       1
                     </div>
                     <div>
-                      <h4 className="font-medium">Order Confirmation</h4>
+                      <h4 className="font-medium">Confirmation de Commande</h4>
                       <p className="text-sm text-muted-foreground">
-                        Our team will call you within 24 hours to confirm your order details.
+                        Notre équipe vous appellera dans les 24 heures pour confirmer les détails de votre commande.
                       </p>
                       <p className="text-xs text-red-600 mt-1 font-medium">
-                        ⚠️ Important: If you don&apos;t answer our call within 48 hours, your order will be automatically canceled.
+                        ⚠️ Important : Si vous ne répondez pas à notre appel dans les 48 heures, votre commande sera automatiquement annulée.
                       </p>
                     </div>
                   </div>
@@ -275,9 +275,9 @@ export default function OrderSuccessPage() {
                       2
                     </div>
                     <div>
-                      <h4 className="font-medium">Order Processing</h4>
+                      <h4 className="font-medium">Traitement de la Commande</h4>
                       <p className="text-sm text-muted-foreground">
-                        Once confirmed, we&apos;ll prepare your order for shipment.
+                        Une fois confirmée, nous préparerons votre commande pour l'expédition.
                       </p>
                     </div>
                   </div>
@@ -287,9 +287,9 @@ export default function OrderSuccessPage() {
                       3
                     </div>
                     <div>
-                      <h4 className="font-medium">Delivery</h4>
+                      <h4 className="font-medium">Livraison</h4>
                       <p className="text-sm text-muted-foreground">
-                        Your order will be delivered to your specified address or pickup location within 1-2 days.
+                        Votre commande sera livrée à l'adresse spécifiée ou au point de retrait dans les 1-2 jours.
                       </p>
                     </div>
                   </div>
@@ -313,7 +313,7 @@ export default function OrderSuccessPage() {
                 ) : (
                   <>
                     <Download className="w-5 h-5 mr-2" />
-                    Download Receipt
+                    Télécharger le Reçu
                   </>
                 )}
               </Button>
@@ -321,28 +321,28 @@ export default function OrderSuccessPage() {
               <Button size="lg" asChild>
                 <Link href={`/track-order`}>
                   <Package className="w-5 h-5 mr-2" />
-                  Track Your Order
+                  Suivre Votre Commande
                 </Link>
               </Button>
               
               <Button variant="outline" size="lg" asChild>
                 <Link href="/products">
                   <ShoppingBag className="w-5 h-5 mr-2" />
-                  Continue Shopping
+                  Continuer les Achats
                 </Link>
               </Button>
               
               <Button variant="outline" size="lg" asChild>
                 <Link href="/">
                   <Home className="w-5 h-5 mr-2" />
-                  Back to Home
+                  Retour à l'Accueil
                 </Link>
               </Button>
             </div>
 
             {/* Contact Info */}
             <div className="mt-12 p-6 bg-muted/30 rounded-lg">
-              <h3 className="font-semibold mb-4">Need Help?</h3>
+              <h3 className="font-semibold mb-4">Besoin d'Aide ?</h3>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <div className="flex items-center space-x-2">
                   <Phone className="w-4 h-4 text-primary" />
@@ -358,5 +358,13 @@ export default function OrderSuccessPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function OrderSuccessPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <OrderSuccessContent />
+    </Suspense>
   )
 }

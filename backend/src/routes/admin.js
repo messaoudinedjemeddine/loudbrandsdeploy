@@ -48,11 +48,21 @@ router.get('/dashboard/stats', async (req, res) => {
       return acc;
     }, {});
 
+    const finalTotalRevenue = totalRevenue._sum.total || 0;
+    
+    console.log('🔍 Admin dashboard stats:', {
+      totalOrders,
+      totalProducts,
+      totalUsers,
+      totalRevenue: finalTotalRevenue,
+      orderStatusBreakdown: statusBreakdown
+    });
+    
     res.json({
       totalOrders,
       totalProducts,
       totalUsers,
-      totalRevenue: totalRevenue._sum.total || 0,
+      totalRevenue: finalTotalRevenue,
       orderStatusBreakdown: statusBreakdown,
       recentOrders
     });
@@ -229,12 +239,25 @@ router.post('/products', async (req, res) => {
       });
     }
 
-    // Return the product with images
+    // Create the sizes if provided
+    if (productData.sizes && productData.sizes.length > 0) {
+      await prisma.productSize.createMany({
+        data: productData.sizes.map((size) => ({
+          size: size.size,
+          stock: parseInt(size.stock) || 0,
+          productId: product.id
+        }))
+      });
+    }
+
+    // Return the product with images and sizes
     const productWithImages = await prisma.product.findUnique({
       where: { id: product.id },
       include: {
         category: true,
-        images: true
+        brand: true,
+        images: true,
+        sizes: true
       }
     });
 
@@ -330,12 +353,33 @@ router.put('/products/:id', async (req, res) => {
       }
     }
 
-    // Return the updated product with images
+    // Update sizes if provided
+    if (productData.sizes) {
+      // Delete existing sizes
+      await prisma.productSize.deleteMany({
+        where: { productId: id }
+      });
+
+      // Create new sizes
+      if (productData.sizes.length > 0) {
+        await prisma.productSize.createMany({
+          data: productData.sizes.map((size) => ({
+            size: size.size,
+            stock: parseInt(size.stock) || 0,
+            productId: id
+          }))
+        });
+      }
+    }
+
+    // Return the updated product with images and sizes
     const productWithImages = await prisma.product.findUnique({
       where: { id },
       include: {
         category: true,
-        images: true
+        brand: true,
+        images: true,
+        sizes: true
       }
     });
 
@@ -526,11 +570,19 @@ router.get('/orders/export', async (req, res) => {
 router.patch('/orders/:id/status', async (req, res) => {
   try {
     const { id } = req.params;
-    const { callCenterStatus, deliveryStatus } = req.body;
+    const { callCenterStatus, deliveryStatus, notes, deliveryType, deliveryAddress, deliveryDeskId, deliveryFee, total, trackingNumber, yalidineShipmentId } = req.body;
 
     const updateData = {};
     if (callCenterStatus) updateData.callCenterStatus = callCenterStatus;
     if (deliveryStatus) updateData.deliveryStatus = deliveryStatus;
+    if (notes !== undefined) updateData.notes = notes;
+    if (deliveryType) updateData.deliveryType = deliveryType;
+    if (deliveryAddress !== undefined) updateData.deliveryAddress = deliveryAddress;
+    if (deliveryDeskId !== undefined) updateData.deliveryDeskId = deliveryDeskId;
+    if (deliveryFee !== undefined) updateData.deliveryFee = deliveryFee;
+    if (total !== undefined) updateData.total = total;
+    if (trackingNumber !== undefined) updateData.trackingNumber = trackingNumber;
+    if (yalidineShipmentId !== undefined) updateData.yalidineShipmentId = yalidineShipmentId;
 
     const order = await prisma.order.update({
       where: { id },
@@ -569,6 +621,111 @@ router.patch('/orders/:id/status', async (req, res) => {
   } catch (error) {
     console.error('Update order status error:', error);
     res.status(500).json({ error: 'Failed to update order status' });
+  }
+});
+
+// Update order items
+router.patch('/orders/:id/items', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { items, subtotal, total } = req.body;
+
+    // Validate input
+    if (!items || !Array.isArray(items)) {
+      return res.status(400).json({ error: 'Items array is required' });
+    }
+
+    if (typeof subtotal !== 'number' || typeof total !== 'number') {
+      return res.status(400).json({ error: 'Subtotal and total must be numbers' });
+    }
+
+    // Start a transaction to update order items
+    const result = await prisma.$transaction(async (tx) => {
+      // Delete existing order items
+      await tx.orderItem.deleteMany({
+        where: { orderId: id }
+      });
+
+      // Create new order items
+      const newItems = await Promise.all(
+        items.map(async (item) => {
+          // Get product details
+          const product = await tx.product.findUnique({
+            where: { id: item.product.id }
+          });
+
+          if (!product) {
+            throw new Error(`Product not found: ${item.product.id}`);
+          }
+
+          return tx.orderItem.create({
+            data: {
+              orderId: id,
+              productId: item.product.id,
+              quantity: item.quantity,
+              price: item.price,
+              size: item.size || null,
+              name: item.name,
+              nameAr: item.nameAr || null
+            },
+            include: {
+              product: {
+                include: {
+                  images: {
+                    where: { isPrimary: true },
+                    take: 1
+                  }
+                }
+              }
+            }
+          });
+        })
+      );
+
+      // Update order totals
+      const updatedOrder = await tx.order.update({
+        where: { id },
+        data: {
+          subtotal,
+          total
+        },
+        include: {
+          items: {
+            include: {
+              product: {
+                include: {
+                  images: {
+                    where: { isPrimary: true },
+                    take: 1
+                  }
+                }
+              }
+            }
+          },
+          city: true,
+          deliveryDesk: true
+        }
+      });
+
+      return updatedOrder;
+    });
+
+    // Format order to include proper structure
+    const formattedOrder = {
+      ...result,
+      items: result.items.map(item => ({
+        ...item,
+        product: {
+          ...item.product,
+          image: item.product.images[0]?.url || '/placeholder-product.jpg'
+        }
+      }))
+    };
+
+    res.json(formattedOrder);
+  } catch (error) {
+    console.error('Update order items error:', error);
+    res.status(500).json({ error: 'Failed to update order items' });
   }
 });
 
@@ -1687,6 +1844,207 @@ router.delete('/brands/:id', async (req, res) => {
   }
 });
 
+// Analytics - Most Ordered Products (Confirmed Orders)
+router.get('/analytics/top-products', async (req, res) => {
+  try {
+    const { limit = 10 } = req.query;
+    
+    const topProducts = await prisma.orderItem.groupBy({
+      by: ['productId'],
+      where: {
+        order: {
+          callCenterStatus: 'CONFIRMED'
+        }
+      },
+      _sum: {
+        quantity: true
+      },
+      _count: {
+        productId: true
+      },
+      orderBy: {
+        _sum: {
+          quantity: 'desc'
+        }
+      },
+      take: parseInt(limit)
+    });
+
+    // Get product details for each top product
+    const productIds = topProducts.map(item => item.productId);
+    const products = await prisma.product.findMany({
+      where: {
+        id: { in: productIds }
+      },
+      select: {
+        id: true,
+        name: true,
+        nameAr: true,
+        price: true,
+        images: {
+          select: {
+            url: true
+          },
+          take: 1
+        }
+      }
+    });
+
+    // Combine data
+    const result = topProducts.map(item => {
+      const product = products.find(p => p.id === item.productId);
+      return {
+        id: product?.id,
+        name: product?.name,
+        nameAr: product?.nameAr,
+        price: product?.price,
+        image: product?.images[0]?.url || '/placeholder-product.jpg',
+        totalQuantity: item._sum.quantity,
+        orderCount: item._count.productId,
+        totalRevenue: (item._sum.quantity || 0) * (product?.price || 0)
+      };
+    }).filter(item => item.id); // Filter out any missing products
+
+    res.json(result);
+  } catch (error) {
+    console.error('Top products analytics error:', error);
+    res.status(500).json({ error: 'Failed to fetch top products analytics' });
+  }
+});
+
+// Analytics - Sales by Category (Confirmed Orders)
+router.get('/analytics/sales-by-category', async (req, res) => {
+  try {
+    const salesByCategory = await prisma.orderItem.groupBy({
+      by: ['productId'],
+      where: {
+        order: {
+          callCenterStatus: 'CONFIRMED'
+        }
+      },
+      _sum: {
+        quantity: true
+      },
+      _count: {
+        productId: true
+      }
+    });
+
+    // Get products with their categories
+    const productIds = salesByCategory.map(item => item.productId);
+    const products = await prisma.product.findMany({
+      where: {
+        id: { in: productIds }
+      },
+      include: {
+        category: {
+          select: {
+            id: true,
+            name: true,
+            nameAr: true
+          }
+        }
+      }
+    });
+
+    // Group by category
+    const categorySales = {};
+    let totalSales = 0;
+
+    salesByCategory.forEach(item => {
+      const product = products.find(p => p.id === item.productId);
+      if (product && product.category) {
+        const categoryId = product.category.id;
+        const categoryName = product.category.name;
+        const categoryNameAr = product.category.nameAr;
+        
+        if (!categorySales[categoryId]) {
+          categorySales[categoryId] = {
+            categoryId,
+            categoryName,
+            categoryNameAr,
+            totalQuantity: 0,
+            orderCount: 0,
+            totalRevenue: 0
+          };
+        }
+        
+        const quantity = item._sum.quantity || 0;
+        const revenue = quantity * product.price;
+        
+        categorySales[categoryId].totalQuantity += quantity;
+        categorySales[categoryId].orderCount += item._count.productId;
+        categorySales[categoryId].totalRevenue += revenue;
+        totalSales += quantity;
+      }
+    });
+
+    // Convert to array and calculate percentages
+    const result = Object.values(categorySales).map(category => ({
+      ...category,
+      percentage: totalSales > 0 ? ((category.totalQuantity / totalSales) * 100) : 0
+    })).sort((a, b) => b.totalQuantity - a.totalQuantity);
+
+    res.json(result);
+  } catch (error) {
+    console.error('Sales by category analytics error:', error);
+    res.status(500).json({ error: 'Failed to fetch sales by category analytics' });
+  }
+});
+
+// Analytics - Orders by City (Confirmed Orders)
+router.get('/analytics/orders-by-city', async (req, res) => {
+  try {
+    const ordersByCity = await prisma.order.groupBy({
+      by: ['cityId'],
+      where: {
+        callCenterStatus: 'CONFIRMED'
+      },
+      _count: {
+        cityId: true
+      },
+      orderBy: {
+        _count: {
+          cityId: 'desc'
+        }
+      }
+    });
+
+    // Get city details
+    const cityIds = ordersByCity.map(item => item.cityId);
+    const cities = await prisma.city.findMany({
+      where: {
+        id: { in: cityIds }
+      },
+      select: {
+        id: true,
+        name: true,
+        nameAr: true
+      }
+    });
+
+    // Calculate total orders for percentage calculation
+    const totalOrders = ordersByCity.reduce((sum, item) => sum + item._count.cityId, 0);
+
+    // Combine data
+    const result = ordersByCity.map(item => {
+      const city = cities.find(c => c.id === item.cityId);
+      return {
+        cityId: city?.id,
+        cityName: city?.name,
+        cityNameAr: city?.nameAr,
+        orders: item._count.cityId,
+        percentage: totalOrders > 0 ? ((item._count.cityId / totalOrders) * 100) : 0
+      };
+    }).filter(item => item.cityId); // Filter out any missing cities
+
+    res.json(result);
+  } catch (error) {
+    console.error('Orders by city analytics error:', error);
+    res.status(500).json({ error: 'Failed to fetch orders by city analytics' });
+  }
+});
+
 // Profit Analytics by Category
 router.get('/analytics/profit-by-category', async (req, res) => {
   try {
@@ -1703,12 +2061,24 @@ router.get('/analytics/profit-by-category', async (req, res) => {
       where.brandId = brand.id;
     }
 
+    // Get products with their sales data from confirmed orders
     const products = await prisma.product.findMany({
       where,
       include: {
         category: true,
         brand: true,
-        sizes: true
+        sizes: true,
+        orderItems: {
+          where: {
+            order: {
+              callCenterStatus: 'CONFIRMED'
+            }
+          },
+          select: {
+            quantity: true,
+            price: true
+          }
+        }
       }
     });
 
@@ -1718,7 +2088,15 @@ router.get('/analytics/profit-by-category', async (req, res) => {
     products.forEach(product => {
       const totalStock = product.stock + product.sizes.reduce((sum, size) => sum + size.stock, 0);
       const profitPerUnit = product.price - product.costPrice;
-      const totalProfit = profitPerUnit * totalStock;
+      
+      // Calculate actual sales from confirmed orders
+      const actualSales = product.orderItems.reduce((sum, item) => sum + item.quantity, 0);
+      const actualRevenue = product.orderItems.reduce((sum, item) => sum + (item.quantity * item.price), 0);
+      const actualCost = actualSales * product.costPrice;
+      const actualProfit = actualRevenue - actualCost;
+      
+      // Calculate theoretical profit (based on current stock)
+      const theoreticalProfit = profitPerUnit * totalStock;
       const totalValue = product.price * totalStock;
       const totalCost = product.costPrice * totalStock;
       
@@ -1735,7 +2113,12 @@ router.get('/analytics/profit-by-category', async (req, res) => {
           totalValue: 0,
           totalCost: 0,
           totalProfit: 0,
+          actualSales: 0,
+          actualRevenue: 0,
+          actualCost: 0,
+          actualProfit: 0,
           averageProfitMargin: 0,
+          actualProfitMargin: 0,
           products: []
         };
       }
@@ -1744,7 +2127,11 @@ router.get('/analytics/profit-by-category', async (req, res) => {
       categoryAnalytics[categoryKey].totalStock += totalStock;
       categoryAnalytics[categoryKey].totalValue += totalValue;
       categoryAnalytics[categoryKey].totalCost += totalCost;
-      categoryAnalytics[categoryKey].totalProfit += totalProfit;
+      categoryAnalytics[categoryKey].totalProfit += theoreticalProfit;
+      categoryAnalytics[categoryKey].actualSales += actualSales;
+      categoryAnalytics[categoryKey].actualRevenue += actualRevenue;
+      categoryAnalytics[categoryKey].actualCost += actualCost;
+      categoryAnalytics[categoryKey].actualProfit += actualProfit;
       
       categoryAnalytics[categoryKey].products.push({
         id: product.id,
@@ -1754,8 +2141,13 @@ router.get('/analytics/profit-by-category', async (req, res) => {
         costPrice: product.costPrice,
         stock: totalStock,
         profitPerUnit,
-        totalProfit,
-        profitMargin: product.price > 0 ? ((profitPerUnit / product.price) * 100) : 0
+        totalProfit: theoreticalProfit,
+        profitMargin: product.price > 0 ? ((profitPerUnit / product.price) * 100) : 0,
+        actualSales,
+        actualRevenue,
+        actualCost,
+        actualProfit,
+        actualProfitMargin: actualRevenue > 0 ? ((actualProfit / actualRevenue) * 100) : 0
       });
     });
 
@@ -1763,11 +2155,13 @@ router.get('/analytics/profit-by-category', async (req, res) => {
     Object.values(categoryAnalytics).forEach(category => {
       category.averageProfitMargin = category.totalValue > 0 ? 
         ((category.totalProfit / category.totalValue) * 100) : 0;
+      category.actualProfitMargin = category.actualRevenue > 0 ? 
+        ((category.actualProfit / category.actualRevenue) * 100) : 0;
     });
 
-    // Convert to array and sort by total profit
+    // Convert to array and sort by actual profit (real sales data)
     const categoryAnalyticsArray = Object.values(categoryAnalytics)
-      .sort((a, b) => b.totalProfit - a.totalProfit);
+      .sort((a, b) => b.actualProfit - a.actualProfit);
 
     // Calculate global analytics
     const globalAnalytics = {
@@ -1777,11 +2171,18 @@ router.get('/analytics/profit-by-category', async (req, res) => {
       totalValue: categoryAnalyticsArray.reduce((sum, cat) => sum + cat.totalValue, 0),
       totalCost: categoryAnalyticsArray.reduce((sum, cat) => sum + cat.totalCost, 0),
       totalProfit: categoryAnalyticsArray.reduce((sum, cat) => sum + cat.totalProfit, 0),
-      averageProfitMargin: 0
+      totalActualSales: categoryAnalyticsArray.reduce((sum, cat) => sum + cat.actualSales, 0),
+      totalActualRevenue: categoryAnalyticsArray.reduce((sum, cat) => sum + cat.actualRevenue, 0),
+      totalActualCost: categoryAnalyticsArray.reduce((sum, cat) => sum + cat.actualCost, 0),
+      totalActualProfit: categoryAnalyticsArray.reduce((sum, cat) => sum + cat.actualProfit, 0),
+      averageProfitMargin: 0,
+      actualProfitMargin: 0
     };
 
     globalAnalytics.averageProfitMargin = globalAnalytics.totalValue > 0 ? 
       ((globalAnalytics.totalProfit / globalAnalytics.totalValue) * 100) : 0;
+    globalAnalytics.actualProfitMargin = globalAnalytics.totalActualRevenue > 0 ? 
+      ((globalAnalytics.totalActualProfit / globalAnalytics.totalActualRevenue) * 100) : 0;
 
     res.json({
       globalAnalytics,

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, use } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
@@ -33,12 +33,14 @@ interface Category {
 }
 
 interface EditCategoryPageProps {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
 export default function EditCategoryPage({ params }: EditCategoryPageProps) {
+  // Unwrap params for Next.js 15 compatibility
+  const unwrappedParams = use(params)
   const router = useRouter()
   const [mounted, setMounted] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -63,7 +65,7 @@ export default function EditCategoryPage({ params }: EditCategoryPageProps) {
     }
 
     try {
-      const response = await fetch(`/api/admin/categories/${params.id}`, {
+      const response = await fetch(`/api/admin/categories/${unwrappedParams.id}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -79,7 +81,7 @@ export default function EditCategoryPage({ params }: EditCategoryPageProps) {
       console.error('Failed to fetch category:', error)
       toast.error('Failed to load category')
     }
-  }, [params.id, token, router])
+  }, [unwrappedParams.id, token, router])
 
   useEffect(() => {
     setMounted(true)
@@ -109,7 +111,7 @@ export default function EditCategoryPage({ params }: EditCategoryPageProps) {
       // Generate slug from name if not provided
       const slug = categoryData.slug || categoryData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
 
-      const response = await fetch(`/api/admin/categories/${params.id}`, {
+      const response = await fetch(`/api/admin/categories/${unwrappedParams.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

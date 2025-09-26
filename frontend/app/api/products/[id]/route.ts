@@ -2,11 +2,12 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const backendUrl = process.env.BACKEND_URL || 'http://localhost:5000'
-    const response = await fetch(`${backendUrl}/api/products/${params.id}`, {
+    const resolvedParams = await params
+    const response = await fetch(`${backendUrl}/api/products/${resolvedParams.id}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

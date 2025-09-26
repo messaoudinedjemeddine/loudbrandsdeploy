@@ -16,18 +16,41 @@ const createOrderSchema = z.object({
   wilayaId: z.number().min(1, 'Wilaya is required'), // Changed from cityId to wilayaId
   deliveryDeskId: z.string().optional(),
   deliveryDeskName: z.string().optional(),
+  deliveryFee: z.union([z.number().min(0, 'Delivery fee must be non-negative'), z.undefined()]).optional(),
   notes: z.string().optional(),
   items: z.array(z.object({
     productId: z.string(),
     quantity: z.number().min(1),
     sizeId: z.string().optional()
   })).min(1, 'At least one item is required')
+}).refine((data) => {
+  // For PICKUP orders, deliveryDeskId should be provided and not empty
+  if (data.deliveryType === 'PICKUP' && (!data.deliveryDeskId || data.deliveryDeskId.trim() === '')) {
+    return false;
+  }
+  return true;
+}, {
+  message: "Delivery desk ID is required for pickup orders",
+  path: ["deliveryDeskId"]
 });
 
 // Create new order
 router.post('/', async (req, res) => {
   try {
-    const orderData = createOrderSchema.parse(req.body);
+    console.log('🔍 Received order data:', req.body);
+    
+    let orderData;
+    try {
+      orderData = createOrderSchema.parse(req.body);
+    } catch (validationError) {
+      console.error('❌ Validation error:', validationError.errors);
+      console.error('❌ Received data:', req.body);
+      return res.status(400).json({ 
+        error: 'Invalid input data',
+        details: validationError.errors,
+        receivedData: req.body
+      });
+    }
 
     // Get wilaya information using the mapper utility
     const wilayaInfo = getWilayaById(orderData.wilayaId);
@@ -123,9 +146,17 @@ router.post('/', async (req, res) => {
       });
     }
 
-    // Calculate delivery fee (simplified logic)
-    const deliveryFee = orderData.deliveryType === 'HOME_DELIVERY' ? 500 : 0;
+    // Use delivery fee from frontend or calculate default
+    const deliveryFee = (orderData.deliveryFee !== undefined && orderData.deliveryFee !== null) ? orderData.deliveryFee : (orderData.deliveryType === 'HOME_DELIVERY' ? 500 : 0);
     const total = subtotal + deliveryFee;
+    
+    console.log('🔍 Order creation debug:', {
+      subtotal,
+      deliveryFee,
+      total,
+      deliveryType: orderData.deliveryType,
+      frontendDeliveryFee: orderData.deliveryFee
+    });
 
     // Handle delivery desk for pickup orders
     let deliveryDeskId = null;

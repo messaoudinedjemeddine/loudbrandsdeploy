@@ -25,6 +25,7 @@ import {
 import Image from 'next/image'
 import Link from 'next/link'
 import { useLocaleStore } from '@/lib/locale-store'
+import { Navbar } from '@/components/navbar'
 
 // Custom hook for counter animation
 const useCounter = (end: number, duration: number = 2000) => {
@@ -129,6 +130,11 @@ export default function AboutPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Navbar */}
+      <div className="fixed top-0 left-0 right-0 z-50">
+        <Navbar />
+      </div>
+      
       <div className="pt-16">
         {/* Hero Section */}
         <section className="relative py-20 bg-muted/30 overflow-hidden">
@@ -151,12 +157,12 @@ export default function AboutPage() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8 }}
               >
-                <h1 className="text-4xl md:text-6xl font-bold mb-6">{t?.pages?.about?.title || 'About E-Shop Algeria'}</h1>
+                <h1 className="text-4xl md:text-6xl font-bold mb-6">{'About E-Shop Algeria'}</h1>
                 <p className="text-xl text-muted-foreground mb-8">
-                  {t?.pages?.about?.subtitle || "We're on a mission to revolutionize online shopping in Algeria"}
+                  {"We're on a mission to revolutionize online shopping in Algeria"}
                 </p>
                 <Badge variant="secondary" className="text-lg px-6 py-2">
-                  {t?.admin?.stats?.yearsExperience || 'Years Experience'} 2019
+                  {'Years Experience'} 2019
                 </Badge>
               </motion.div>
               
@@ -212,63 +218,291 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* Story Section */}
+        {/* Who We Are Section */}
         <section className="py-20 bg-muted/30">
           <div className="max-w-6xl mx-auto px-4">
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+              className="text-center mb-16"
+            >
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
+                {'Who We Are'}
+              </h2>
+              <div className="w-24 h-1 bg-primary mx-auto mb-8"></div>
+              <p className="text-xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed">
+                {'From the heart of Algeria, we are redefining elegance with a style that blends modernity and authenticity.'}
+              </p>
+            </motion.div>
+
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <motion.div
                 initial={{ opacity: 0, x: -50 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8 }}
                 viewport={{ once: true }}
+                className="space-y-6"
               >
-                <h2 className="text-3xl md:text-4xl font-bold mb-6">{t?.pages?.about?.ourStory || 'Our Story'}</h2>
-                <div className="space-y-4 text-muted-foreground">
-                  <p>{t?.pages?.about?.subtitle || "We're on a mission to revolutionize online shopping in Algeria"}</p>
-                  <p>{t?.pages?.about?.ourMission || 'Our Mission'}</p>
+                <h3 className="text-3xl font-bold text-gray-900 dark:text-white">
+                  {'LOUD Brands'}
+                </h3>
+                <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
+                  {'We are a leading Algerian brand specializing in the design and production of occasion wear and everyday clothing, through two distinct branches:'}
+                </p>
+                <div className="space-y-4">
+                  <div className="flex items-start space-x-4">
+                    <div className="w-2 h-2 bg-primary rounded-full mt-3 flex-shrink-0"></div>
+                    <div>
+                      <h4 className="font-semibold text-gray-900 dark:text-white">LOUD Styles</h4>
+                      <p className="text-gray-600 dark:text-gray-300">
+                        {'Luxurious wedding and evening gowns.'}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-start space-x-4">
+                    <div className="w-2 h-2 bg-primary rounded-full mt-3 flex-shrink-0"></div>
+                    <div>
+                      <h4 className="font-semibold text-gray-900 dark:text-white">LOUDIM</h4>
+                      <p className="text-gray-600 dark:text-gray-300">
+                        {'Chic outerwear and sophisticated casual wear.'}
+                      </p>
+                    </div>
+                  </div>
                 </div>
+                <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed font-medium">
+                  {'We are here to offer Algerian women local choices that powerfully compete with international brands—with complete pride, we are 100% Algerian.'}
+                </p>
               </motion.div>
+
               <motion.div
                 initial={{ opacity: 0, x: 50 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8 }}
                 viewport={{ once: true }}
-                className="flex justify-center"
+                className="relative"
               >
-                <div className="relative w-full max-w-md">
-                  <div className="relative w-full h-80 rounded-2xl overflow-hidden shadow-2xl">
-                    <Image
-                      src="/api/upload/images/images-1750886415167-825207562.jpg"
-                      alt="E-Shop Algeria Story"
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <div className="absolute -bottom-4 -left-4 w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center">
-                    <Heart className="w-8 h-8 text-primary" />
-                  </div>
+                <div className="relative w-full h-96 rounded-2xl overflow-hidden shadow-2xl">
+                  <Image
+                    src="/api/upload/images/images-1750886415167-825207562.jpg"
+                    alt="LOUD Brands"
+                    fill
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
                 </div>
               </motion.div>
             </div>
           </div>
         </section>
 
-        {/* Values Section */}
-        <section className="py-20">
+        {/* Our Story Section */}
+        <section className="py-20 bg-white dark:bg-gray-900">
           <div className="max-w-6xl mx-auto px-4">
-            <h2 className="text-3xl md:text-4xl font-bold mb-10 text-center">{t?.pages?.about?.ourValues || 'Our Values'}</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {values.map((value, idx) => (
-                <Card key={idx} className="text-center">
-                  <CardContent className="p-8">
-                    <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <value.icon className="w-8 h-8 text-primary" />
-                    </div>
-                    <h3 className="font-semibold text-lg mb-2">{value.title}</h3>
-                    <p className="text-muted-foreground">{value.description}</p>
-                  </CardContent>
-                </Card>
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+              className="text-center mb-16"
+            >
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
+                {'Our Story'}
+              </h2>
+              <div className="w-24 h-1 bg-primary mx-auto mb-8"></div>
+            </motion.div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <motion.div
+                initial={{ opacity: 0, x: -50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8 }}
+                viewport={{ once: true }}
+                className="relative"
+              >
+                <div className="relative w-full h-96 rounded-2xl overflow-hidden shadow-2xl">
+                  <Image
+                    src="/api/upload/images/images-1750886415167-221177598.jpg"
+                    alt="Our Story"
+                    fill
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                </div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, x: 50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8 }}
+                viewport={{ once: true }}
+                className="space-y-6"
+              >
+                <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
+                  {'LOUD Brands began as a simple dream: to create local fashion that reflects the identity of the Algerian woman and meets her refined taste for every occasion.'}
+                </p>
+                <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
+                  {'From a wedding dress that immortalizes life\'s big moment to a casual look that mirrors your everyday self—our journey has been filled with passion, design, and commitment to quality.'}
+                </p>
+                <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
+                  {'We chose to be different... so we innovated by creating two branches to cater to every aspect of your life:'}
+                </p>
+                <div className="space-y-3">
+                  <div className="flex items-start space-x-3">
+                    <div className="w-2 h-2 bg-primary rounded-full mt-3 flex-shrink-0"></div>
+                    <p className="text-gray-600 dark:text-gray-300">
+                      <strong>LOUD Styles:</strong> {'For every grand moment, a look worthy of you.'}
+                    </p>
+                  </div>
+                  <div className="flex items-start space-x-3">
+                    <div className="w-2 h-2 bg-primary rounded-full mt-3 flex-shrink-0"></div>
+                    <p className="text-gray-600 dark:text-gray-300">
+                      <strong>LOUDIM:</strong> {'For every day, an elegance that suits you.'}
+                    </p>
+                  </div>
+                </div>
+                <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed font-medium">
+                  {'Today, we are proud to be an Algerian brand making a difference with every step.'}
+                </p>
+              </motion.div>
+            </div>
+          </div>
+        </section>
+
+        {/* Our Values Section */}
+        <section className="py-20 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+          <div className="max-w-6xl mx-auto px-4">
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+              className="text-center mb-16"
+            >
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
+                {t?.pages?.about?.ourValues || 'Our Values'}
+              </h2>
+              <div className="w-24 h-1 bg-primary mx-auto mb-8"></div>
+            </motion.div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {[
+                {
+                  icon: '✨',
+                  title: 'Quality First',
+                  description: 'From fabric selection to the final stitch, we prioritize the smallest details.'
+                },
+                {
+                  icon: '✨',
+                  title: 'Refined Elegance',
+                  description: 'We design pieces that reflect your personality, with a contemporary vision and an Algerian touch.'
+                },
+                {
+                  icon: '✨',
+                  title: 'Empowering Local Industry',
+                  description: 'Our ultimate pride is being 100% Algerian production.'
+                },
+                {
+                  icon: '✨',
+                  title: 'Boldness and Distinction',
+                  description: 'We believe every woman deserves to be unique and different.'
+                },
+                {
+                  icon: '✨',
+                  title: 'Continuous Innovation',
+                  description: 'We follow the latest fashion lines and adapt them to suit your local taste.'
+                }
+              ].map((value, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                  className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+                >
+                  <div className="text-3xl mb-4">{value.icon}</div>
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">{value.title}</h3>
+                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{value.description}</p>
+                </motion.div>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Why Choose Us Section */}
+        <section className="py-20 bg-white dark:bg-gray-900">
+          <div className="max-w-6xl mx-auto px-4">
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+              className="text-center mb-16"
+            >
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
+                {'Why Choose Us?'}
+              </h2>
+              <div className="w-24 h-1 bg-primary mx-auto mb-8"></div>
+              <p className="text-xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed">
+                {'Because we are not just a brand; we are an experience.'}
+              </p>
+            </motion.div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <motion.div
+                initial={{ opacity: 0, x: -50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8 }}
+                viewport={{ once: true }}
+                className="space-y-6"
+              >
+                <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
+                  {'LOUD Brands was born to be the first choice for the Algerian woman seeking elegance, distinctiveness, and quality—whether in life\'s grand moments or its everyday details.'}
+                </p>
+                <div className="space-y-4">
+                  <div className="flex items-start space-x-4">
+                    <div className="w-2 h-2 bg-primary rounded-full mt-3 flex-shrink-0"></div>
+                    <p className="text-gray-600 dark:text-gray-300">
+                      {'We know your taste.'}
+                    </p>
+                  </div>
+                  <div className="flex items-start space-x-4">
+                    <div className="w-2 h-2 bg-primary rounded-full mt-3 flex-shrink-0"></div>
+                    <p className="text-gray-600 dark:text-gray-300">
+                      {'We understand your needs.'}
+                    </p>
+                  </div>
+                  <div className="flex items-start space-x-4">
+                    <div className="w-2 h-2 bg-primary rounded-full mt-3 flex-shrink-0"></div>
+                    <p className="text-gray-600 dark:text-gray-300">
+                      {'And we give you everything you need to be you, at your finest.'}
+                    </p>
+                  </div>
+                </div>
+                <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed font-bold">
+                  {'LOUD BRANDS is the name of true Algerian elegance, with local production and a world-class standard.'}
+                </p>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, x: 50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8 }}
+                viewport={{ once: true }}
+                className="relative"
+              >
+                <div className="relative w-full h-96 rounded-2xl overflow-hidden shadow-2xl">
+                  <Image
+                    src="/api/upload/images/images-1750886415167-825207562.jpg"
+                    alt="Why Choose Us"
+                    fill
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                </div>
+              </motion.div>
             </div>
           </div>
         </section>

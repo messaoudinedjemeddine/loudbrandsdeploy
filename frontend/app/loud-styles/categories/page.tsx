@@ -12,6 +12,7 @@ import Link from 'next/link'
 import { useCartStore } from '@/lib/store'
 import { useLocaleStore } from '@/lib/locale-store'
 import { api } from '@/lib/api'
+import { LoudStylesNavbar } from '@/components/loud-styles-navbar'
 
 interface Category {
   id: string;
@@ -39,7 +40,7 @@ export default function LoudStylesCategoriesPage() {
         const response = await api.categories.getAll({ brand: 'loud-styles' })
         
         // Ensure we have an array of categories
-        const fetchedCategories = response.categories || []
+        const fetchedCategories = (response as any).categories || []
         
         setCategories(fetchedCategories)
         setFilteredCategories(fetchedCategories)
@@ -130,7 +131,7 @@ export default function LoudStylesCategoriesPage() {
                   >
                     <Button 
                       size="sm" 
-                      className="bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/30"
+                      className="bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/30 text-black"
                     >
                       {isRTL ? 'استكشفي المجموعة' : 'Explore Collection'}
                     </Button>
@@ -166,8 +167,13 @@ export default function LoudStylesCategoriesPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-cream-50 via-warm-50 to-cream-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900" dir={isRTL ? 'rtl' : 'ltr'}>
+      {/* Navbar */}
+      <div className="fixed top-0 left-0 right-0 z-50">
+        <LoudStylesNavbar />
+      </div>
+      
       {/* Header */}
-      <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+      <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 pt-20">
         <div className="container mx-auto px-4 py-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

@@ -37,9 +37,10 @@ const calculateFeesSchema = z.object({
 
 const createShipmentSchema = z.object({
   orderId: z.string().min(1),
-  customerName: z.string().min(1),
-  customerPhone: z.string().min(1),
-  customerAddress: z.string().min(1),
+  firstname: z.string().min(1),
+  familyname: z.string().min(1),
+  contactPhone: z.string().min(1),
+  address: z.string().min(1),
   fromWilayaName: z.string().min(1),
   toWilayaName: z.string().min(1),
   toCommuneName: z.string().min(1),
@@ -71,15 +72,40 @@ router.get('/status', (req, res) => {
 // Test Yalidine API connection and endpoints
 router.get('/test', async (req, res) => {
   try {
+    console.log('🔍 Testing Yalidine connection...');
+    
     if (!yalidineService.isConfigured()) {
+      console.log('❌ Yalidine not configured');
       return res.status(503).json({ error: 'Yalidine shipping not configured' });
     }
 
-    const testResult = await yalidineService.testConnection();
-    res.json(testResult);
+    console.log('✅ Yalidine is configured, testing connection...');
+    
+    // Test basic API call
+    try {
+      const wilayas = await yalidineService.getWilayas();
+      console.log('✅ Wilayas test passed:', wilayas.data?.length || 0, 'wilayas found');
+    } catch (wilayaError) {
+      console.error('❌ Wilayas test failed:', wilayaError.message);
+      return res.status(500).json({ 
+        error: 'Yalidine API test failed', 
+        details: wilayaError.message,
+        configured: yalidineService.isConfigured()
+      });
+    }
+
+    res.json({ 
+      success: true, 
+      message: 'Yalidine API is working correctly',
+      configured: yalidineService.isConfigured()
+    });
   } catch (error) {
     console.error('Error testing Yalidine connection:', error);
-    res.status(500).json({ error: 'Failed to test connection' });
+    res.status(500).json({ 
+      error: 'Failed to test connection',
+      details: error.message,
+      configured: yalidineService.isConfigured()
+    });
   }
 });
 
@@ -333,23 +359,34 @@ router.post('/create-shipment', async (req, res) => {
     const validatedData = createShipmentSchema.parse(req.body);
     
     // Validate phone number
-    if (!yalidineService.validatePhoneNumber(validatedData.customerPhone)) {
+    if (!yalidineService.validatePhoneNumber(validatedData.contactPhone)) {
       return res.status(400).json({ error: 'Invalid phone number format' });
     }
 
     // Format data for Yalidine API
     const parcelData = yalidineService.formatParcelData(validatedData);
     
+    console.log('🔍 Creating shipment with data:', validatedData);
+    console.log('🔍 Formatted parcel data:', parcelData);
+    
     // Create shipment
     const result = await yalidineService.createParcel(parcelData);
+    console.log('🔍 Yalidine service result:', result);
     
     // Get the result for the specific order
     const orderResult = result[validatedData.orderId];
+    console.log('🔍 Order result:', orderResult);
     
     if (!orderResult || !orderResult.success) {
+      console.error('❌ Shipment creation failed:', {
+        orderResult,
+        message: orderResult?.message,
+        result: result
+      });
       return res.status(400).json({ 
         error: 'Failed to create shipment', 
-        message: orderResult?.message || 'Unknown error' 
+        message: orderResult?.message || 'Unknown error',
+        details: orderResult
       });
     }
 
@@ -432,6 +469,81 @@ router.delete('/shipment/:tracking', async (req, res) => {
   } catch (error) {
     console.error('Error deleting shipment:', error);
     res.status(500).json({ error: 'Failed to delete shipment' });
+  }
+});
+
+// Debug endpoint to test shipment creation with sample data
+router.post('/test-shipment', async (req, res) => {
+  try {
+    console.log('🔍 Testing shipment creation with sample data...');
+    
+    if (!yalidineService.isConfigured()) {
+      return res.status(503).json({ error: 'Yalidine shipping not configured' });
+    }
+
+    // Sample shipment data for testing
+    const sampleData = {
+      orderId: 'TEST-ORDER-001',
+      customerName: 'Test Customer',
+      customerPhone: '0551234567',
+      customerAddress: 'Test Address, Test City',
+      fromWilayaName: 'Batna',
+      toWilayaName: 'Alger',
+      toCommuneName: 'Alger',
+      productList: 'Test Product (1x)',
+      price: 1000,
+      weight: 0.5,
+      length: 30,
+      width: 20,
+      height: 10,
+      isStopDesk: false,
+      doInsurance: false,
+      declaredValue: 1000,
+      freeshipping: false,
+      hasExchange: false
+    };
+
+    console.log('🔍 Sample data:', sampleData);
+
+    const validatedData = createShipmentSchema.parse(sampleData);
+    console.log('✅ Data validation passed');
+
+    const parcelData = yalidineService.formatParcelData(validatedData);
+    console.log('🔍 Formatted parcel data:', parcelData);
+
+    const result = await yalidineService.createParcel(parcelData);
+    console.log('🔍 Yalidine service result:', result);
+
+    const orderResult = result[sampleData.orderId];
+    console.log('🔍 Order result:', orderResult);
+
+    if (!orderResult || !orderResult.success) {
+      console.error('❌ Test shipment creation failed:', orderResult);
+      return res.status(400).json({ 
+        error: 'Test shipment creation failed', 
+        message: orderResult?.message || 'Unknown error',
+        details: orderResult,
+        result: result
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Test shipment created successfully',
+      tracking: orderResult.tracking,
+      orderId: orderResult.order_id,
+      label: orderResult.label,
+      importId: orderResult.import_id
+    });
+  } catch (error) {
+    console.error('❌ Test shipment creation error:', error);
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({ error: 'Invalid test data', details: error.errors });
+    }
+    res.status(500).json({ 
+      error: 'Test shipment creation failed',
+      details: error.message
+    });
   }
 });
 
@@ -565,6 +677,95 @@ router.get('/shipments', async (req, res) => {
       console.error('Response data:', error.response.data);
     }
     res.status(500).json({ error: 'Failed to fetch shipments' });
+  }
+});
+
+// Get Yalidine shipment statistics
+router.get('/shipments/stats', async (req, res) => {
+  try {
+    console.log('🔍 Yalidine shipment stats request received');
+    
+    if (!yalidineService.isConfigured()) {
+      console.log('❌ Yalidine service not configured');
+      return res.status(503).json({ error: 'Yalidine shipping not configured' });
+    }
+
+    // Get all shipments to calculate statistics
+    const shipments = await yalidineService.getAllParcels({});
+    
+    if (!shipments.data || shipments.data.length === 0) {
+      return res.json({
+        enPreparation: 0,
+        centre: 0,
+        versWilaya: 0,
+        sortiEnLivraison: 0,
+        livre: 0,
+        echecLivraison: 0,
+        retourARetirer: 0,
+        retourneAuVendeur: 0,
+        echangeEchoue: 0,
+        totalShipments: 0
+      });
+    }
+
+    // Count shipments by status
+    const stats = {
+      enPreparation: 0,
+      centre: 0,
+      versWilaya: 0,
+      sortiEnLivraison: 0,
+      livre: 0,
+      echecLivraison: 0,
+      retourARetirer: 0,
+      retourneAuVendeur: 0,
+      echangeEchoue: 0,
+      totalShipments: shipments.data.length
+    };
+
+    shipments.data.forEach(shipment => {
+      const status = shipment.last_status;
+      
+      switch (status) {
+        case 'En préparation':
+          stats.enPreparation++;
+          break;
+        case 'Centre':
+          stats.centre++;
+          break;
+        case 'Vers Wilaya':
+          stats.versWilaya++;
+          break;
+        case 'Sorti en livraison':
+          stats.sortiEnLivraison++;
+          break;
+        case 'Livré':
+          stats.livre++;
+          break;
+        case 'Echèc livraison':
+          stats.echecLivraison++;
+          break;
+        case 'Retour à retirer':
+          stats.retourARetirer++;
+          break;
+        case 'Retourné au vendeur':
+          stats.retourneAuVendeur++;
+          break;
+        case 'Echange échoué':
+          stats.echangeEchoue++;
+          break;
+      }
+    });
+
+    console.log('✅ Yalidine shipment stats calculated:', stats);
+    
+    res.json(stats);
+  } catch (error) {
+    console.error('❌ Error fetching Yalidine shipment stats:', error.message);
+    if (error.response) {
+      console.error('Response status:', error.response.status);
+      console.error('Response data:', error.response.data);
+    }
+    res.status(500).json({ error: 'Failed to fetch shipment statistics' });
   }
 });
 

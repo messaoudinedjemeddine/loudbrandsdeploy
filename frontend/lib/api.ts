@@ -28,6 +28,12 @@ class ApiClient {
     options: RequestInit = {}
   ): Promise<T> {
     const url = `${this.baseURL}${endpoint}`;
+    console.log('API Request:', {
+      method: options.method || 'GET',
+      url,
+      endpoint,
+      baseURL: this.baseURL
+    });
     
     const config: RequestInit = {
       headers: {
@@ -40,6 +46,7 @@ class ApiClient {
     // Add auth token if available
     if (typeof window !== 'undefined') {
       const token = getAuthToken();
+      console.log('Auth token available:', !!token);
       if (token) {
         config.headers = {
           ...config.headers,
@@ -208,11 +215,46 @@ class ApiClient {
     status: {
       callCenterStatus?: string;
       deliveryStatus?: string;
+      notes?: string;
+      deliveryType?: string;
+      deliveryAddress?: string;
+      deliveryDeskId?: string;
+      deliveryFee?: number;
+      total?: number;
+      trackingNumber?: string;
+      yalidineShipmentId?: string;
     }
   ) {
     return this.request(`/admin/orders/${orderId}/status`, {
       method: 'PATCH',
       body: JSON.stringify(status),
+    });
+  }
+
+  async updateOrderItems(
+    orderId: string,
+    data: {
+      items: Array<{
+        id: string;
+        name: string;
+        nameAr?: string;
+        quantity: number;
+        price: number;
+        size?: string;
+        product: {
+          id: string;
+          name: string;
+          nameAr?: string;
+          image?: string;
+        };
+      }>;
+      subtotal: number;
+      total: number;
+    }
+  ) {
+    return this.request(`/admin/orders/${orderId}/items`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
     });
   }
 
@@ -275,12 +317,23 @@ export const api = {
     getDashboardStats: () => apiClient.getDashboardStats(),
     getRecentOrders: () => apiClient.getRecentOrders(),
     getLowStockProducts: () => apiClient.getLowStockProducts(),
+    getProducts: (params?: {
+      page?: number;
+      limit?: number;
+      search?: string;
+      category?: string;
+      status?: string;
+    }) => apiClient.request(`/admin/products${params ? `?${new URLSearchParams(params as any).toString()}` : ''}`),
     getOrders: (params?: Parameters<typeof apiClient.getAdminOrders>[0]) => 
       apiClient.getAdminOrders(params),
     updateOrderStatus: (
       orderId: string, 
       status: Parameters<typeof apiClient.updateOrderStatus>[1]
     ) => apiClient.updateOrderStatus(orderId, status),
+    updateOrderItems: (
+      orderId: string,
+      data: Parameters<typeof apiClient.updateOrderItems>[1]
+    ) => apiClient.updateOrderItems(orderId, data),
     getUsers: (params?: Parameters<typeof apiClient.getUsers>[0]) => 
       apiClient.getUsers(params),
     createUser: (data: {
@@ -309,8 +362,6 @@ export const api = {
       method: 'DELETE',
     }),
     // Products management
-    getProducts: (params?: Parameters<typeof apiClient.getProducts>[0]) => 
-      apiClient.getProducts(params),
     getProduct: (id: string) => apiClient.getProduct(id),
     createProduct: (data: any) => apiClient.request('/admin/products', {
       method: 'POST',
@@ -449,6 +500,13 @@ export const api = {
       const params = brandSlug ? `?brandSlug=${brandSlug}` : '';
       return apiClient.request(`/admin/analytics/profit-by-category${params}`);
     },
+    // Analytics
+    getTopProducts: (limit?: number) => {
+      const params = limit ? `?limit=${limit}` : '';
+      return apiClient.request(`/admin/analytics/top-products${params}`);
+    },
+    getSalesByCategory: () => apiClient.request('/admin/analytics/sales-by-category'),
+    getOrdersByCity: () => apiClient.request('/admin/analytics/orders-by-city'),
   },
 
   // Shipping (Yalidine)
@@ -505,6 +563,7 @@ export const api = {
       const query = searchParams.toString();
       return apiClient.request(`/shipping/shipments${query ? `?${query}` : ''}`);
     },
+    getShipmentStats: () => apiClient.request('/shipping/shipments/stats'),
   },
 };
 

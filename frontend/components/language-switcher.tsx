@@ -18,7 +18,7 @@ const languageNames: Record<Locale, { name: string; nativeName: string }> = {
   fr: { name: 'French', nativeName: 'Français' }
 }
 
-export function LanguageSwitcher({ isTransparent = false }: { isTransparent?: boolean }) {
+export function LanguageSwitcher({ isTransparent = false, isLightBackground = false }: { isTransparent?: boolean; isLightBackground?: boolean }) {
   const { locale, setLocale } = useLocaleStore()
   const [isOpen, setIsOpen] = useState(false)
 
@@ -33,7 +33,11 @@ export function LanguageSwitcher({ isTransparent = false }: { isTransparent?: bo
         <Button 
           variant="ghost" 
           size="sm" 
-          className="p-2 text-white hover:text-amber-300 hover:bg-amber-500/20 rounded-lg transition-all duration-300"
+          className={`p-2 rounded-lg transition-all duration-300 ${
+            isLightBackground 
+              ? 'text-gray-800 dark:text-gray-300 hover:text-primary hover:bg-primary/10' 
+              : 'text-white hover:text-amber-300 hover:bg-amber-500/20'
+          }`}
         >
           <Globe className="w-5 h-5" />
         </Button>

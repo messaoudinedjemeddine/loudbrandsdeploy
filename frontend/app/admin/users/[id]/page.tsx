@@ -20,9 +20,9 @@ import Link from 'next/link'
 import { AdminLayout } from '@/components/admin/admin-layout'
 
 interface UserDetailPageProps {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
 const mockUser = {

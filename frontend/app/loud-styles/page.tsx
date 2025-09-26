@@ -71,8 +71,8 @@ export default function LoudStylesPage() {
   const features = [
     {
       icon: Truck,
-      title: isRTL ? 'شحن مجاني' : 'Free Shipping',
-      description: isRTL ? 'شحن مجاني لجميع الطلبات' : 'Free shipping on all orders'
+      title: isRTL ? 'شحن مع ياليدين' : 'Shipping with Yalidine',
+      description: isRTL ? 'شحن موثوق مع ياليدين' : 'Reliable shipping with Yalidine'
     },
     {
       icon: Shield,
@@ -234,7 +234,7 @@ export default function LoudStylesPage() {
             <Button 
               size="lg" 
               variant="outline"
-              className="text-lg px-8 py-6 transition-all duration-300 font-semibold hover:scale-105 border-white text-white hover:bg-white hover:text-gray-900" 
+              className="text-lg px-8 py-6 transition-all duration-300 font-semibold hover:scale-105 border-white text-black hover:bg-white hover:text-gray-900" 
               asChild
             >
               <Link href="/loud-styles/categories">
@@ -504,21 +504,6 @@ export default function LoudStylesPage() {
                                 {isRTL ? product.nameAr || product.name : product.name}
                               </motion.h3>
                               
-                              <motion.div 
-                                className="flex items-center justify-center mb-3"
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.4 + index * 0.1, duration: 0.4 }}
-                              >
-                                <div className="flex items-center">
-                                  {[...Array(5)].map((_, i) => (
-                                    <Star
-                                      key={i}
-                                      className={`w-4 h-4 ${i < (product.rating || 4) ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
-                                    />
-                                  ))}
-                                </div>
-                              </motion.div>
                               
                               <motion.div 
                                 className="flex items-center justify-center gap-2 mb-4"
@@ -528,11 +513,11 @@ export default function LoudStylesPage() {
                               >
                                 {product.oldPrice && product.oldPrice > product.price && (
                                   <span className="text-sm text-gray-500 line-through">
-                                    ${product.oldPrice}
+                                    {product.oldPrice?.toLocaleString()} DA
                                   </span>
                                 )}
                                 <span className="text-xl font-bold text-primary">
-                                  ${product.price}
+                                  {product.price.toLocaleString()} DA
                                 </span>
                               </motion.div>
                               
@@ -620,11 +605,11 @@ export default function LoudStylesPage() {
               >
                 <Button 
                   size="lg" 
-                  className="text-lg px-8 py-6 transition-all duration-300 font-medium" 
+                  className="text-lg px-8 py-6 transition-all duration-300 font-medium text-white" 
                   style={{ backgroundColor: '#bfa36a', borderColor: '#bfa36a' }}
                   asChild
                 >
-                  <Link href="/loud-styles/products" style={{ borderColor: '#bfa36a', color: '#bfa36a' }}>
+                  <Link href="/loud-styles/products" style={{ borderColor: '#bfa36a', color: 'white' }}>
                     {isRTL ? 'عرض جميع المنتجات' : 'View All Products'}
                   </Link>
                 </Button>

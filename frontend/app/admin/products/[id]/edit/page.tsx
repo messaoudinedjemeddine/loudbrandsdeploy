@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, use } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
@@ -29,6 +29,7 @@ interface Product {
   description?: string;
   descriptionAr?: string;
   price: number;
+  costPrice?: number;
   oldPrice?: number;
   category: string;
   reference?: string;
@@ -41,17 +42,27 @@ interface Product {
   slug?: string;
 }
 
+interface Category {
+  id: string;
+  name: string;
+  nameAr?: string;
+  slug: string;
+}
+
 interface EditProductPageProps {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
 export default function EditProductPage({ params }: EditProductPageProps) {
+  // Unwrap params for Next.js 15 compatibility
+  const unwrappedParams = use(params)
   const { t } = useLocaleStore()
   const router = useRouter()
   const [mounted, setMounted] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [categories, setCategories] = useState<Category[]>([])
   const [productData, setProductData] = useState<Product>({
     id: '',
     name: '',
@@ -59,6 +70,7 @@ export default function EditProductPage({ params }: EditProductPageProps) {
     description: '',
     descriptionAr: '',
     price: 0,
+    costPrice: 0,
     oldPrice: 0,
     category: '',
     reference: '',
@@ -70,9 +82,19 @@ export default function EditProductPage({ params }: EditProductPageProps) {
     images: []
   })
 
+  const fetchCategories = useCallback(async () => {
+    try {
+      const response = await api.admin.getCategories() as Category[]
+      setCategories(response)
+    } catch (error) {
+      console.error('Failed to fetch categories:', error)
+      toast.error('Failed to load categories')
+    }
+  }, [])
+
   const fetchProduct = useCallback(async () => {
     try {
-      const data = await api.admin.getProduct(params.id) as any
+      const data = await api.admin.getProduct(unwrappedParams.id) as any
       // Transform the API response to match our Product interface
       const transformedData: Product = {
         id: data.id,
@@ -81,6 +103,7 @@ export default function EditProductPage({ params }: EditProductPageProps) {
         description: data.description || '',
         descriptionAr: data.descriptionAr || '',
         price: data.price,
+        costPrice: data.costPrice || 0,
         oldPrice: data.oldPrice || 0,
         category: data.category?.name || data.category || '',
         reference: data.reference || '',
@@ -97,12 +120,13 @@ export default function EditProductPage({ params }: EditProductPageProps) {
       console.error('Failed to fetch product:', error)
       toast.error('Failed to load product')
     }
-  }, [params.id])
+  }, [unwrappedParams.id])
 
   useEffect(() => {
     setMounted(true)
+    fetchCategories()
     fetchProduct()
-  }, [fetchProduct])
+  }, [fetchCategories, fetchProduct])
 
   if (!mounted) return null
 
@@ -122,12 +146,13 @@ export default function EditProductPage({ params }: EditProductPageProps) {
       // Generate slug from name if not provided
       const slug = productData.slug || productData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
 
-      await api.admin.updateProduct(params.id, {
+      await api.admin.updateProduct(unwrappedParams.id, {
         name: productData.name,
         nameAr: productData.nameAr,
         description: productData.description,
         descriptionAr: productData.descriptionAr,
         price: productData.price,
+        costPrice: productData.costPrice,
         oldPrice: productData.oldPrice,
         category: productData.category,
         reference: productData.reference,
@@ -170,7 +195,7 @@ export default function EditProductPage({ params }: EditProductPageProps) {
             </div>
           </div>
           <Button variant="outline" size="sm" asChild>
-            <Link href={`/products/${params.id}`}>
+            <Link href={`/products/${unwrappedParams.id}`}>
               <Eye className="w-4 h-4 mr-2" />
               View Product
             </Link>
@@ -226,9 +251,20 @@ export default function EditProductPage({ params }: EditProductPageProps) {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="price">Price (DA) *</Label>
+                  <Label htmlFor="costPrice">Buying Price (DA) *</Label>
+                  <Input
+                    id="costPrice"
+                    type="number"
+                    value={productData.costPrice || ''}
+                    onChange={(e) => handleInputChange('costPrice', parseFloat(e.target.value) || 0)}
+                    required
+                  />
+                  <p className="text-xs text-muted-foreground">The price you paid for this product</p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="price">Selling Price (DA) *</Label>
                   <Input
                     id="price"
                     type="number"
@@ -236,6 +272,7 @@ export default function EditProductPage({ params }: EditProductPageProps) {
                     onChange={(e) => handleInputChange('price', parseFloat(e.target.value) || 0)}
                     required
                   />
+                  <p className="text-xs text-muted-foreground">The price customers will pay</p>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="oldPrice">Old Price (DA)</Label>
@@ -245,6 +282,7 @@ export default function EditProductPage({ params }: EditProductPageProps) {
                     value={productData.oldPrice || ''}
                     onChange={(e) => handleInputChange('oldPrice', parseFloat(e.target.value) || undefined)}
                   />
+                  <p className="text-xs text-muted-foreground">Previous selling price (for discounts)</p>
                 </div>
               </div>
 
@@ -253,13 +291,14 @@ export default function EditProductPage({ params }: EditProductPageProps) {
                   <Label htmlFor="category">Category *</Label>
                   <Select value={productData.category} onValueChange={(value) => handleInputChange('category', value)}>
                     <SelectTrigger>
-                      <SelectValue />
+                      <SelectValue placeholder="Select a category" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Traditional Dresses">Traditional Dresses</SelectItem>
-                      <SelectItem value="Modern Abayas">Modern Abayas</SelectItem>
-                      <SelectItem value="Embroidered Caftans">Embroidered Caftans</SelectItem>
-                      <SelectItem value="Bridal Collection">Bridal Collection</SelectItem>
+                      {categories.map((category) => (
+                        <SelectItem key={category.id} value={category.name}>
+                          {category.name}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>

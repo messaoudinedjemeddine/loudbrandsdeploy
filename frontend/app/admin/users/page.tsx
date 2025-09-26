@@ -187,15 +187,15 @@ export default function AdminUsersPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold">Users</h1>
+            <h1 className="text-3xl font-bold">Utilisateurs</h1>
             <p className="text-muted-foreground">
-              Manage user accounts and permissions
+              Gérez les comptes utilisateurs et les permissions
             </p>
           </div>
           <Button className="elegant-gradient" asChild>
             <Link href="/admin/users/new">
               <UserPlus className="w-4 h-4 mr-2" />
-              Add User
+              Ajouter Utilisateur
             </Link>
           </Button>
         </div>
@@ -209,13 +209,13 @@ export default function AdminUsersPage() {
           >
             <Card>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+                <CardTitle className="text-sm font-medium">Total Utilisateurs</CardTitle>
                 <Users className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{users.length}</div>
                 <p className="text-xs text-muted-foreground">
-                  Total registered users
+                  Total utilisateurs enregistrés
                 </p>
               </CardContent>
             </Card>
@@ -228,7 +228,7 @@ export default function AdminUsersPage() {
           >
                           <Card>
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-sm font-medium">Confirmatrice</CardTitle>
+                  <CardTitle className="text-sm font-medium">Confirmatrices</CardTitle>
                   <Phone className="h-4 w-4 text-purple-500" />
                 </CardHeader>
                 <CardContent>
@@ -236,7 +236,7 @@ export default function AdminUsersPage() {
                     {users.filter(u => u.role === 'CONFIRMATRICE').length}
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Call center staff
+                    Personnel centre d'appel
                   </p>
                 </CardContent>
               </Card>
@@ -249,7 +249,7 @@ export default function AdminUsersPage() {
           >
                           <Card>
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-sm font-medium">Agent Livraison</CardTitle>
+                  <CardTitle className="text-sm font-medium">Agents Livraison</CardTitle>
                   <Users className="h-4 w-4 text-orange-500" />
                 </CardHeader>
                 <CardContent>
@@ -257,7 +257,7 @@ export default function AdminUsersPage() {
                     {users.filter(u => u.role === 'AGENT_LIVRAISON').length}
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Delivery coordinators
+                    Coordinateurs de livraison
                   </p>
                 </CardContent>
               </Card>
@@ -269,7 +269,7 @@ export default function AdminUsersPage() {
           <CardHeader>
             <CardTitle className="flex items-center">
               <Filter className="w-5 h-5 mr-2" />
-              Filters
+              Filtres
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -277,7 +277,7 @@ export default function AdminUsersPage() {
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                 <Input
-                  placeholder="Search users..."
+                  placeholder="Rechercher utilisateurs..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-10"
@@ -286,10 +286,10 @@ export default function AdminUsersPage() {
 
               <Select value={roleFilter} onValueChange={setRoleFilter}>
                 <SelectTrigger>
-                  <SelectValue placeholder="All Roles" />
+                  <SelectValue placeholder="Tous les Rôles" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Roles</SelectItem>
+                  <SelectItem value="all">Tous les Rôles</SelectItem>
                   <SelectItem value="ADMIN">Admin</SelectItem>
                   <SelectItem value="CONFIRMATRICE">Confirmatrice</SelectItem>
                   <SelectItem value="AGENT_LIVRAISON">Agent Livraison</SelectItem>
@@ -302,7 +302,7 @@ export default function AdminUsersPage() {
         {/* Users List */}
         <Card>
           <CardHeader>
-            <CardTitle>Users ({filteredUsers.length})</CardTitle>
+            <CardTitle>Utilisateurs ({filteredUsers.length})</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -349,7 +349,7 @@ export default function AdminUsersPage() {
                           </div>
                           <div className="flex items-center space-x-1">
                             <Calendar className="w-3 h-3" />
-                            <span>Joined {new Date(user.createdAt).toLocaleDateString()}</span>
+                            <span>Rejoint le {new Date(user.createdAt).toLocaleDateString()}</span>
                           </div>
                         </div>
                         
@@ -398,12 +398,12 @@ export default function AdminUsersPage() {
               {filteredUsers.length === 0 && (
                 <div className="text-center py-8">
                   <Users className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">No users found</h3>
+                  <h3 className="text-lg font-semibold mb-2">Aucun utilisateur trouvé</h3>
                   <p className="text-muted-foreground mb-4">
-                    Try adjusting your filters or add a new user
+                    Essayez d'ajuster vos filtres ou ajoutez un nouvel utilisateur
                   </p>
                   <Button asChild>
-                    <Link href="/admin/users/new">Add User</Link>
+                    <Link href="/admin/users/new">Ajouter Utilisateur</Link>
                   </Button>
                 </div>
               )}
