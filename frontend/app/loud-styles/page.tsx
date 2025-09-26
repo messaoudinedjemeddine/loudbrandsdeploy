@@ -179,6 +179,7 @@ export default function LoudStylesPage() {
           muted
           loop
           playsInline
+          preload="none"
           className="absolute inset-0 w-full h-full object-cover"
         >
           <source src="/videos/hero-video.mp4" type="video/mp4" />

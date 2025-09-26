@@ -5,7 +5,7 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   images: { 
-    unoptimized: true,
+    unoptimized: false, // Enable image optimization for better performance
     domains: ['localhost', 'loudbrands-backend-da682a11031e.herokuapp.com'],
     remotePatterns: [
       {
@@ -13,6 +13,7 @@ const nextConfig = {
         hostname: '**',
       },
     ],
+    formats: ['image/webp', 'image/avif'], // Modern image formats
   },
   async headers() {
     return [
@@ -31,6 +32,43 @@ const nextConfig = {
           {
             key: 'Content-Type',
             value: 'application/manifest+json',
+          },
+        ],
+      },
+      // Performance optimizations
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY',
+          },
+          {
+            key: 'X-XSS-Protection',
+            value: '1; mode=block',
+          },
+        ],
+      },
+      // Cache static assets
+      {
+        source: '/images/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        source: '/_next/static/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
           },
         ],
       },

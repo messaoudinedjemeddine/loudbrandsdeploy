@@ -184,6 +184,7 @@ export default function HomePage() {
           muted
           loop
           playsInline
+          preload="none"
           poster="/images/hero-poster.jpg"
         >
           {/* Multiple video formats for better browser compatibility */}
