@@ -177,7 +177,7 @@ export default function LuxuryProductDetail({ product }: ProductDetailClientProp
     
     // If sizes are already letters, use them directly
     if (sizeStrings.some(size => ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'].includes(size))) {
-      return [...new Set(sizeStrings)] // Remove duplicates
+      return Array.from(new Set(sizeStrings)) // Remove duplicates
     }
     
     // Convert numeric sizes to letter sizes and remove duplicates
@@ -192,7 +192,7 @@ export default function LuxuryProductDetail({ product }: ProductDetailClientProp
       return size
     })
     
-    return [...new Set(convertedSizes)] // Remove duplicates
+    return Array.from(new Set(convertedSizes)) // Remove duplicates
   }
   
   const displaySizes = getDisplaySizes()
