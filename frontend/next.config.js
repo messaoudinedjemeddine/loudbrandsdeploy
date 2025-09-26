@@ -2,7 +2,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: false,
+    dirs: ['pages', 'utils', 'components', 'lib', 'src', 'app']
   },
   // Performance optimizations
   experimental: {
