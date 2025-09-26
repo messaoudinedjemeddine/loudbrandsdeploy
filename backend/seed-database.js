@@ -22,10 +22,25 @@ async function seedDatabase() {
     });
     console.log('✅ Admin user created:', admin.email);
 
+    // Create sample brand first
+    const brand = await prisma.brand.upsert({
+      where: { slug: 'loud-brands' },
+      update: {},
+      create: {
+        name: 'Loud Brands',
+        nameAr: 'علامات لود التجارية',
+        description: 'Premium fashion and lifestyle brand',
+        descriptionAr: 'علامة أزياء ونمط حياة فاخرة',
+        slug: 'loud-brands',
+        isActive: true
+      }
+    });
+    console.log('✅ Brand created:', brand.name);
+
     // Create sample categories
     const categories = await Promise.all([
       prisma.category.upsert({
-        where: { slug: 'electronics' },
+        where: { brandId_slug: { brandId: brand.id, slug: 'electronics' } },
         update: {},
         create: {
           name: 'Electronics',
@@ -33,11 +48,12 @@ async function seedDatabase() {
           description: 'Latest electronic devices and gadgets',
           descriptionAr: 'أحدث الأجهزة الإلكترونية والأدوات',
           image: 'https://images.unsplash.com/photo-1498049794561-7780e7231661?w=500',
-          slug: 'electronics'
+          slug: 'electronics',
+          brandId: brand.id
         }
       }),
       prisma.category.upsert({
-        where: { slug: 'fashion' },
+        where: { brandId_slug: { brandId: brand.id, slug: 'fashion' } },
         update: {},
         create: {
           name: 'Fashion',
@@ -45,11 +61,12 @@ async function seedDatabase() {
           description: 'Trendy fashion items and accessories',
           descriptionAr: 'عناصر الأزياء والإكسسوارات العصرية',
           image: 'https://images.unsplash.com/photo-1445205170230-053b83016050?w=500',
-          slug: 'fashion'
+          slug: 'fashion',
+          brandId: brand.id
         }
       }),
       prisma.category.upsert({
-        where: { slug: 'home-garden' },
+        where: { brandId_slug: { brandId: brand.id, slug: 'home-garden' } },
         update: {},
         create: {
           name: 'Home & Garden',
@@ -57,7 +74,8 @@ async function seedDatabase() {
           description: 'Home improvement and garden supplies',
           descriptionAr: 'مستلزمات تحسين المنزل والحديقة',
           image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=500',
-          slug: 'home-garden'
+          slug: 'home-garden',
+          brandId: brand.id
         }
       })
     ]);
@@ -66,7 +84,7 @@ async function seedDatabase() {
     // Create sample products
     const products = await Promise.all([
       prisma.product.upsert({
-        where: { slug: 'iphone-15-pro' },
+        where: { brandId_slug: { brandId: brand.id, slug: 'iphone-15-pro' } },
         update: {},
         create: {
           name: 'iPhone 15 Pro',
@@ -77,6 +95,7 @@ async function seedDatabase() {
           stock: 50,
           reference: 'IPHONE15PRO',
           slug: 'iphone-15-pro',
+          brandId: brand.id,
           categoryId: categories[0].id,
           images: {
             create: [
@@ -90,7 +109,7 @@ async function seedDatabase() {
         }
       }),
       prisma.product.upsert({
-        where: { slug: 'samsung-galaxy-s24' },
+        where: { brandId_slug: { brandId: brand.id, slug: 'samsung-galaxy-s24' } },
         update: {},
         create: {
           name: 'Samsung Galaxy S24',
@@ -101,6 +120,7 @@ async function seedDatabase() {
           stock: 30,
           reference: 'SAMSUNGS24',
           slug: 'samsung-galaxy-s24',
+          brandId: brand.id,
           categoryId: categories[0].id,
           images: {
             create: [
@@ -114,7 +134,7 @@ async function seedDatabase() {
         }
       }),
       prisma.product.upsert({
-        where: { slug: 'designer-watch' },
+        where: { brandId_slug: { brandId: brand.id, slug: 'designer-watch' } },
         update: {},
         create: {
           name: 'Designer Watch',
@@ -125,6 +145,7 @@ async function seedDatabase() {
           stock: 20,
           reference: 'DESIGNERWATCH',
           slug: 'designer-watch',
+          brandId: brand.id,
           categoryId: categories[1].id,
           images: {
             create: [
