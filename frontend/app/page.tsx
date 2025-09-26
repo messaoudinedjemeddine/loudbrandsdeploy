@@ -178,10 +178,28 @@ export default function HomePage() {
           <Navbar />
         </div>
         
-        {/* Optimized Background - Static gradient for instant loading */}
-        <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-800">
-          <div className="absolute inset-0 bg-black/20"></div>
-        </div>
+        {/* Hero Video Background */}
+        <video
+          id="hero-video"
+          className="absolute inset-0 w-full h-full object-cover"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          poster="/images/hero-poster.jpg"
+        >
+          <source src="/videos/hero-video.mp4" type="video/mp4" />
+          <source src="/videos/hero-video.webm" type="video/webm" />
+          <source src="/videos/hero-video.ogg" type="video/ogg" />
+          
+          {/* Fallback image if video fails to load */}
+          <img
+            src="/images/hero-fallback.jpg"
+            alt="LOUD BRANDS Hero"
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        </video>
 
         {/* Video Overlay */}
         <div className="absolute inset-0 bg-black/40" />

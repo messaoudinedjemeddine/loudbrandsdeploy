@@ -22,7 +22,7 @@ const nextConfig = {
   },
   images: { 
     unoptimized: false, // Enable image optimization for better performance
-    domains: ['localhost', 'loudbrands-backend-da682a11031e.herokuapp.com'],
+    domains: ['localhost', 'loudbrands-backend-eu-abfa65dd1df6.herokuapp.com'],
     remotePatterns: [
       {
         protocol: 'https',
