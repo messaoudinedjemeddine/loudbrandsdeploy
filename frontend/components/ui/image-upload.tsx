@@ -58,7 +58,7 @@ export function ImageUpload({
         throw new Error('Authentication required. Please log in.');
       }
 
-      const response = await fetch('http://localhost:5000/api/upload/images', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://loudbrands-backend-eu-abfa65dd1df6.herokuapp.com/api'}/upload/images`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${authToken}`
