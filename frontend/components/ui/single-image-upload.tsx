@@ -32,13 +32,10 @@ export function SingleImageUpload({
 
     try {
       const formData = new FormData();
-      formData.append('image', files[0]);
+      formData.append('file', files[0]);
+      formData.append('folder', 'loudbrands');
 
       console.log('Sending single image upload request...');
-      
-      if (!token) {
-        throw new Error('Authentication required. Please log in.');
-      }
 
       const response = await fetch('/api/upload/cloudinary', {
         method: 'POST',
