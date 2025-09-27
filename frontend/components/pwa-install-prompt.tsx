@@ -1,11 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Download, X, Smartphone, Star, Zap } from 'lucide-react';
+import { Download, X, Smartphone } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];
@@ -36,11 +34,15 @@ export function PWAInstallPrompt() {
       return;
     }
 
+    // Show prompt after a delay (5 seconds)
+    const timer = setTimeout(() => {
+      setShowPrompt(true);
+    }, 5000);
+
     // Listen for the beforeinstallprompt event
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
-      setShowPrompt(true);
     };
 
     // Listen for app installed event
@@ -53,30 +55,36 @@ export function PWAInstallPrompt() {
     window.addEventListener('appinstalled', handleAppInstalled);
 
     return () => {
+      clearTimeout(timer);
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
       window.removeEventListener('appinstalled', handleAppInstalled);
     };
   }, []);
 
   const handleInstallClick = async () => {
-    if (!deferredPrompt) return;
-
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    
-    if (outcome === 'accepted') {
-      console.log('User accepted the install prompt');
+    if (deferredPrompt) {
+      // Use the browser's install prompt
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      
+      if (outcome === 'accepted') {
+        console.log('User accepted the install prompt');
+        setShowPrompt(false);
+      } else {
+        console.log('User dismissed the install prompt');
+      }
+      
+      setDeferredPrompt(null);
     } else {
-      console.log('User dismissed the install prompt');
+      // Fallback for browsers that don't support beforeinstallprompt
+      // Show instructions for manual installation
+      alert('To install this app:\n\n• On Chrome: Click the menu (⋮) and select "Install LOUD BRANDS"\n• On Safari: Tap Share and select "Add to Home Screen"\n• On Firefox: Click the menu and select "Install"');
+      setShowPrompt(false);
     }
-    
-    setDeferredPrompt(null);
-    setShowPrompt(false);
   };
 
   const handleDismiss = () => {
     setShowPrompt(false);
-    setDeferredPrompt(null);
     localStorage.setItem('pwa-prompt-dismissed', 'true');
     setIsDismissed(true);
   };
@@ -86,92 +94,51 @@ export function PWAInstallPrompt() {
   }
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 z-50 max-w-md mx-auto">
-      <Card className="bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 border-2 border-primary/20 shadow-2xl backdrop-blur-sm">
-        <CardContent className="p-6">
-          <div className="flex items-start space-x-4">
-            {/* App Icon */}
-            <div className="flex-shrink-0 relative">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent p-1 shadow-lg">
-                <Image
-                  src="/icon-192x192.png"
-                  alt="LOUD BRANDS"
-                  width={56}
-                  height={56}
-                  className="rounded-xl w-full h-full object-cover"
-                />
-              </div>
-              <div className="absolute -top-1 -right-1 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
-                <Download className="w-3 h-3 text-white" />
-              </div>
+    <div className="fixed bottom-4 right-4 z-50">
+      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-3 max-w-xs">
+        <div className="flex items-center space-x-3">
+          {/* App Icon */}
+          <div className="flex-shrink-0">
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-accent p-1 shadow-md">
+              <Image
+                src="/icon-192x192.png"
+                alt="LOUD BRANDS"
+                width={32}
+                height={32}
+                className="rounded-md w-full h-full object-cover"
+              />
             </div>
-            
-            {/* Content */}
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center space-x-2 mb-2">
-                <h3 className="text-lg font-bold text-foreground">
-                  Install LOUD BRANDS
-                </h3>
-                <Badge variant="secondary" className="text-xs">
-                  <Star className="w-3 h-3 mr-1" />
-                  Premium
-                </Badge>
-              </div>
-              
-              <p className="text-sm text-muted-foreground mb-3 leading-relaxed">
-                Get instant access to our premium fashion collection with the app
-              </p>
-              
-              {/* Features */}
-              <div className="flex flex-wrap gap-2 mb-4">
-                <div className="flex items-center space-x-1 text-xs text-muted-foreground">
-                  <Zap className="w-3 h-3 text-primary" />
-                  <span>Fast Access</span>
-                </div>
-                <div className="flex items-center space-x-1 text-xs text-muted-foreground">
-                  <Smartphone className="w-3 h-3 text-primary" />
-                  <span>Mobile Optimized</span>
-                </div>
-                <div className="flex items-center space-x-1 text-xs text-muted-foreground">
-                  <Star className="w-3 h-3 text-primary" />
-                  <span>Premium Experience</span>
-                </div>
-              </div>
-            </div>
-            
-            {/* Close Button */}
-            <button
-              onClick={handleDismiss}
-              className="flex-shrink-0 text-muted-foreground hover:text-foreground transition-colors p-1 rounded-full hover:bg-muted"
-            >
-              <X className="h-4 w-4" />
-            </button>
+          </div>
+          
+          {/* Content */}
+          <div className="flex-1 min-w-0">
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+              Install App
+            </h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              Get the full experience
+            </p>
           </div>
           
           {/* Action Buttons */}
-          <div className="flex space-x-3 mt-4">
+          <div className="flex items-center space-x-1">
             <Button
               onClick={handleInstallClick}
-              className="flex-1 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white font-semibold py-3 px-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
+              size="sm"
+              className="bg-primary hover:bg-primary/90 text-white text-xs px-3 py-1 h-7"
             >
-              <Download className="w-4 h-4 mr-2" />
-              Install App
+              <Download className="w-3 h-3 mr-1" />
+              Install
             </Button>
-            <Button
+            <button
               onClick={handleDismiss}
-              variant="outline"
-              className="flex-1 border-2 border-muted-foreground/20 hover:border-muted-foreground/40 text-muted-foreground hover:text-foreground font-medium py-3 px-4 rounded-xl transition-all duration-200"
+              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 p-1"
             >
-              Maybe Later
-            </Button>
+              <X className="h-3 w-3" />
+            </button>
           </div>
-          
-          {/* Additional Info */}
-          <p className="text-xs text-muted-foreground text-center mt-3">
-            Free to install • No ads • Secure shopping
-          </p>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 } 

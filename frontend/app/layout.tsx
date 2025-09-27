@@ -7,7 +7,6 @@ import { RTLProvider } from '@/components/rtl-provider';
 import { LayoutWrapper } from '@/components/layout-wrapper';
 import { ServiceWorkerRegister } from '@/components/service-worker-register';
 import { PWAInstallPrompt } from '@/components/pwa-install-prompt';
-import { PWABanner } from '@/components/pwa-banner';
 import { PWAStatus } from '@/components/pwa-status';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/react';
@@ -109,7 +108,6 @@ export default function RootLayout({
               {children}
             </LayoutWrapper>
             <Toaster />
-            <PWABanner />
             <PWAInstallPrompt />
             <PWAStatus />
           </RTLProvider>

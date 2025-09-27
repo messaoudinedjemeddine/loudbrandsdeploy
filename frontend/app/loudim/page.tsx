@@ -265,7 +265,7 @@ export default function LoudimPage() {
       </section>
 
       {/* Features Section */}
-      <section className="py-20" style={{ backgroundColor: '#ede2d1' }}>
+      <section className="py-20 bg-gradient-to-br from-cream-100 via-warm-50 to-cream-200 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 ${isRTL ? 'text-right' : 'text-left'}`}>
             {features.map((feature, index) => (
@@ -297,7 +297,7 @@ export default function LoudimPage() {
       </section>
 
       {/* Categories Section */}
-      <section className="py-20" style={{ backgroundColor: '#f5f5f5' }}>
+      <section className="py-20 bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -405,7 +405,7 @@ export default function LoudimPage() {
       </section>
 
       {/* Featured Products Section */}
-      <section className="py-20" style={{ backgroundColor: '#ede2d1' }}>
+      <section className="py-20 bg-gradient-to-br from-cream-100 via-warm-50 to-cream-200 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 30 }}

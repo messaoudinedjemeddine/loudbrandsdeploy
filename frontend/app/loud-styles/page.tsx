@@ -164,7 +164,7 @@ export default function LoudStylesPage() {
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#b6b8b2' }} dir={isRTL ? 'rtl' : 'ltr'}>
+    <div className="min-h-screen bg-gradient-to-br from-warm-100 via-cream-50 to-warm-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900" dir={isRTL ? 'rtl' : 'ltr'}>
       {/* Navbar */}
       <div className="fixed top-0 left-0 right-0 z-50">
         <LoudStylesNavbar />
@@ -267,7 +267,7 @@ export default function LoudStylesPage() {
       </section>
 
       {/* Features Section */}
-      <section className="py-20" style={{ backgroundColor: '#ede2d1' }}>
+      <section className="py-20 bg-gradient-to-br from-cream-100 via-warm-50 to-cream-200 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800">
         <div className="container mx-auto px-4">
           <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 ${isRTL ? 'text-right' : 'text-left'}`}>
             {features.map((feature, index) => (
@@ -291,7 +291,7 @@ export default function LoudStylesPage() {
       </section>
 
       {/* Categories Section */}
-      <section className="py-20" style={{ backgroundColor: '#f5f5f5' }}>
+      <section className="py-20 bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-700">
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
@@ -399,7 +399,7 @@ export default function LoudStylesPage() {
       </section>
 
       {/* Featured Products Section */}
-      <section className="py-20" style={{ backgroundColor: '#ede2d1' }}>
+      <section className="py-20 bg-gradient-to-br from-cream-100 via-warm-50 to-cream-200 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800">
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
