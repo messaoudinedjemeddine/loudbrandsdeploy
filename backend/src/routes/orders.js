@@ -89,11 +89,27 @@ router.post('/', async (req, res) => {
     }
 
     if (!city) {
-      console.error(`City not found for wilaya ID ${orderData.wilayaId} with name: ${cityName}`);
-      console.error('Available cities in database:', await prisma.city.findMany({ select: { name: true, nameAr: true } }));
-      return res.status(400).json({ 
-        error: `City not found for wilaya: ${cityName}. Please contact support.` 
-      });
+      console.log(`City not found for wilaya ID ${orderData.wilayaId} with name: ${cityName}. Creating city...`);
+      
+      // Create the city if it doesn't exist
+      try {
+        city = await prisma.city.create({
+          data: {
+            name: cityName,
+            nameAr: wilayaInfo.nameAr,
+            code: wilayaInfo.code,
+            deliveryFee: 300, // Default delivery fee
+            isActive: true
+          }
+        });
+        console.log(`✅ Created new city: ${city.name} (${city.nameAr})`);
+      } catch (createError) {
+        console.error(`❌ Failed to create city ${cityName}:`, createError);
+        console.error('Available cities in database:', await prisma.city.findMany({ select: { name: true, nameAr: true } }));
+        return res.status(400).json({ 
+          error: `City not found for wilaya: ${cityName}. Please contact support.` 
+        });
+      }
     }
 
     // Generate order number
@@ -249,6 +265,64 @@ router.post('/', async (req, res) => {
 
     console.error('Order creation error:', error);
     res.status(500).json({ error: 'Failed to create order' });
+  }
+});
+
+// Get all orders (for admin)
+router.get('/', async (req, res) => {
+  try {
+    const { page = 1, limit = 10, status, city } = req.query;
+    
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    
+    const where = {};
+    if (status && status !== 'all') {
+      where.callCenterStatus = status;
+    }
+    if (city && city !== 'all') {
+      where.city = {
+        name: city
+      };
+    }
+    
+    const [orders, total] = await Promise.all([
+      prisma.order.findMany({
+        where,
+        skip,
+        take: parseInt(limit),
+        orderBy: { createdAt: 'desc' },
+        include: {
+          items: {
+            include: {
+              product: {
+                include: {
+                  images: {
+                    where: { isPrimary: true },
+                    take: 1
+                  }
+                }
+              }
+            }
+          },
+          city: true,
+          deliveryDesk: true
+        }
+      }),
+      prisma.order.count({ where })
+    ]);
+    
+    res.json({
+      orders,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total,
+        pages: Math.ceil(total / parseInt(limit))
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching orders:', error);
+    res.status(500).json({ error: 'Failed to fetch orders' });
   }
 });
 

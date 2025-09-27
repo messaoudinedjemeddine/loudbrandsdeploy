@@ -161,39 +161,24 @@ async function seedDatabase() {
     ]);
     console.log('✅ Products created:', products.length);
 
-    // Create sample cities (Algerian cities)
-    const cities = await Promise.all([
-      prisma.city.upsert({
-        where: { code: '16' },
+    // Create all Algerian cities from wilaya mapping
+    const { WILAYA_MAPPING } = require('./src/utils/wilaya-mapper');
+    const cities = [];
+    
+    for (const [wilayaId, wilayaData] of Object.entries(WILAYA_MAPPING)) {
+      const city = await prisma.city.upsert({
+        where: { code: wilayaData.code },
         update: {},
         create: {
-          name: 'Algiers',
-          nameAr: 'الجزائر',
-          code: '16',
+          name: wilayaData.name,
+          nameAr: wilayaData.nameAr,
+          code: wilayaData.code,
+          deliveryFee: Math.floor(Math.random() * 500) + 200, // Random delivery fee between 200-700 DA
           isActive: true
         }
-      }),
-      prisma.city.upsert({
-        where: { code: '31' },
-        update: {},
-        create: {
-          name: 'Oran',
-          nameAr: 'وهران',
-          code: '31',
-          isActive: true
-        }
-      }),
-      prisma.city.upsert({
-        where: { code: '25' },
-        update: {},
-        create: {
-          name: 'Constantine',
-          nameAr: 'قسنطينة',
-          code: '25',
-          isActive: true
-        }
-      })
-    ]);
+      });
+      cities.push(city);
+    }
     console.log('✅ Cities created:', cities.length);
 
     // Create sample delivery desks
