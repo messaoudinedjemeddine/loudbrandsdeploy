@@ -248,15 +248,15 @@ export default function LoudimCategoriesPage() {
         {filteredCategories.length === 0 ? (
           <div className="text-center py-12">
             <div className="text-gray-400 mb-4">
-              <Search className="w-16 h-16 mx-auto" />
+              <Sparkles className="w-16 h-16 mx-auto" />
             </div>
-            <h3 className="text-xl font-semibold mb-2">
-              {isRTL ? 'لا توجد فئات' : 'No categories found'}
+            <h3 className="text-2xl font-bold mb-2 text-primary">
+              {isRTL ? 'قريباً' : 'Coming Soon'}
             </h3>
-            <p className="text-gray-600 dark:text-gray-400">
+            <p className="text-gray-600 dark:text-gray-400 text-lg">
               {isRTL 
-                ? 'جربي البحث عن شيء آخر'
-                : 'Try searching for something else'
+                ? 'نعمل على إضافة فئات جديدة لـ LOUDIM. ترقبوا المزيد!'
+                : 'We are working on adding new categories for LOUDIM. Stay tuned for more!'
               }
             </p>
           </div>

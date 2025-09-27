@@ -63,13 +63,14 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
+      { url: '/LOUD BRANDS.png', sizes: 'any', type: 'image/png' },
       { url: '/icon-192x192.png', sizes: '192x192', type: 'image/png' },
       { url: '/icon-512x512.png', sizes: '512x512', type: 'image/png' },
     ],
     apple: [
       { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
     ],
-    shortcut: ['/icon-192x192.png'],
+    shortcut: ['/LOUD BRANDS.png'],
   },
   manifest: '/site.webmanifest',
 };
@@ -82,7 +83,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href="/LOUD BRANDS.png" sizes="any" />
         <link rel="icon" href="/icon-192x192.png" type="image/png" sizes="192x192" />
         <link rel="icon" href="/icon-512x512.png" type="image/png" sizes="512x512" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />

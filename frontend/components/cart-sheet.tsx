@@ -39,7 +39,7 @@ export function CartSheet({ open, onOpenChange }: CartSheetProps) {
               {isRTL ? 'أضف بعض المنتجات للبدء' : 'Add some products to get started'}
             </p>
             <Button asChild onClick={() => onOpenChange(false)}>
-              <Link href="/products">{t.common.continueShopping}</Link>
+              <Link href="/loud-styles">{t.common.continueShopping}</Link>
             </Button>
           </div>
         </SheetContent>
@@ -144,7 +144,7 @@ export function CartSheet({ open, onOpenChange }: CartSheetProps) {
               className="w-full" 
               asChild
             >
-              <Link href="/products" onClick={() => onOpenChange(false)}>
+              <Link href="/loud-styles" onClick={() => onOpenChange(false)}>
                 {t.common.continueShopping}
               </Link>
             </Button>

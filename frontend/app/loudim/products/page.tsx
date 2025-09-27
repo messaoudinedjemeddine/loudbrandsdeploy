@@ -437,15 +437,15 @@ function LoudimProductsContent() {
         ) : filteredProducts.length === 0 ? (
           <div className="text-center py-16">
             <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
-              <Search className="w-12 h-12 text-muted-foreground" />
+              <Sparkles className="w-12 h-12 text-muted-foreground" />
             </div>
-            <h3 className="text-xl font-semibold mb-2 text-center">
-              {isRTL ? 'لا توجد منتجات' : 'No products found'}
+            <h3 className="text-2xl font-bold mb-2 text-center text-primary">
+              {isRTL ? 'قريباً' : 'Coming Soon'}
             </h3>
-            <p className="text-muted-foreground mb-6 text-center">
+            <p className="text-muted-foreground mb-6 text-center text-lg">
               {isRTL 
-                ? 'لا توجد منتجات تطابق معايير البحث. جربي تعديل المرشحات.'
-                : 'No products match your search criteria. Try adjusting your filters.'
+                ? 'نعمل على إضافة منتجات جديدة لـ LOUDIM. ترقبوا المزيد!'
+                : 'We are working on adding new products for LOUDIM. Stay tuned for more!'
               }
             </p>
             <Button onClick={() => setSearchQuery('')} variant="outline" className="text-center">

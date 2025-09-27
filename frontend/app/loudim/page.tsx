@@ -288,8 +288,8 @@ export default function LoudimPage() {
                 <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:shadow-xl transition-all duration-300" style={{ backgroundColor: '#a58a66' }}>
                   <feature.icon className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-xl font-semibold mb-3 leading-[120%]">{feature.title}</h3>
-                <p className="text-muted-foreground leading-[150%]">{feature.description}</p>
+                <h3 className="text-xl font-semibold mb-3 leading-[120%] text-gray-900 dark:text-white">{feature.title}</h3>
+                <p className="text-gray-600 dark:text-gray-300 leading-[150%]">{feature.description}</p>
               </motion.div>
             ))}
           </div>
@@ -306,10 +306,10 @@ export default function LoudimPage() {
             viewport={{ once: true }}
             className={`text-center mb-16 ${isRTL ? 'text-right' : 'text-left'}`}
           >
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 leading-[120%]">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 leading-[120%] text-gray-900 dark:text-white">
               {isRTL ? 'تسوقي حسب المجموعة' : 'Shop by Collection'}
             </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-[150%]">
+            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto leading-[150%]">
               {isRTL 
                 ? 'اكتشفي مجموعاتنا المتنوعة من الأزياء التقليدية الجزائرية'
                 : 'Discover our diverse collections of traditional Algerian fashion'
@@ -414,10 +414,10 @@ export default function LoudimPage() {
             viewport={{ once: true }}
             className={`text-center mb-16 ${isRTL ? 'text-right' : 'text-left'}`}
           >
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 leading-[120%]">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 leading-[120%] text-gray-900 dark:text-white">
               {isRTL ? 'المجموعة المميزة' : 'Featured Collection'}
             </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-[150%]">
+            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto leading-[150%]">
               {isRTL 
                 ? 'قطع مختارة بعناية من أجمل الأزياء التقليدية الجزائرية'
                 : 'Carefully selected pieces from the most beautiful traditional Algerian fashion'

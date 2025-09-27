@@ -156,7 +156,7 @@ export default function CheckoutPage() {
           <h2 className="text-2xl font-bold mb-4">Your cart is empty</h2>
           <p className="text-muted-foreground mb-8">Add some products to proceed with checkout</p>
           <Button asChild>
-            <Link href="/products">Continue Shopping</Link>
+            <Link href="/loud-styles">Continue Shopping</Link>
           </Button>
         </div>
       </div>

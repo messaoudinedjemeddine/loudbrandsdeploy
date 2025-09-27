@@ -2,6 +2,7 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const cloudinary = require('../config/cloudinary');
 const { authenticateToken, requireAdmin } = require('../middleware/auth');
 
 const router = express.Router();
@@ -12,16 +13,8 @@ if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-// Configure multer for file uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-  }
-});
+// Configure multer for memory storage (for Cloudinary upload)
+const storage = multer.memoryStorage();
 
 const fileFilter = (req, file, cb) => {
   // Accept only image files
@@ -36,24 +29,35 @@ const upload = multer({
   storage,
   fileFilter,
   limits: {
-    fileSize: parseInt(process.env.MAX_FILE_SIZE) || 5 * 1024 * 1024 // 5MB default
+    fileSize: parseInt(process.env.MAX_FILE_SIZE) || 10 * 1024 * 1024 // 10MB default
   }
 });
 
 // Upload single image
-router.post('/image', authenticateToken, requireAdmin, upload.single('image'), (req, res) => {
+router.post('/image', authenticateToken, requireAdmin, upload.single('image'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'No file uploaded' });
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'https://loudbrands-backend-eu-abfa65dd1df6.herokuapp.com';
-    const fileUrl = `${baseUrl}/uploads/${req.file.filename}`;
+    // Get folder from request body or use default
+    const folder = req.body.folder || 'loudbrands';
+
+    // Upload to Cloudinary
+    const result = await cloudinary.uploader.upload(
+      `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`,
+      {
+        folder: folder,
+        resource_type: 'auto',
+        quality: 'auto',
+        fetch_format: 'auto',
+      }
+    );
     
     res.json({
       message: 'File uploaded successfully',
-      url: fileUrl,
-      filename: req.file.filename,
+      url: result.secure_url,
+      publicId: result.public_id,
       originalName: req.file.originalname,
       size: req.file.size
     });
@@ -64,19 +68,35 @@ router.post('/image', authenticateToken, requireAdmin, upload.single('image'), (
 });
 
 // Upload multiple images
-router.post('/images', authenticateToken, requireAdmin, upload.array('images', 10), (req, res) => {
+router.post('/images', authenticateToken, requireAdmin, upload.array('images', 10), async (req, res) => {
   try {
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({ error: 'No files uploaded' });
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'https://loudbrands-backend-eu-abfa65dd1df6.herokuapp.com';
-    const files = req.files.map(file => ({
-      url: `${baseUrl}/uploads/${file.filename}`,
-      filename: file.filename,
-      originalName: file.originalname,
-      size: file.size
-    }));
+    // Get folder from request body or use default
+    const folder = req.body.folder || 'loudbrands';
+
+    // Upload all files to Cloudinary
+    const uploadPromises = req.files.map(async (file) => {
+      const result = await cloudinary.uploader.upload(
+        `data:${file.mimetype};base64,${file.buffer.toString('base64')}`,
+        {
+          folder: folder,
+          resource_type: 'auto',
+          quality: 'auto',
+          fetch_format: 'auto',
+        }
+      );
+      return {
+        url: result.secure_url,
+        publicId: result.public_id,
+        originalName: file.originalname,
+        size: file.size
+      };
+    });
+
+    const files = await Promise.all(uploadPromises);
 
     res.json({
       message: 'Files uploaded successfully',
@@ -88,14 +108,15 @@ router.post('/images', authenticateToken, requireAdmin, upload.array('images', 1
   }
 });
 
-// Delete uploaded file
-router.delete('/:filename', authenticateToken, requireAdmin, (req, res) => {
+// Delete uploaded file from Cloudinary
+router.delete('/:publicId', authenticateToken, requireAdmin, async (req, res) => {
   try {
-    const { filename } = req.params;
-    const filePath = path.join(uploadDir, filename);
-
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
+    const { publicId } = req.params;
+    
+    // Delete from Cloudinary
+    const result = await cloudinary.uploader.destroy(publicId);
+    
+    if (result.result === 'ok') {
       res.json({ message: 'File deleted successfully' });
     } else {
       res.status(404).json({ error: 'File not found' });

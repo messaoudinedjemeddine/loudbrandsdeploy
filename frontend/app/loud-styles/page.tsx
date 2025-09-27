@@ -282,8 +282,8 @@ export default function LoudStylesPage() {
                 <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg" style={{ backgroundColor: '#bfa36a' }}>
                   <feature.icon className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-                <p className="text-muted-foreground">{feature.description}</p>
+                <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">{feature.title}</h3>
+                <p className="text-gray-600 dark:text-gray-300">{feature.description}</p>
               </motion.div>
             ))}
           </div>
@@ -300,10 +300,10 @@ export default function LoudStylesPage() {
             viewport={{ once: true }}
             className={`text-center mb-16 ${isRTL ? 'text-right' : 'text-left'}`}
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900 dark:text-white">
               {isRTL ? 'تسوقي حسب المجموعة' : 'Shop by Collection'}
             </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
               {isRTL 
                 ? 'اكتشفي مجموعاتنا المتنوعة من الأزياء التقليدية الجزائرية'
                 : 'Discover our diverse collections of traditional Algerian fashion'
@@ -408,10 +408,10 @@ export default function LoudStylesPage() {
             viewport={{ once: true }}
             className={`text-center mb-16 ${isRTL ? 'text-right' : 'text-left'}`}
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900 dark:text-white">
               {isRTL ? 'المجموعة المميزة' : 'Featured Collection'}
             </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
               {isRTL 
                 ? 'قطع مختارة بعناية من أجمل الأزياء التقليدية الجزائرية'
                 : 'Carefully selected pieces from the most beautiful traditional Algerian fashion'

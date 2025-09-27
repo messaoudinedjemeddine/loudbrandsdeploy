@@ -211,7 +211,7 @@ export default function HomePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.5 }}
           >
-            <h1 className="text-5xl md:text-7xl mb-6 tracking-wider group cursor-pointer">
+            <h1 className="text-5xl md:text-7xl mb-6 tracking-wider group cursor-pointer" dir="ltr">
               <span className="inline-block">
                 <span className="text-primary transition-colors duration-300 group-hover:text-white font-bold">LOUD</span>
                 <span className="relative inline-block ml-2">
@@ -291,6 +291,7 @@ export default function HomePage() {
           </motion.div>
         </motion.div>
       </section>
+
 
       {/* About Us Section */}
       <section className="py-24 bg-white">

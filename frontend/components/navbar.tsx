@@ -170,7 +170,7 @@ export function Navbar() {
                   whileHover={{ scale: 1.05 }}
                   transition={{ duration: 0.3, ease: "easeOut" }}
                 >
-                                    <h1 className="text-xl md:text-2xl tracking-wider cursor-pointer font-semibold">
+                                    <h1 className="text-xl md:text-2xl tracking-wider cursor-pointer font-semibold" dir="ltr">
                     <span className="inline-block">
                       <span className={`transition-colors duration-300 group-hover:text-white font-bold ${isScrolled || needsVisibleNavbar ? 'text-gray-800 dark:text-white' : 'text-white'}`}>{logoText}</span>
                       <span className={`relative inline-block ${isLoudimPage ? '' : 'ml-2'}`}>

@@ -36,7 +36,7 @@ export function Footer() {
             <div className="space-y-4 text-muted-foreground">
               <div className={`flex items-center space-x-3 ${isRTL ? 'space-x-reverse' : ''}`}>
                 <Phone className="w-4 h-4 text-primary flex-shrink-0" />
-                <span>+213 XXX XXX XXX</span>
+                <span>0557022925</span>
               </div>
               <div className={`flex items-center space-x-3 ${isRTL ? 'space-x-reverse' : ''}`}>
                 <Mail className="w-4 h-4 text-primary flex-shrink-0" />
@@ -68,7 +68,6 @@ export function Footer() {
             <ul className="space-y-3">
               <li><Link href="/contact" className="text-muted-foreground hover:text-primary transition-colors">{t.nav.contact}</Link></li>
               <li><Link href="/track-order" className="text-muted-foreground hover:text-primary transition-colors">{t.nav.trackOrder}</Link></li>
-              <li><Link href="/admin/login" className="text-muted-foreground hover:text-primary transition-colors text-xs opacity-60">{isRTL ? 'إدارة' : 'Admin'}</Link></li>
             </ul>
           </div>
           
