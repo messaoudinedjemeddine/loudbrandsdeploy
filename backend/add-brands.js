@@ -17,13 +17,7 @@ async function addBrands() {
         descriptionAr: 'أزياء تقليدية جزائرية أنيقة للمرأة العصرية',
         slug: 'loud-styles',
         isActive: true,
-        logo: '/logos/loud-styles-logo.png',
-        website: 'https://loudbrandss.com/loud-styles',
-        socialMedia: {
-          instagram: '@loudstyles',
-          facebook: 'LoudStyles',
-          tiktok: '@loudstyles'
-        }
+        logo: '/logos/loud-styles-logo.png'
       }
     });
 
@@ -40,13 +34,7 @@ async function addBrands() {
         descriptionAr: 'علامة أزياء ونمط حياة رجالية فاخرة',
         slug: 'loudim',
         isActive: true,
-        logo: '/logos/loudim-logo.png',
-        website: 'https://loudbrandss.com/loudim',
-        socialMedia: {
-          instagram: '@loudim',
-          facebook: 'Loudim',
-          tiktok: '@loudim'
-        }
+        logo: '/logos/loudim-logo.png'
       }
     });
 
