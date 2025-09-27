@@ -93,31 +93,31 @@ html, body {
   }
   
   .dark {
-    /* Dark mode - Rich warm tones */
-    --background: 25 15% 8%; /* Deep warm brown */
-    --foreground: 45 25% 95%; /* Soft cream */
-    --card: 25 15% 10%; /* Dark warm brown */
-    --card-foreground: 45 25% 95%;
-    --popover: 25 15% 10%;
-    --popover-foreground: 45 25% 95%;
-    --primary: 38 55% 65%; /* Warm golden */
-    --primary-foreground: 25 15% 8%;
-    --secondary: 25 15% 15%; /* Dark warm brown */
-    --secondary-foreground: 45 25% 95%;
-    --muted: 25 15% 12%;
-    --muted-foreground: 40 15% 65%;
-    --accent: 35 45% 55%; /* Warm camel */
-    --accent-foreground: 45 25% 95%;
+    /* Dark mode - Rich warm tones with better contrast */
+    --background: 25 15% 6%; /* Deeper warm brown for better contrast */
+    --foreground: 45 25% 98%; /* Brighter cream for better readability */
+    --card: 25 15% 8%; /* Dark warm brown */
+    --card-foreground: 45 25% 98%; /* Brighter text on cards */
+    --popover: 25 15% 8%;
+    --popover-foreground: 45 25% 98%;
+    --primary: 38 55% 70%; /* Brighter golden for better visibility */
+    --primary-foreground: 25 15% 6%;
+    --secondary: 25 15% 12%; /* Slightly lighter for better contrast */
+    --secondary-foreground: 45 25% 98%; /* Brighter secondary text */
+    --muted: 25 15% 10%;
+    --muted-foreground: 40 15% 75%; /* Brighter muted text */
+    --accent: 35 45% 60%; /* Brighter camel */
+    --accent-foreground: 45 25% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 25 15% 18%;
-    --input: 25 15% 18%;
-    --ring: 38 55% 65%;
-    --chart-1: 38 55% 65%;
-    --chart-2: 35 45% 55%;
-    --chart-3: 45 25% 75%;
-    --chart-4: 25 15% 25%;
-    --chart-5: 30 35% 55%;
+    --border: 25 15% 20%; /* Slightly lighter borders */
+    --input: 25 15% 15%; /* Lighter input backgrounds */
+    --ring: 38 55% 70%;
+    --chart-1: 38 55% 70%;
+    --chart-2: 35 45% 60%;
+    --chart-3: 45 25% 80%;
+    --chart-4: 25 15% 30%;
+    --chart-5: 30 35% 60%;
   }
 }
 
@@ -807,4 +807,108 @@ nav * {
 
 [dir="rtl"] .breadcrumb-separator {
   transform: rotate(180deg);
+}
+
+/* Enhanced Dark Mode Text Visibility */
+.dark .text-muted-foreground {
+  color: hsl(var(--muted-foreground)) !important;
+  opacity: 0.9;
+}
+
+.dark .text-gray-500 {
+  color: hsl(40 15% 75%) !important;
+}
+
+.dark .text-gray-600 {
+  color: hsl(40 15% 80%) !important;
+}
+
+.dark .text-gray-700 {
+  color: hsl(40 15% 85%) !important;
+}
+
+.dark .text-gray-800 {
+  color: hsl(40 15% 90%) !important;
+}
+
+.dark .text-gray-900 {
+  color: hsl(40 15% 95%) !important;
+}
+
+/* Dark mode card improvements */
+.dark .card {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+}
+
+.dark .card-foreground {
+  color: hsl(var(--card-foreground));
+}
+
+/* Dark mode button improvements */
+.dark .btn-secondary {
+  background: hsl(var(--secondary));
+  color: hsl(var(--secondary-foreground));
+  border: 1px solid hsl(var(--border));
+}
+
+.dark .btn-secondary:hover {
+  background: hsl(var(--secondary) / 0.8);
+}
+
+/* Dark mode input improvements */
+.dark input, .dark textarea, .dark select {
+  background: hsl(var(--input));
+  color: hsl(var(--foreground));
+  border: 1px solid hsl(var(--border));
+}
+
+.dark input:focus, .dark textarea:focus, .dark select:focus {
+  border-color: hsl(var(--ring));
+  box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2);
+}
+
+/* Dark mode link improvements */
+.dark a {
+  color: hsl(var(--primary));
+}
+
+.dark a:hover {
+  color: hsl(var(--primary) / 0.8);
+}
+
+/* Dark mode badge improvements */
+.dark .badge {
+  background: hsl(var(--secondary));
+  color: hsl(var(--secondary-foreground));
+}
+
+/* Dark mode table improvements */
+.dark table {
+  background: hsl(var(--card));
+}
+
+.dark th {
+  background: hsl(var(--muted));
+  color: hsl(var(--foreground));
+}
+
+.dark td {
+  color: hsl(var(--foreground));
+  border-color: hsl(var(--border));
+}
+
+/* Dark mode dropdown improvements */
+.dark .dropdown-content {
+  background: hsl(var(--popover));
+  border: 1px solid hsl(var(--border));
+}
+
+.dark .dropdown-item {
+  color: hsl(var(--popover-foreground));
+}
+
+.dark .dropdown-item:hover {
+  background: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
 }
