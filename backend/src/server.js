@@ -100,6 +100,30 @@ app.get('/api/debug', (req, res) => {
   });
 });
 
+// API info endpoint
+app.get('/api', (req, res) => {
+  res.status(200).json({
+    message: 'LoudBrands API',
+    version: '1.0.0',
+    status: 'active',
+    timestamp: new Date().toISOString(),
+    endpoints: {
+      auth: '/api/auth',
+      products: '/api/products',
+      orders: '/api/orders',
+      categories: '/api/categories',
+      brands: '/api/brands',
+      admin: '/api/admin',
+      confirmatrice: '/api/confirmatrice',
+      'agent-livraison': '/api/agent-livraison',
+      upload: '/api/upload',
+      shipping: '/api/shipping'
+    },
+    health: '/health',
+    debug: '/api/debug'
+  });
+});
+
 // API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
