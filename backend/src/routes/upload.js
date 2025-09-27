@@ -47,7 +47,7 @@ router.post('/image', authenticateToken, requireAdmin, upload.single('image'), (
       return res.status(400).json({ error: 'No file uploaded' });
     }
 
-    const baseUrl = process.env.BACKEND_URL || `http://localhost:${process.env.PORT || 5000}`;
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'https://loudbrands-backend-eu-abfa65dd1df6.herokuapp.com';
     const fileUrl = `${baseUrl}/uploads/${req.file.filename}`;
     
     res.json({
@@ -70,7 +70,7 @@ router.post('/images', authenticateToken, requireAdmin, upload.array('images', 1
       return res.status(400).json({ error: 'No files uploaded' });
     }
 
-    const baseUrl = process.env.BACKEND_URL || `http://localhost:${process.env.PORT || 5000}`;
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'https://loudbrands-backend-eu-abfa65dd1df6.herokuapp.com';
     const files = req.files.map(file => ({
       url: `${baseUrl}/uploads/${file.filename}`,
       filename: file.filename,

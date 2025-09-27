@@ -26,8 +26,13 @@ app.use('/uploads', (req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  res.header('Cache-Control', 'public, max-age=31536000'); // Cache for 1 year
   next();
-}, express.static('uploads'));
+}, express.static('uploads', {
+  maxAge: '1y',
+  etag: true,
+  lastModified: true
+}));
 
 // Security middleware (with exceptions for uploads)
 app.use(helmet({
