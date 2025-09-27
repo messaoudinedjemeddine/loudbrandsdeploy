@@ -4,7 +4,7 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const brand = searchParams.get('brand')
-    const backendUrl = process.env.BACKEND_URL || 'http://localhost:5000'
+    const backendUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'https://loudbrands-backend-eu-abfa65dd1df6.herokuapp.com'
     const timestamp = Date.now()
     
     // Build the backend URL with brand parameter if provided

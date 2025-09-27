@@ -5,7 +5,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const backendUrl = process.env.BACKEND_URL || 'http://localhost:5000'
+    const backendUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'https://loudbrands-backend-eu-abfa65dd1df6.herokuapp.com'
     const resolvedParams = await params
     const response = await fetch(`${backendUrl}/api/products/${resolvedParams.id}`, {
       method: 'GET',

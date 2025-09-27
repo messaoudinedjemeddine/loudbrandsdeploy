@@ -13,9 +13,9 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     const resolvedParams = await Promise.resolve(params)
     
     console.log('Fetching category with ID:', resolvedParams.id)
-    console.log('Backend URL:', process.env.BACKEND_URL || 'http://localhost:5000')
+    console.log('Backend URL:', process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'https://loudbrands-backend-eu-abfa65dd1df6.herokuapp.com')
 
-    const response = await fetch(`${process.env.BACKEND_URL || 'http://localhost:5000'}/api/admin/categories/${resolvedParams.id}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'https://loudbrands-backend-eu-abfa65dd1df6.herokuapp.com'}/api/admin/categories/${resolvedParams.id}`, {
       method: 'GET',
       headers: {
         'Authorization': authHeader,
@@ -55,7 +55,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     // Handle params that might be a Promise in newer Next.js versions
     const resolvedParams = await Promise.resolve(params)
 
-    const response = await fetch(`${process.env.BACKEND_URL || 'http://localhost:5000'}/api/admin/categories/${resolvedParams.id}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'https://loudbrands-backend-eu-abfa65dd1df6.herokuapp.com'}/api/admin/categories/${resolvedParams.id}`, {
       method: 'PUT',
       headers: {
         'Authorization': authHeader,
@@ -89,7 +89,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
     // Handle params that might be a Promise in newer Next.js versions
     const resolvedParams = await Promise.resolve(params)
 
-    const response = await fetch(`${process.env.BACKEND_URL || 'http://localhost:5000'}/api/admin/categories/${resolvedParams.id}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'https://loudbrands-backend-eu-abfa65dd1df6.herokuapp.com'}/api/admin/categories/${resolvedParams.id}`, {
       method: 'DELETE',
       headers: {
         'Authorization': authHeader,

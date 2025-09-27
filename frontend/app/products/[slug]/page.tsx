@@ -46,7 +46,7 @@ interface ProductPageProps {
 // Required for static export
 export async function generateStaticParams() {
   try {
-    const res = await fetch(`${process.env.BACKEND_URL || 'http://localhost:5000'}/api/products`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'https://loudbrands-backend-eu-abfa65dd1df6.herokuapp.com'}/api/products`, {
       cache: 'no-store'
     })
     
@@ -68,7 +68,7 @@ export async function generateStaticParams() {
 
 async function getProduct(slug: string): Promise<Product | null> {
   try {
-    const res = await fetch(`${process.env.BACKEND_URL || 'http://localhost:5000'}/api/products/slug/${slug}`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'https://loudbrands-backend-eu-abfa65dd1df6.herokuapp.com'}/api/products/slug/${slug}`, {
       cache: 'no-store'
     })
     

@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Authorization header required' }, { status: 401 })
     }
 
-    const response = await fetch(`${process.env.BACKEND_URL || 'http://localhost:5000'}/api/admin/categories`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'https://loudbrands-backend-eu-abfa65dd1df6.herokuapp.com'}/api/admin/categories`, {
       method: 'GET',
       headers: {
         'Authorization': authHeader,
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json()
 
-    const response = await fetch(`${process.env.BACKEND_URL || 'http://localhost:5000'}/api/admin/categories`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'https://loudbrands-backend-eu-abfa65dd1df6.herokuapp.com'}/api/admin/categories`, {
       method: 'POST',
       headers: {
         'Authorization': authHeader,
