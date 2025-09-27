@@ -230,7 +230,7 @@ export function OrderConfirmationDashboard() {
 
       // Fetch cities and delivery desks - using direct API calls
       try {
-        const citiesResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/admin/cities`, {
+        const citiesResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://loudbrands-backend-eu-abfa65dd1df6.herokuapp.com/api'}/admin/cities`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('auth-storage') ? JSON.parse(localStorage.getItem('auth-storage')!).state?.token : ''}`,
             'Content-Type': 'application/json'
@@ -239,7 +239,7 @@ export function OrderConfirmationDashboard() {
         const citiesData = await citiesResponse.json()
         setCities(citiesData.data || citiesData || [])
 
-        const desksResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/admin/delivery-desks`, {
+        const desksResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://loudbrands-backend-eu-abfa65dd1df6.herokuapp.com/api'}/admin/delivery-desks`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('auth-storage') ? JSON.parse(localStorage.getItem('auth-storage')!).state?.token : ''}`,
             'Content-Type': 'application/json'
@@ -302,7 +302,7 @@ export function OrderConfirmationDashboard() {
       }
 
       // Update order using direct API call
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/admin/orders/${editingOrder.id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://loudbrands-backend-eu-abfa65dd1df6.herokuapp.com/api'}/admin/orders/${editingOrder.id}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('auth-storage') ? JSON.parse(localStorage.getItem('auth-storage')!).state?.token : ''}`,
@@ -387,7 +387,7 @@ export function OrderConfirmationDashboard() {
     try {
       setLoadingAction(true)
       // Update order notes using direct API call
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/admin/orders/${orderId}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://loudbrands-backend-eu-abfa65dd1df6.herokuapp.com/api'}/admin/orders/${orderId}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('auth-storage') ? JSON.parse(localStorage.getItem('auth-storage')!).state?.token : ''}`,
@@ -418,7 +418,7 @@ export function OrderConfirmationDashboard() {
     try {
       setLoadingAction(true)
       // Delete order item using direct API call
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/admin/orders/${orderId}/items/${itemId}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://loudbrands-backend-eu-abfa65dd1df6.herokuapp.com/api'}/admin/orders/${orderId}/items/${itemId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('auth-storage') ? JSON.parse(localStorage.getItem('auth-storage')!).state?.token : ''}`,
@@ -458,7 +458,7 @@ export function OrderConfirmationDashboard() {
       }
 
       // Add order item using direct API call
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/admin/orders/${orderId}/items`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://loudbrands-backend-eu-abfa65dd1df6.herokuapp.com/api'}/admin/orders/${orderId}/items`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('auth-storage') ? JSON.parse(localStorage.getItem('auth-storage')!).state?.token : ''}`,
@@ -488,7 +488,7 @@ export function OrderConfirmationDashboard() {
     try {
       setLoadingAction(true)
       // Update order item using direct API call
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/admin/orders/${orderId}/items/${itemId}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://loudbrands-backend-eu-abfa65dd1df6.herokuapp.com/api'}/admin/orders/${orderId}/items/${itemId}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('auth-storage') ? JSON.parse(localStorage.getItem('auth-storage')!).state?.token : ''}`,

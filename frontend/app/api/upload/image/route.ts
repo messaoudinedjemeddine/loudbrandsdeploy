@@ -4,7 +4,7 @@ export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData()
     
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/upload/image`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://loudbrands-backend-eu-abfa65dd1df6.herokuapp.com/api'}/upload/image`, {
       method: 'POST',
       headers: {
         'Authorization': request.headers.get('Authorization') || ''

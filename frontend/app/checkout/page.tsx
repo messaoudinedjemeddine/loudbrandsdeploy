@@ -271,7 +271,7 @@ export default function CheckoutPage() {
         deliveryType: formData.deliveryType,
         shippingFees: shippingFees
       });
-      console.log('🔍 Debug: API base URL:', process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api');
+      console.log('🔍 Debug: API base URL:', process.env.NEXT_PUBLIC_API_URL || 'https://loudbrands-backend-eu-abfa65dd1df6.herokuapp.com/api');
 
       // Create order via API
       const response = await api.orders.create(orderData) as { order: { orderNumber: string } }

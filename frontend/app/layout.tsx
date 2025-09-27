@@ -8,6 +8,8 @@ import { LayoutWrapper } from '@/components/layout-wrapper';
 import { ServiceWorkerRegister } from '@/components/service-worker-register';
 import { PWAInstallPrompt } from '@/components/pwa-install-prompt';
 import { PWAStatus } from '@/components/pwa-status';
+import { SpeedInsights } from '@vercel/speed-insights/next';
+import { Analytics } from '@vercel/analytics/react';
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -110,6 +112,8 @@ export default function RootLayout({
           </RTLProvider>
         </ThemeProvider>
         <ServiceWorkerRegister />
+        <SpeedInsights />
+        <Analytics />
       </body>
     </html>
   );
