@@ -322,8 +322,8 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
       // Prepare update data
       const updateData = {
         deliveryType: deliveryData.deliveryType,
-        deliveryAddress: deliveryData.deliveryAddress?.trim() || null,
-        deliveryDeskId: deliveryData.deliveryDeskId || null,
+        deliveryAddress: deliveryData.deliveryAddress?.trim() || undefined,
+        deliveryDeskId: deliveryData.deliveryDeskId || undefined,
         deliveryFee: newDeliveryFee,
         total: newTotal
       }
@@ -560,9 +560,9 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
         },
         quantity: item.quantity,
         price: item.price,
-        size: item.size || null,
+        size: item.size || undefined,
         name: item.name,
-        nameAr: item.nameAr || null
+        nameAr: item.nameAr || undefined
       }))
       
       console.log('Transformed items:', transformedItems)
