@@ -415,78 +415,89 @@ function LoudStylesProductsContent() {
 
          // Filter sidebar component
          const FilterSidebar = () => (
-           <div className={`fixed top-0 ${isRTL ? 'right-0' : 'left-0'} h-full w-80 bg-gradient-to-br from-cream-100 via-warm-50 to-cream-200 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800 p-6 shadow-2xl z-40 pt-24`}>
-             <div className="mb-6">
-               <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-                 {isRTL ? 'المرشحات' : 'Filters'}
-               </h3>
-             </div>
+           <div className={`fixed inset-0 z-50 ${isFilterOpen ? 'block' : 'hidden'}`}>
+             <div className="absolute inset-0 bg-black/50" onClick={() => setIsFilterOpen(false)} />
+             <div className={`absolute top-0 ${isRTL ? 'right-0' : 'left-0'} h-full w-80 bg-gradient-to-br from-cream-100 via-warm-50 to-cream-200 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800 p-6 shadow-2xl`}>
+               <div className="flex items-center justify-between mb-6">
+                 <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                   {isRTL ? 'المرشحات' : 'Filters'}
+                 </h3>
+                 <Button
+                   variant="ghost"
+                   size="sm"
+                   onClick={() => setIsFilterOpen(false)}
+                   className="p-2"
+                 >
+                   <X className="w-5 h-5" />
+                 </Button>
+               </div>
 
-             {/* Categories */}
-             <div className="mb-6">
-               <h4 className="text-lg font-semibold mb-3 text-gray-800 dark:text-gray-200">
-                 {isRTL ? 'الفئات' : 'Categories'}
-               </h4>
-               <div className="space-y-2">
-                 {categories.map(category => (
-                   <label key={category} className="flex items-center space-x-2 cursor-pointer">
-                     <input
-                       type="checkbox"
-                       checked={selectedCategories.includes(category)}
-                       onChange={(e) => {
-                         if (e.target.checked) {
-                           setSelectedCategories([...selectedCategories, category])
+               {/* Categories */}
+               <div className="mb-6">
+                 <h4 className="text-lg font-semibold mb-3 text-gray-800 dark:text-gray-200">
+                   {isRTL ? 'الفئات' : 'Categories'}
+                 </h4>
+                 <div className="space-y-2">
+                   {categories.map(category => (
+                     <label key={category} className="flex items-center space-x-2 cursor-pointer">
+                       <input
+                         type="checkbox"
+                         checked={selectedCategories.includes(category)}
+                         onChange={(e) => {
+                           if (e.target.checked) {
+                             setSelectedCategories([...selectedCategories, category])
+                           } else {
+                             setSelectedCategories(selectedCategories.filter(c => c !== category))
+                           }
+                         }}
+                         className="w-4 h-4 text-primary rounded border-gray-300"
+                       />
+                       <span className="text-sm text-gray-700 dark:text-gray-300">{category}</span>
+                     </label>
+                   ))}
+                 </div>
+               </div>
+
+               {/* Sizes */}
+               <div className="mb-6">
+                 <h4 className="text-lg font-semibold mb-3 text-gray-800 dark:text-gray-200">
+                   {isRTL ? 'المقاسات' : 'Sizes'}
+                 </h4>
+                 <div className="flex flex-wrap gap-2">
+                   {sizes.map(size => (
+                     <button
+                       key={size}
+                       onClick={() => {
+                         if (selectedSizes.includes(size)) {
+                           setSelectedSizes(selectedSizes.filter(s => s !== size))
                          } else {
-                           setSelectedCategories(selectedCategories.filter(c => c !== category))
+                           setSelectedSizes([...selectedSizes, size])
                          }
                        }}
-                       className="w-4 h-4 text-primary rounded border-gray-300"
-                     />
-                     <span className="text-sm text-gray-700 dark:text-gray-300">{category}</span>
-                   </label>
-                 ))}
+                       className={`px-3 py-1 text-sm rounded-full border transition-all ${
+                         selectedSizes.includes(size)
+                           ? 'bg-primary text-white border-primary'
+                           : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:border-primary'
+                       }`}
+                     >
+                       {size}
+                     </button>
+                   ))}
+                 </div>
                </div>
-             </div>
 
-             {/* Sizes */}
-             <div className="mb-6">
-               <h4 className="text-lg font-semibold mb-3 text-gray-800 dark:text-gray-200">
-                 {isRTL ? 'المقاسات' : 'Sizes'}
-               </h4>
-               <div className="flex flex-wrap gap-2">
-                 {sizes.map(size => (
-                   <button
-                     key={size}
-                     onClick={() => {
-                       if (selectedSizes.includes(size)) {
-                         setSelectedSizes(selectedSizes.filter(s => s !== size))
-                       } else {
-                         setSelectedSizes([...selectedSizes, size])
-                       }
-                     }}
-                     className={`px-3 py-1 text-sm rounded-full border transition-all ${
-                       selectedSizes.includes(size)
-                         ? 'bg-primary text-white border-primary'
-                         : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:border-primary'
-                     }`}
-                   >
-                     {size}
-                   </button>
-                 ))}
-               </div>
+               {/* Clear Filters */}
+               <Button
+                 variant="outline"
+                 onClick={() => {
+                   setSelectedCategories([])
+                   setSelectedSizes([])
+                 }}
+                 className="w-full"
+               >
+                 {isRTL ? 'مسح المرشحات' : 'Clear Filters'}
+               </Button>
              </div>
-
-             {/* Clear Filters */}
-             <Button
-               variant="outline"
-               onClick={() => {
-                 setSelectedCategories([])
-                 setSelectedSizes([])
-               }}
-               className="w-full"
-             >
-               {isRTL ? 'مسح المرشحات' : 'Clear Filters'}
-             </Button>
            </div>
          )
 
@@ -499,11 +510,6 @@ function LoudStylesProductsContent() {
 
       {/* Filter Sidebar */}
       <FilterSidebar />
-
-      {/* Main Content with Sidebar */}
-      <div className={`flex ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
-        {/* Sidebar Spacer */}
-        <div className="w-80 flex-shrink-0"></div>
       
       {/* Hero Section */}
       <div className="relative overflow-hidden pt-20 bg-gradient-to-br from-cream-100 via-warm-50 to-cream-200 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800">
@@ -526,9 +532,9 @@ function LoudStylesProductsContent() {
               }
             </p>
             
-                   {/* Search Bar */}
-                   <div className="max-w-2xl mx-auto">
-                     <div className="relative">
+                   {/* Search Bar and Filter Button */}
+                   <div className="max-w-2xl mx-auto flex gap-4">
+                     <div className="flex-1 relative">
                        <Search className={`absolute ${isRTL ? 'right-4' : 'left-4'} top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5`} />
                        <Input
                          placeholder={isRTL ? 'البحث في المنتجات...' : 'Search products...'}
@@ -538,14 +544,19 @@ function LoudStylesProductsContent() {
                          dir={isRTL ? 'rtl' : 'ltr'}
                        />
                      </div>
+                     <Button
+                       onClick={() => setIsFilterOpen(true)}
+                       className="h-12 px-6 bg-white/80 backdrop-blur-sm border-2 border-primary/20 hover:border-primary/50 text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-all duration-300"
+                     >
+                       <Filter className="w-5 h-5 mr-2" />
+                       {isRTL ? 'مرشحات' : 'Filters'}
+                     </Button>
                    </div>
           </motion.div>
         </div>
       </div>
 
-        {/* Main Content */}
-        <div className="flex-1">
-          <div className="max-w-6xl mx-auto px-4 py-8 bg-gradient-to-br from-cream-100 via-warm-50 to-cream-200 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800">
+      <div className="max-w-6xl mx-auto px-4 py-8 bg-gradient-to-br from-cream-100 via-warm-50 to-cream-200 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800">
         {/* Products Grid */}
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -582,16 +593,10 @@ function LoudStylesProductsContent() {
             ))}
           </div>
         )}
-             </div>
-           </div>
-         )
-       }
-
-         </div>
-       </div>
-     </div>
-   )
- }
+      </div>
+    </div>
+  )
+}
 
 export default function LoudStylesProductsPage() {
   return (
