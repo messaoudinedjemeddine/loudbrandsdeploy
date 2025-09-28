@@ -211,7 +211,7 @@ function LoudStylesProductsContent() {
         <Link href={`/loud-styles/products/${product.slug}?brand=loud-styles`} className="block h-full">
           <Card className="overflow-hidden border border-gray-200 dark:border-gray-700 bg-transparent shadow-lg hover:shadow-2xl transition-all duration-500 h-full flex flex-col cursor-pointer">
             {/* Product Image */}
-            <div className="relative aspect-[4/5] overflow-hidden bg-gradient-to-br from-cream-100 via-warm-50 to-cream-200 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800 flex-shrink-0">
+            <div className="relative aspect-[4/5] overflow-hidden bg-gradient-to-br from-cream-100 via-warm-50 to-cream-200 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800 flex-shrink-0 w-full">
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 transition={{ duration: 0.4, ease: "easeOut" }}
@@ -222,6 +222,7 @@ function LoudStylesProductsContent() {
                   alt={isRTL ? product.nameAr || product.name : product.name}
                   fill
                   className="object-cover transition-transform duration-500"
+                  sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
                     target.src = '/placeholder.svg';
@@ -514,7 +515,7 @@ function LoudStylesProductsContent() {
       {/* Hero Section */}
       <div className="relative overflow-hidden pt-20 bg-gradient-to-br from-cream-100 via-warm-50 to-cream-200 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800">
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
-        <div className="max-w-6xl mx-auto px-4 py-16 relative">
+        <div className="max-w-6xl mx-auto px-2 sm:px-4 py-16 relative">
           
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -556,7 +557,7 @@ function LoudStylesProductsContent() {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 py-8 bg-gradient-to-br from-cream-100 via-warm-50 to-cream-200 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800">
+      <div className="max-w-6xl mx-auto px-2 sm:px-4 py-8 bg-gradient-to-br from-cream-100 via-warm-50 to-cream-200 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800">
         {/* Products Grid */}
         {loading ? (
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 md:gap-6">

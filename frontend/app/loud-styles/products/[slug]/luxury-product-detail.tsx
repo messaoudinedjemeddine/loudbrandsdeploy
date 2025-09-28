@@ -252,7 +252,7 @@ export default function LuxuryProductDetail({ product }: LuxuryProductDetailProp
         </motion.div>
 
         <motion.div 
-          className="container mx-auto px-4 py-4 sm:py-8"
+          className="container mx-auto px-2 sm:px-4 py-4 sm:py-8"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
@@ -266,7 +266,7 @@ export default function LuxuryProductDetail({ product }: LuxuryProductDetailProp
               <div className="relative">
                 {/* Main Image */}
                 <motion.div
-                  className="relative aspect-square bg-background dark:bg-gray-800 rounded-xl sm:rounded-2xl overflow-hidden shadow-elegant dark:shadow-2xl"
+                  className="relative aspect-square bg-background dark:bg-gray-800 rounded-xl sm:rounded-2xl overflow-hidden shadow-elegant dark:shadow-2xl w-full"
                   variants={imageVariants}
                   whileHover={{ scale: 1.02 }}
                   transition={{ duration: 0.3 }}
@@ -277,6 +277,7 @@ export default function LuxuryProductDetail({ product }: LuxuryProductDetailProp
                     fill
                     className="object-cover"
                     priority
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 40vw"
                     onError={(e) => {
                       const target = e.target as HTMLImageElement
                       target.src = '/placeholder.svg'
@@ -339,6 +340,7 @@ export default function LuxuryProductDetail({ product }: LuxuryProductDetailProp
                           alt={`${isRTL ? product.nameAr || product.name : product.name} - Image ${index + 1}`}
                           fill
                           className="object-cover"
+                          sizes="(max-width: 640px) 64px, 80px"
                           onError={(e) => {
                             const target = e.target as HTMLImageElement
                             target.src = '/placeholder.svg'
@@ -657,6 +659,7 @@ export default function LuxuryProductDetail({ product }: LuxuryProductDetailProp
                     alt={isRTL ? product.nameAr || product.name : product.name}
                     fill
                     className="object-contain"
+                    sizes="100vw"
                     onError={(e) => {
                       const target = e.target as HTMLImageElement
                       target.src = '/placeholder.svg'
