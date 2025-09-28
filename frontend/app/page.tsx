@@ -294,7 +294,7 @@ export default function HomePage() {
 
 
       {/* About Us Section */}
-      <section className="py-24 bg-white">
+      <section className="py-24 bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             {/* Content */}
@@ -454,7 +454,7 @@ export default function HomePage() {
       </section>
 
       {/* Our Story Section */}
-      <section className="py-24 text-gray-900" style={{ backgroundColor: '#ede2d1' }}>
+      <section className="py-24 text-gray-900 dark:text-gray-100 bg-gradient-to-br from-cream-100 via-warm-50 to-cream-200 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.h2
             initial={{ opacity: 0, y: 50 }}
@@ -541,7 +541,7 @@ export default function HomePage() {
       </section>
 
       {/* Brands Section */}
-      <section className="py-20 bg-gray-50">
+      <section className="py-20 bg-gray-50 dark:bg-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header Structure */}
           <motion.div
@@ -761,7 +761,7 @@ export default function HomePage() {
 
 
       {/* Our Values Section */}
-      <section className="py-20 text-gray-900" style={{ backgroundColor: '#ede2d1' }}>
+      <section className="py-20 text-gray-900 dark:text-gray-100 bg-gradient-to-br from-cream-100 via-warm-50 to-cream-200 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
