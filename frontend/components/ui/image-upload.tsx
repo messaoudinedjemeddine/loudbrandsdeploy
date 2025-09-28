@@ -38,12 +38,31 @@ export function ImageUpload({
         formData.append('images', file);
         console.log('Adding file to FormData:', file.name, file.size);
       });
-      formData.append('folder', 'loudbrands');
 
       console.log('Sending upload request...');
+      
+      // Get token from auth storage
+      let authToken = null;
+      const authData = localStorage.getItem('auth-storage');
+      if (authData) {
+        try {
+          const parsedData = JSON.parse(authData);
+          // Zustand persist stores data in a 'state' property
+          authToken = parsedData?.state?.token || parsedData?.token;
+        } catch (error) {
+          console.warn('Failed to parse auth token:', error);
+        }
+      }
 
-      const response = await fetch('/api/upload/cloudinary-multiple', {
+      if (!authToken) {
+        throw new Error('Authentication required. Please log in.');
+      }
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://loudbrands-backend-eu-abfa65dd1df6.herokuapp.com/api'}/upload/images`, {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${authToken}`
+        },
         body: formData,
       });
 

@@ -32,13 +32,19 @@ export function SingleImageUpload({
 
     try {
       const formData = new FormData();
-      formData.append('file', files[0]);
-      formData.append('folder', 'loudbrands');
+      formData.append('image', files[0]);
 
       console.log('Sending single image upload request...');
+      
+      if (!token) {
+        throw new Error('Authentication required. Please log in.');
+      }
 
-      const response = await fetch('/api/upload/cloudinary', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://loudbrands-backend-eu-abfa65dd1df6.herokuapp.com/api'}/upload/image`, {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
         body: formData,
       });
 
