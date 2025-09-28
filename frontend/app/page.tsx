@@ -392,12 +392,12 @@ export default function HomePage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.8 }}
                   viewport={{ once: true }}
-                  className="bg-gray-50 p-6 rounded-2xl text-center hover:scale-105 transition-transform duration-300"
+                  className="bg-gray-50 dark:bg-gray-800 p-6 rounded-2xl text-center hover:scale-105 transition-transform duration-300"
                 >
                   <div className="text-3xl font-bold text-primary mb-2">
                     5000+
                   </div>
-                  <p className="text-gray-600 font-medium">
+                  <p className="text-gray-600 dark:text-gray-300 font-medium">
                     {isRTL ? 'عميلة سعيدة' : 'Happy Customers'}
                   </p>
                 </motion.div>
@@ -407,12 +407,12 @@ export default function HomePage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 1.0 }}
                   viewport={{ once: true }}
-                  className="bg-gray-50 p-6 rounded-2xl text-center hover:scale-105 transition-transform duration-300"
+                  className="bg-gray-50 dark:bg-gray-800 p-6 rounded-2xl text-center hover:scale-105 transition-transform duration-300"
                 >
                   <div className="text-3xl font-bold text-primary mb-2">
                     1000+
                   </div>
-                  <p className="text-gray-600 font-medium">
+                  <p className="text-gray-600 dark:text-gray-300 font-medium">
                     {isRTL ? 'تصميم فريد' : 'Unique Designs'}
                   </p>
                 </motion.div>
@@ -623,7 +623,7 @@ export default function HomePage() {
                   whileTap={{ scale: 0.95 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300">
+                  <Button asChild className="bg-primary hover:bg-primary/90 text-white font-bold px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300">
                     <Link href="/loudim">
 {t?.pages?.loudBrands?.exploreLoudim || (isRTL ? 'استكشفي LOUDIM' : 'Explore LOUDIM')}
                     </Link>
@@ -654,7 +654,7 @@ export default function HomePage() {
                     viewport={{ once: true }}
                     className="absolute top-6 right-6 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg"
                   >
-                    <span className="text-gray-900 font-bold">LOUDIM</span>
+                    <span className="text-yellow-600 font-bold">LOUDIM</span>
                   </motion.div>
                 </div>
               </motion.div>
@@ -691,7 +691,7 @@ export default function HomePage() {
                     viewport={{ once: true }}
                     className="absolute top-6 right-6 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg"
                   >
-                    <span className="text-gray-900 font-bold">LOUD STYLES</span>
+                    <span className="text-yellow-600 font-bold">LOUD STYLES</span>
                   </motion.div>
                 </div>
               </motion.div>
@@ -747,7 +747,7 @@ export default function HomePage() {
                   whileTap={{ scale: 0.95 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300">
+                  <Button asChild className="bg-primary hover:bg-primary/90 text-white font-bold px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300">
                     <Link href="/loud-styles">
                       {isRTL ? 'استكشفي LOUD STYLES' : 'Explore LOUD STYLES'}
                     </Link>
