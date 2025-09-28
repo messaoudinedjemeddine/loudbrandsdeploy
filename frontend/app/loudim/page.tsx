@@ -87,7 +87,7 @@ export default function LoudimPage() {
     {
       icon: CreditCard,
       title: isRTL ? 'دفع آمن' : 'Secure Payment',
-      description: isRTL ? 'دفع عند الاستلام أو تحويل بنكي' : 'Cash on delivery or bank transfer'
+      description: isRTL ? 'دفع عند الاستلام' : 'Cash on delivery'
     }
   ]
 
