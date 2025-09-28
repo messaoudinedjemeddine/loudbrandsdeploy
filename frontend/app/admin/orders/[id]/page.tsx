@@ -286,18 +286,53 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
     if (!order) return
     
     try {
+      console.log('Updating delivery information...')
+      console.log('Order ID:', order.id)
+      console.log('Delivery data:', deliveryData)
+      
+      // Validate required fields
+      if (!deliveryData.deliveryType) {
+        toast.error('Please select a delivery type')
+        return
+      }
+      
+      if (deliveryData.deliveryType === 'HOME_DELIVERY' && !deliveryData.deliveryAddress?.trim()) {
+        toast.error('Please enter a delivery address for home delivery')
+        return
+      }
+      
       // Calculate new delivery fee based on Yalidine data
       const newDeliveryFee = getDeliveryFee()
       const newTotal = order.subtotal + newDeliveryFee
       
-      // Update order via API
-      await api.admin.updateOrderStatus(order.id, {
+      console.log('Calculated delivery fee:', newDeliveryFee)
+      console.log('New total:', newTotal)
+      
+      // Validate calculated values
+      if (isNaN(newDeliveryFee) || newDeliveryFee < 0) {
+        toast.error('Invalid delivery fee calculated. Please try again.')
+        return
+      }
+      
+      if (isNaN(newTotal) || newTotal <= 0) {
+        toast.error('Invalid total amount calculated. Please try again.')
+        return
+      }
+      
+      // Prepare update data
+      const updateData = {
         deliveryType: deliveryData.deliveryType,
-        deliveryAddress: deliveryData.deliveryAddress,
-        deliveryDeskId: deliveryData.deliveryDeskId,
+        deliveryAddress: deliveryData.deliveryAddress?.trim() || null,
+        deliveryDeskId: deliveryData.deliveryDeskId || null,
         deliveryFee: newDeliveryFee,
         total: newTotal
-      })
+      }
+      
+      console.log('Sending update data:', updateData)
+      
+      // Update order via API
+      const response = await api.admin.updateOrderStatus(order.id, updateData)
+      console.log('API response:', response)
       
       // Update local state
       setOrder(prev => prev ? {
@@ -312,7 +347,27 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
       toast.success('Delivery information updated successfully')
     } catch (error) {
       console.error('Failed to update delivery information:', error)
-      toast.error('Failed to update delivery information')
+      console.error('Error details:', {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined
+      })
+      
+      // More specific error handling
+      if (error instanceof Error) {
+        if (error.message.includes('Failed to fetch')) {
+          toast.error('Network error: Unable to connect to server. Please check your connection.')
+        } else if (error.message.includes('401') || error.message.includes('403')) {
+          toast.error('Authentication error: Please log in again.')
+        } else if (error.message.includes('404')) {
+          toast.error('Order not found. Please refresh the page.')
+        } else if (error.message.includes('500')) {
+          toast.error('Server error: Please try again later.')
+        } else {
+          toast.error(`Failed to update delivery information: ${error.message}`)
+        }
+      } else {
+        toast.error('Failed to update delivery information. Please try again.')
+      }
     }
   }
 
