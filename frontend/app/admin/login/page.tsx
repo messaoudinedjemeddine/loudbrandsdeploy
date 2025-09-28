@@ -13,19 +13,13 @@ import {
   EyeOff, 
   Lock, 
   Mail, 
-  Shield,
   ArrowRight,
-  AlertCircle,
-  Users,
-  ChevronDown,
-  ChevronUp,
-  Copy,
-  Check
+  AlertCircle
 } from 'lucide-react'
+import Image from 'next/image'
 import { useAuthStore } from '@/lib/store'
 import { api } from '@/lib/api'
 import { toast } from 'sonner'
-import { Badge } from '@/components/ui/badge'
 import { useLocaleStore } from '@/lib/locale-store'
 
 export default function AdminLoginPage() {
@@ -36,34 +30,11 @@ export default function AdminLoginPage() {
   const [rememberMe, setRememberMe] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({})
-  const [showCredentials, setShowCredentials] = useState(false)
-  const [copiedUser, setCopiedUser] = useState<string | null>(null)
 
   const router = useRouter()
   const { setAuth, isAuthenticated } = useAuthStore()
   const { t } = useLocaleStore()
 
-  // User credentials for all roles
-  const userCredentials = [
-    {
-      role: 'Administrateur',
-      email: 'admin@example.com',
-      password: 'admin123',
-      description: 'Accès complet au système - gestion des produits, utilisateurs, et analytics'
-    },
-    {
-      role: 'Confirmatrice (Centre d\'Appel)',
-      email: 'confirmatrice@test.com',
-      password: 'confirmatrice123',
-      description: 'Confirmation des commandes et service client'
-    },
-    {
-      role: 'Agent de Livraison',
-      email: 'agent@test.com',
-      password: 'agent123',
-      description: 'Coordination des livraisons et suivi des commandes'
-    }
-  ]
 
   useEffect(() => {
     setMounted(true)
@@ -158,23 +129,6 @@ export default function AdminLoginPage() {
     }
   }
 
-  const fillCredentials = (userEmail: string, userPassword: string) => {
-    setEmail(userEmail)
-    setPassword(userPassword)
-    setErrors({}) // Clear any existing errors
-    toast.success('Identifiants remplis ! Cliquez sur Se connecter pour continuer.')
-  }
-
-  const copyCredentials = async (userEmail: string, userPassword: string) => {
-    try {
-      await navigator.clipboard.writeText(`Email: ${userEmail}\nPassword: ${userPassword}`)
-      setCopiedUser(userEmail)
-      toast.success('Identifiants copiés dans le presse-papiers !')
-      setTimeout(() => setCopiedUser(null), 2000)
-    } catch (err) {
-      toast.error('Échec de la copie des identifiants')
-    }
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4 relative overflow-hidden">
@@ -207,9 +161,15 @@ export default function AdminLoginPage() {
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-              className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-primary to-blue-600 rounded-2xl p-4 shadow-lg"
+              className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-2xl p-4 shadow-lg"
             >
-              <Shield className="w-full h-full text-white" />
+              <Image
+                src="/ios logo.png"
+                alt="LOUD BRANDS"
+                width={48}
+                height={48}
+                className="w-full h-full object-contain"
+              />
             </motion.div>
             
             <motion.div
@@ -313,7 +273,7 @@ export default function AdminLoginPage() {
               {/* Submit Button */}
               <Button
                 type="submit"
-                className="w-full bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white font-semibold py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]"
+                className="w-full bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white dark:text-white font-semibold py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]"
                 disabled={isLoading}
               >
                 {isLoading ? (
@@ -330,87 +290,6 @@ export default function AdminLoginPage() {
               </Button>
             </motion.form>
 
-            {/* Test Credentials */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.8 }}
-              className="border-t border-slate-200 dark:border-slate-600 pt-6"
-            >
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full mb-4 border-2 border-slate-300 dark:border-slate-600 hover:border-primary hover:bg-primary/5 transition-all duration-200"
-                onClick={() => setShowCredentials(!showCredentials)}
-              >
-                <Users className="w-4 h-4 mr-2" />
-                Identifiants de Test
-                {showCredentials ? (
-                  <ChevronUp className="w-4 h-4 ml-2" />
-                ) : (
-                  <ChevronDown className="w-4 h-4 ml-2" />
-                )}
-              </Button>
-
-              {showCredentials && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="space-y-3"
-                >
-                  {userCredentials.map((user, index) => (
-                    <div
-                      key={index}
-                      className="p-4 border-2 border-slate-200 dark:border-slate-600 rounded-lg bg-gradient-to-r from-slate-50 to-blue-50 dark:from-slate-700 dark:to-slate-600 shadow-sm hover:shadow-md transition-all duration-200"
-                    >
-                      <div className="flex items-center justify-between mb-3">
-                        <Badge variant="secondary" className="text-xs font-semibold bg-primary/10 text-primary border-primary/20">
-                          {user.role}
-                        </Badge>
-                        <div className="flex space-x-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => fillCredentials(user.email, user.password)}
-                            className="h-7 px-3 text-xs border-primary/30 hover:bg-primary hover:text-white transition-all duration-200"
-                          >
-                            Remplir
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => copyCredentials(user.email, user.password)}
-                            className="h-7 px-3 text-xs border-primary/30 hover:bg-primary hover:text-white transition-all duration-200"
-                          >
-                            {copiedUser === user.email ? (
-                              <Check className="w-3 h-3" />
-                            ) : (
-                              <Copy className="w-3 h-3" />
-                            )}
-                          </Button>
-                        </div>
-                      </div>
-                      <div className="text-sm space-y-2">
-                        <div className="flex items-center space-x-2">
-                          <Mail className="w-3 h-3 text-primary" />
-                          <span className="font-medium text-slate-700 dark:text-slate-300">Email:</span>
-                          <span className="font-mono text-slate-600 dark:text-slate-400">{user.email}</span>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <Lock className="w-3 h-3 text-primary" />
-                          <span className="font-medium text-slate-700 dark:text-slate-300">Mot de passe:</span>
-                          <span className="font-mono text-slate-600 dark:text-slate-400">{user.password}</span>
-                        </div>
-                        <p className="text-slate-600 dark:text-slate-400 text-xs bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded">
-                          {user.description}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </motion.div>
-              )}
-            </motion.div>
           </CardContent>
         </Card>
       </motion.div>
