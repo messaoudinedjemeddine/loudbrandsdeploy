@@ -175,7 +175,7 @@ function LoudStylesProductsContent() {
         className="group relative h-full"
       >
         <Link href={`/loud-styles/products/${product.slug}?brand=loud-styles`} className="block h-full">
-          <Card className="overflow-hidden border-0 bg-gradient-to-br from-cream-100 via-warm-50 to-cream-200 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800 shadow-lg hover:shadow-2xl transition-all duration-500 h-full flex flex-col cursor-pointer">
+          <Card className="overflow-hidden border-0 bg-transparent shadow-lg hover:shadow-2xl transition-all duration-500 h-full flex flex-col cursor-pointer">
             {/* Product Image */}
             <div className="relative aspect-[4/5] overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 flex-shrink-0">
               <motion.div
@@ -301,7 +301,7 @@ function LoudStylesProductsContent() {
             </div>
             
             {/* Product Info */}
-          <CardContent className="p-4 flex-1 flex flex-col min-h-0">
+          <CardContent className="p-4 flex-1 flex flex-col min-h-0 bg-transparent">
             <div className="space-y-3 flex-1 flex flex-col">
               {/* Category */}
               <div className={`flex items-center justify-center ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
