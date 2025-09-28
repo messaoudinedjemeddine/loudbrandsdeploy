@@ -395,14 +395,14 @@ function LoudStylesProductsContent() {
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#b6b8b2' }} dir={isRTL ? 'rtl' : 'ltr'}>
+    <div className="min-h-screen bg-gradient-to-br from-cream-100 via-warm-50 to-cream-200 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800" dir={isRTL ? 'rtl' : 'ltr'}>
       {/* Navbar */}
       <div className="fixed top-0 left-0 right-0 z-50">
         <LoudStylesNavbar />
       </div>
       
       {/* Hero Section */}
-      <div className="relative overflow-hidden pt-20" style={{ backgroundColor: '#b6b8b2' }}>
+      <div className="relative overflow-hidden pt-20 bg-gradient-to-br from-cream-100 via-warm-50 to-cream-200 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800">
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
         <div className="max-w-6xl mx-auto px-4 py-16 relative">
           
@@ -412,10 +412,10 @@ function LoudStylesProductsContent() {
             transition={{ duration: 0.8 }}
             className="text-center"
           >
-            <h1 className="text-5xl md:text-6xl font-bold mb-4 text-gray-800 dark:text-white text-center leading-tight">
+            <h1 className="text-5xl md:text-6xl font-bold mb-4 text-gray-900 dark:text-white text-center leading-tight">
               {isRTL ? 'أناقة الأزياء التقليدية الجزائرية' : 'LOUD STYLES Collection'}
             </h1>
-            <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto text-center leading-relaxed">
+            <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto text-center leading-relaxed">
               {isRTL 
                 ? 'تسوقي حسب المجموعة - المجموعة المميزة'
                 : 'A unique collection of premium products with the highest quality and best prices'
