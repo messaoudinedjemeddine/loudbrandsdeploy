@@ -553,9 +553,23 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
       console.log('New subtotal:', newSubtotal)
       console.log('New total:', newTotal)
 
+      // Transform order items to match backend expectations
+      const transformedItems = orderItems.map(item => ({
+        product: {
+          id: item.product.id
+        },
+        quantity: item.quantity,
+        price: item.price,
+        size: item.size || null,
+        name: item.name,
+        nameAr: item.nameAr || null
+      }))
+      
+      console.log('Transformed items:', transformedItems)
+      
       // Update order with new items and totals
       const result = await api.admin.updateOrderItems(order.id, {
-        items: orderItems,
+        items: transformedItems,
         subtotal: newSubtotal,
         total: newTotal
       })
@@ -579,14 +593,20 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
         stack: error instanceof Error ? error.stack : undefined
       })
       
-      // Check if it's an authentication error
+      // More specific error handling
       const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-      if (errorMessage.includes('Access token required') || errorMessage.includes('401')) {
-        toast.error('Authentication required. Please log in again.')
-      } else if (errorMessage.includes('Route not found')) {
-        toast.error('Server error: Route not found. Please try again.')
+      if (errorMessage.includes('Failed to fetch')) {
+        toast.error('Network error: Unable to connect to server. Please check your connection.')
+      } else if (errorMessage.includes('401') || errorMessage.includes('403')) {
+        toast.error('Authentication error: Please log in again.')
+      } else if (errorMessage.includes('404')) {
+        toast.error('Order not found. Please refresh the page.')
+      } else if (errorMessage.includes('500')) {
+        toast.error('Server error: Please try again later.')
+      } else if (errorMessage.includes('400')) {
+        toast.error('Invalid data: Please check the order items and try again.')
       } else {
-        toast.error('Failed to update order items')
+        toast.error(`Failed to update order items: ${errorMessage}`)
       }
     }
   }
@@ -753,10 +773,14 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                     <div key={item.id} className="flex items-center space-x-4 p-4 border rounded-lg">
                       <div className="relative w-16 h-16 bg-muted rounded-md overflow-hidden">
                         <Image
-                          src={item.product.image || '/placeholder-product.jpg'}
+                          src={item.product.image || '/placeholder.svg'}
                           alt={item.product.name}
                           fill
                           className="object-cover"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = '/placeholder.svg';
+                          }}
                         />
                       </div>
                       <div className="flex-1">
