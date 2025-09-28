@@ -138,6 +138,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
     setMounted(true)
     fetchOrder()
     loadYalidineData()
+    loadAvailableProducts() // Load products on mount
   }, [unwrappedParams.id])
 
   // Load Yalidine data
@@ -341,8 +342,8 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
         const response = await api.admin.getProducts({ limit: 100 }) as any
         console.log('Admin API response:', response)
         
-        if (response.produits && response.produits.length > 0) {
-          const produitsWithImages = response.produits.map((product: any) => ({
+        if (response.products && response.products.length > 0) {
+          const produitsWithImages = response.products.map((product: any) => ({
             id: product.id,
             name: product.name,
             nameAr: product.nameAr,
@@ -352,30 +353,45 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
           
           console.log('Processed produits from admin:', produitsWithImages.length)
           setAvailableProducts(produitsWithImages)
+          toast.success(`Loaded ${produitsWithImages.length} products`)
           return
+        } else {
+          console.log('No products found in admin response')
         }
       } catch (adminError) {
         console.warn('Admin produits endpoint failed, trying regular endpoint:', adminError)
       }
       
       // Fallback to regular produits endpoint
-      const produitsResponse = await api.products.getAll({ limit: 100 }) as any
-      console.log('Regular API response:', produitsResponse)
-      
-      const produitsWithImages = produitsResponse.data?.map((product: any) => ({
-        id: product.id,
-        name: product.name,
-        nameAr: product.nameAr,
-        image: product.images?.[0]?.url || product.image || '/placeholder-product.jpg',
-        price: product.price
-      })) || []
-      
-      console.log('Processed produits from regular endpoint:', produitsWithImages.length)
-      setAvailableProducts(produitsWithImages)
+      try {
+        const produitsResponse = await api.products.getAll({ limit: 100 }) as any
+        console.log('Regular API response:', produitsResponse)
+        
+        const produitsWithImages = produitsResponse.products?.map((product: any) => ({
+          id: product.id,
+          name: product.name,
+          nameAr: product.nameAr,
+          image: product.image || '/placeholder-product.jpg',
+          price: product.price
+        })) || []
+        
+        console.log('Processed produits from regular endpoint:', produitsWithImages.length)
+        setAvailableProducts(produitsWithImages)
+        
+        if (produitsWithImages.length > 0) {
+          toast.success(`Loaded ${produitsWithImages.length} products`)
+        } else {
+          toast.warning('No products found')
+        }
+      } catch (regularError) {
+        console.error('Regular products endpoint also failed:', regularError)
+        throw regularError
+      }
       
     } catch (error) {
       console.error('Failed to load produits from both endpoints:', error)
-      toast.error('Failed to load available produits')
+      toast.error('Failed to load available produits. Please check your connection.')
+      setAvailableProducts([])
     } finally {
       setLoadingProducts(false)
     }
