@@ -209,7 +209,7 @@ function LoudStylesProductsContent() {
         className="group relative h-full"
       >
         <Link href={`/loud-styles/products/${product.slug}?brand=loud-styles`} className="block h-full">
-          <Card className="overflow-hidden border-0 bg-transparent shadow-lg hover:shadow-2xl transition-all duration-500 h-full flex flex-col cursor-pointer">
+          <Card className="overflow-hidden border border-gray-200 dark:border-gray-700 bg-transparent shadow-lg hover:shadow-2xl transition-all duration-500 h-full flex flex-col cursor-pointer">
             {/* Product Image */}
             <div className="relative aspect-[4/5] overflow-hidden bg-gradient-to-br from-cream-100 via-warm-50 to-cream-200 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800 flex-shrink-0">
               <motion.div
@@ -236,7 +236,7 @@ function LoudStylesProductsContent() {
                 <Button
                   size="sm"
                   variant="secondary"
-                  className="rounded-full w-10 h-10 p-0 bg-white/90 hover:bg-white shadow-lg"
+                  className="rounded-full w-10 h-10 p-0 bg-white/90 hover:bg-white dark:bg-gray-800/90 dark:hover:bg-gray-800 dark:text-white shadow-lg"
                   onClick={(e) => {
                     e.preventDefault()
                     e.stopPropagation()
@@ -262,22 +262,7 @@ function LoudStylesProductsContent() {
                     }
                   }}
                 >
-                  <Heart className={`w-4 h-4 ${isInWishlist(product.id) ? 'fill-red-500 text-red-500' : ''}`} />
-                </Button>
-              </div>
-              
-              <div className={`absolute top-4 ${isRTL ? 'right-4' : 'left-4'} opacity-0 group-hover:opacity-100 transition-all duration-300`}>
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  className="rounded-full w-10 h-10 p-0 bg-white/90 hover:bg-white shadow-lg"
-                  onClick={(e) => {
-                    e.preventDefault()
-                    e.stopPropagation()
-                    window.location.href = `/loud-styles/products/${product.slug}?brand=loud-styles`
-                  }}
-                >
-                  <Eye className="w-4 h-4" />
+                  <Heart className={`w-4 h-4 ${isInWishlist(product.id) ? 'fill-red-500 text-red-500' : 'text-gray-600 dark:text-gray-300'}`} />
                 </Button>
               </div>
             </div>
