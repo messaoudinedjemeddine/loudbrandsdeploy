@@ -46,15 +46,23 @@ async function deleteKaftansProduct() {
       console.log(`Deleting product: ${product.name} (ID: ${product.id})`);
       
       // Delete related records first (due to foreign key constraints)
+      console.log('Deleting order items...');
+      await prisma.orderItem.deleteMany({
+        where: { productId: product.id }
+      });
+      
+      console.log('Deleting product images...');
       await prisma.productImage.deleteMany({
         where: { productId: product.id }
       });
       
+      console.log('Deleting product sizes...');
       await prisma.productSize.deleteMany({
         where: { productId: product.id }
       });
       
       // Delete the product
+      console.log('Deleting product...');
       await prisma.product.delete({
         where: { id: product.id }
       });
