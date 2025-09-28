@@ -24,13 +24,15 @@ export const uploadToCloudinary = async (file: File, folder: string = 'loudbrand
     
     console.log('Data URI created, length:', dataURI.length)
 
-    // Upload to Cloudinary using the SDK
+    // Upload to Cloudinary using the SDK with explicit config
     console.log('Uploading to Cloudinary using SDK...')
     const result = await cloudinary.uploader.upload(dataURI, {
       folder: folder,
       resource_type: 'auto',
       quality: 'auto',
       fetch_format: 'auto',
+      use_filename: true,
+      unique_filename: true
     })
     
     console.log('Cloudinary upload successful:', result.secure_url)
