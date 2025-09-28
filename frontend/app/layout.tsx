@@ -68,7 +68,7 @@ export const metadata: Metadata = {
       { url: '/icon-512x512.png', sizes: '512x512', type: 'image/png' },
     ],
     apple: [
-      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+      { url: '/ios logo.png', sizes: '180x180', type: 'image/png' },
     ],
     shortcut: ['/LOUD BRANDS.png'],
   },
@@ -86,7 +86,7 @@ export default function RootLayout({
         <link rel="icon" href="/LOUD BRANDS.png" sizes="any" />
         <link rel="icon" href="/icon-192x192.png" type="image/png" sizes="192x192" />
         <link rel="icon" href="/icon-512x512.png" type="image/png" sizes="512x512" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="apple-touch-icon" href="/ios logo.png" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="LOUD BRANDS" />
