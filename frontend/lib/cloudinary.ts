@@ -12,23 +12,35 @@ export { cloudinary }
 // Helper function to upload image to Cloudinary
 export const uploadToCloudinary = async (file: File, folder: string = 'loudbrands'): Promise<string> => {
   try {
+    console.log('Starting Cloudinary upload for:', file.name)
+    console.log('File size:', file.size, 'File type:', file.type)
+    console.log('Target folder:', folder)
+    
     // Convert File to base64
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
     const base64 = buffer.toString('base64')
     const dataURI = `data:${file.type};base64,${base64}`
+    
+    console.log('Data URI created, length:', dataURI.length)
 
-    // Upload to Cloudinary
+    // Upload to Cloudinary using the SDK
+    console.log('Uploading to Cloudinary using SDK...')
     const result = await cloudinary.uploader.upload(dataURI, {
       folder: folder,
       resource_type: 'auto',
       quality: 'auto',
       fetch_format: 'auto',
     })
-
+    
+    console.log('Cloudinary upload successful:', result.secure_url)
     return result.secure_url
   } catch (error) {
     console.error('Error uploading to Cloudinary:', error)
+    console.error('Error details:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined
+    })
     throw new Error('Failed to upload image')
   }
 }

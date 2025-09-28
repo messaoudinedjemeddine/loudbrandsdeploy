@@ -3,9 +3,19 @@ import { uploadToCloudinary } from '@/lib/cloudinary'
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('Cloudinary multiple upload API called')
+    console.log('Environment check:', {
+      cloudName: process.env.CLOUDINARY_CLOUD_NAME,
+      apiKey: process.env.CLOUDINARY_API_KEY ? 'Set' : 'Not set',
+      apiSecret: process.env.CLOUDINARY_API_SECRET ? 'Set' : 'Not set'
+    })
+    
     const formData = await request.formData()
     const files = formData.getAll('images') as File[]
     const folder = formData.get('folder') as string || 'loudbrands'
+
+    console.log('Files received:', files.length)
+    console.log('Folder:', folder)
 
     if (!files || files.length === 0) {
       return NextResponse.json({ error: 'No files provided' }, { status: 400 })
@@ -25,16 +35,25 @@ export async function POST(request: NextRequest) {
     }
 
     // Upload all files to Cloudinary
-    const uploadPromises = files.map(async (file) => {
-      const imageUrl = await uploadToCloudinary(file, folder)
-      return {
-        url: imageUrl,
-        originalName: file.name,
-        size: file.size
+    console.log('Starting upload process...')
+    const uploadPromises = files.map(async (file, index) => {
+      console.log(`Uploading file ${index + 1}: ${file.name}`)
+      try {
+        const imageUrl = await uploadToCloudinary(file, folder)
+        console.log(`Successfully uploaded ${file.name}: ${imageUrl}`)
+        return {
+          url: imageUrl,
+          originalName: file.name,
+          size: file.size
+        }
+      } catch (error) {
+        console.error(`Failed to upload ${file.name}:`, error)
+        throw error
       }
     })
 
     const results = await Promise.all(uploadPromises)
+    console.log('All uploads completed successfully')
 
     return NextResponse.json({ 
       success: true, 
