@@ -13,6 +13,7 @@ import {
   Calendar,
   Clock
 } from 'lucide-react'
+import Image from 'next/image'
 import { toast } from 'sonner'
 
 interface Order {
@@ -169,16 +170,33 @@ export default function ConfirmatriceConfirmPage() {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <div className="space-y-1">
+                        <div className="space-y-2">
                           {order.items.map((item) => (
-                            <div key={item.id} className="text-sm">
-                              <div className="flex items-center justify-between">
-                                <span>{item.product.name}</span>
-                                <span className="text-gray-500">x{item.quantity}</span>
+                            <div key={item.id} className="flex items-center space-x-3 p-2 border rounded-lg">
+                              {/* Product Image */}
+                              <div className="relative w-12 h-12 flex-shrink-0">
+                                <Image
+                                  src={item.product.images?.[0]?.url || '/placeholder.svg'}
+                                  alt={item.product.name}
+                                  fill
+                                  className="object-cover rounded-md"
+                                  sizes="48px"
+                                  onError={(e) => {
+                                    const target = e.target as HTMLImageElement;
+                                    target.src = '/placeholder.svg';
+                                  }}
+                                />
                               </div>
-                              {item.size && (
-                                <div className="text-xs text-gray-500">Taille: {item.size}</div>
-                              )}
+                              
+                              {/* Product Details */}
+                              <div className="flex-1 min-w-0">
+                                <div className="text-sm font-medium truncate">{item.product.name}</div>
+                                <div className="text-xs text-gray-500">{item.product.price.toFixed(2)} DH</div>
+                                {item.size && (
+                                  <div className="text-xs text-gray-500">Taille: {item.size}</div>
+                                )}
+                                <div className="text-xs text-gray-500">x{item.quantity}</div>
+                              </div>
                             </div>
                           ))}
                         </div>

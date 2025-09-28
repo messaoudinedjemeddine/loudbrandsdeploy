@@ -26,6 +26,7 @@ import {
   XCircle,
   Calendar
 } from 'lucide-react'
+import Image from 'next/image'
 import { toast } from 'sonner'
 
 interface OrderItem {
@@ -343,41 +344,62 @@ export default function ConfirmatriceOrdersPage() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="space-y-1">
+                      <div className="space-y-2">
                         {order.items.map((item) => (
-                          <div key={item.id} className="text-sm">
-                            <div className="flex items-center justify-between">
-                              <span>{item.product.name}</span>
-                              <div className="flex items-center space-x-1">
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => updateOrderItemQuantity(order.id, item.id, Math.max(0, item.quantity - 1))}
-                                  disabled={item.quantity <= 1}
-                                >
-                                  <Minus className="h-3 w-3" />
-                                </Button>
-                                <span className="w-8 text-center">{item.quantity}</span>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => updateOrderItemQuantity(order.id, item.id, item.quantity + 1)}
-                                >
-                                  <Plus className="h-3 w-3" />
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => removeOrderItem(order.id, item.id)}
-                                  className="text-red-600 hover:text-red-700"
-                                >
-                                  <X className="h-3 w-3" />
-                                </Button>
-                              </div>
+                          <div key={item.id} className="flex items-center space-x-3 p-2 border rounded-lg">
+                            {/* Product Image */}
+                            <div className="relative w-12 h-12 flex-shrink-0">
+                              <Image
+                                src={item.product.images?.[0]?.url || '/placeholder.svg'}
+                                alt={item.product.name}
+                                fill
+                                className="object-cover rounded-md"
+                                sizes="48px"
+                                onError={(e) => {
+                                  const target = e.target as HTMLImageElement;
+                                  target.src = '/placeholder.svg';
+                                }}
+                              />
                             </div>
-                            {item.size && (
-                              <div className="text-xs text-gray-500">Taille: {item.size}</div>
-                            )}
+                            
+                            {/* Product Details */}
+                            <div className="flex-1 min-w-0">
+                              <div className="text-sm font-medium truncate">{item.product.name}</div>
+                              <div className="text-xs text-gray-500">{item.product.price.toFixed(2)} DH</div>
+                              {item.size && (
+                                <div className="text-xs text-gray-500">Taille: {item.size}</div>
+                              )}
+                            </div>
+                            
+                            {/* Quantity Controls */}
+                            <div className="flex items-center space-x-1">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => updateOrderItemQuantity(order.id, item.id, Math.max(0, item.quantity - 1))}
+                                disabled={item.quantity <= 1}
+                                className="h-6 w-6 p-0"
+                              >
+                                <Minus className="h-3 w-3" />
+                              </Button>
+                              <span className="w-6 text-center text-sm">{item.quantity}</span>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => updateOrderItemQuantity(order.id, item.id, item.quantity + 1)}
+                                className="h-6 w-6 p-0"
+                              >
+                                <Plus className="h-3 w-3" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => removeOrderItem(order.id, item.id)}
+                                className="h-6 w-6 p-0 text-red-600 hover:text-red-700"
+                              >
+                                <X className="h-3 w-3" />
+                              </Button>
+                            </div>
                           </div>
                         ))}
                         <Button
