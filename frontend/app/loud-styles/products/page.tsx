@@ -320,8 +320,8 @@ function LoudStylesProductsContent() {
             </div>
             
             {/* Product Info */}
-          <CardContent className="p-4 flex-1 flex flex-col min-h-0 bg-transparent">
-            <div className="space-y-3 flex-1 flex flex-col">
+          <CardContent className="p-2 sm:p-4 flex-1 flex flex-col min-h-0 bg-transparent">
+            <div className="space-y-2 sm:space-y-3 flex-1 flex flex-col">
               {/* Category */}
               <div className={`flex items-center justify-center ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
                 <Badge variant="outline" className="text-xs font-medium text-center">
@@ -337,24 +337,24 @@ function LoudStylesProductsContent() {
               </div>
 
               {/* Product Name */}
-              <h3 className="font-semibold text-base leading-tight line-clamp-2 hover:text-primary transition-colors group-hover:text-primary text-center min-h-[2.5rem] flex items-center justify-center">
+              <h3 className="font-semibold text-sm sm:text-base leading-tight line-clamp-2 hover:text-primary transition-colors group-hover:text-primary text-center min-h-[2rem] sm:min-h-[2.5rem] flex items-center justify-center">
                 {isRTL ? product.nameAr || product.name : product.name}
               </h3>
 
               {/* Sizes Preview */}
               {sizeStrings.length > 0 && (
                 <div className="flex flex-wrap gap-1 justify-center min-h-[1.5rem]">
-                  {sizeStrings.slice(0, 3).map((size: string, sizeIndex: number) => (
+                  {sizeStrings.slice(0, 2).map((size: string, sizeIndex: number) => (
                     <span 
                       key={size || sizeIndex} 
-                      className="text-xs bg-muted px-2 py-1 rounded-full font-medium text-center"
+                      className="text-xs bg-muted px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full font-medium text-center"
                     >
                       {size || '-'}
                     </span>
                   ))}
-                  {sizeStrings.length > 3 && (
+                  {sizeStrings.length > 2 && (
                     <span className="text-xs text-gray-500 dark:text-muted-foreground">
-                      +{sizeStrings.length - 3}
+                      +{sizeStrings.length - 2}
                     </span>
                   )}
                 </div>
@@ -363,12 +363,12 @@ function LoudStylesProductsContent() {
               {/* Price */}
               <div className={`flex items-center justify-between ${isRTL ? 'flex-row-reverse' : 'flex-row'} mt-auto`}>
                 <div className="space-y-1 text-center flex-1">
-                  <div className={`flex items-center space-x-2 ${isRTL ? 'flex-row-reverse' : 'flex-row'} justify-center`}>
-                    <span className="text-lg font-bold text-primary">
+                  <div className={`flex items-center space-x-1 sm:space-x-2 ${isRTL ? 'flex-row-reverse' : 'flex-row'} justify-center`}>
+                    <span className="text-sm sm:text-lg font-bold text-primary">
                       {product.price.toLocaleString()} {isRTL ? 'د.ج' : 'DA'}
                     </span>
                     {product.oldPrice && (
-                      <span className="text-sm text-muted-foreground line-through">
+                      <span className="text-xs sm:text-sm text-muted-foreground line-through">
                         {product.oldPrice.toLocaleString()} {isRTL ? 'د.ج' : 'DA'}
                       </span>
                     )}
@@ -386,14 +386,14 @@ function LoudStylesProductsContent() {
 
               {/* Launch Countdown */}
               {product.isLaunch && product.launchAt && (
-                <div className="mt-3">
+                <div className="mt-2 sm:mt-3">
                   <LaunchCountdown launchAt={product.launchAt} />
                 </div>
               )}
 
               {/* Add to Cart Button */}
               <Button
-                className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-white font-medium shadow-lg hover:shadow-xl transition-all duration-300 text-center mt-3 h-10"
+                className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-white font-medium shadow-lg hover:shadow-xl transition-all duration-300 text-center mt-2 sm:mt-3 h-8 sm:h-10 text-xs sm:text-sm"
                 onClick={() => handleAddToCart(product)}
                 disabled={product.stock === 0 || (product.isLaunch && product.isLaunchActive)}
               >
@@ -533,23 +533,23 @@ function LoudStylesProductsContent() {
             </p>
             
                    {/* Search Bar and Filter Button */}
-                   <div className="max-w-2xl mx-auto flex gap-4">
+                   <div className="max-w-2xl mx-auto flex flex-col sm:flex-row gap-4">
                      <div className="flex-1 relative">
                        <Search className={`absolute ${isRTL ? 'right-4' : 'left-4'} top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5`} />
                        <Input
                          placeholder={isRTL ? 'البحث في المنتجات...' : 'Search products...'}
                          value={searchQuery}
                          onChange={(e) => setSearchQuery(e.target.value)}
-                         className={`${isRTL ? 'pr-12 pl-4' : 'pl-12 pr-4'} h-12 text-lg bg-white/80 backdrop-blur-sm border-2 border-primary/20 focus:border-primary/50 transition-all duration-300`}
+                         className={`${isRTL ? 'pr-12 pl-4' : 'pl-12 pr-4'} h-12 text-base sm:text-lg bg-white/80 backdrop-blur-sm border-2 border-primary/20 focus:border-primary/50 transition-all duration-300`}
                          dir={isRTL ? 'rtl' : 'ltr'}
                        />
                      </div>
                      <Button
                        onClick={() => setIsFilterOpen(true)}
-                       className="h-12 px-6 bg-white/80 backdrop-blur-sm border-2 border-primary/20 hover:border-primary/50 text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-all duration-300"
+                       className="h-12 px-4 sm:px-6 bg-white/80 backdrop-blur-sm border-2 border-primary/20 hover:border-primary/50 text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-all duration-300"
                      >
-                       <Filter className="w-5 h-5 mr-2" />
-                       {isRTL ? 'مرشحات' : 'Filters'}
+                       <Filter className="w-5 h-5 sm:mr-2" />
+                       <span className="hidden sm:inline">{isRTL ? 'مرشحات' : 'Filters'}</span>
                      </Button>
                    </div>
           </motion.div>
@@ -559,25 +559,25 @@ function LoudStylesProductsContent() {
       <div className="max-w-6xl mx-auto px-4 py-8 bg-gradient-to-br from-cream-100 via-warm-50 to-cream-200 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800">
         {/* Products Grid */}
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
             {[...Array(8)].map((_, index) => (
               <div key={index} className="animate-pulse">
-                <div className="aspect-[4/5] bg-gray-200 rounded-lg mb-4"></div>
-                <div className="h-4 bg-gray-200 rounded mb-2"></div>
-                <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                <div className="aspect-[4/5] bg-gray-200 rounded-lg mb-3 sm:mb-4"></div>
+                <div className="h-3 sm:h-4 bg-gray-200 rounded mb-2"></div>
+                <div className="h-2 sm:h-3 bg-gray-200 rounded w-1/2"></div>
               </div>
             ))}
           </div>
         ) : filteredProducts.length === 0 ? (
-          <div className="text-center py-16">
-            <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
-              <Search className="w-12 h-12 text-muted-foreground" />
+          <div className="text-center py-8 sm:py-16">
+            <div className="w-16 h-16 sm:w-24 sm:h-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+              <Search className="w-8 h-8 sm:w-12 sm:h-12 text-muted-foreground" />
             </div>
-            <h3 className="text-xl font-semibold mb-2 text-center">
+            <h3 className="text-lg sm:text-xl font-semibold mb-2 text-center">
               {isRTL ? 'لا توجد منتجات' : 'No products found'}
             </h3>
-            <p className="text-muted-foreground mb-6 text-center">
-              {isRTL 
+            <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6 text-center px-4">
+              {isRTL
                 ? 'لا توجد منتجات تطابق معايير البحث. جربي تعديل المرشحات.'
                 : 'No products match your search criteria. Try adjusting your filters.'
               }
@@ -587,7 +587,7 @@ function LoudStylesProductsContent() {
             </Button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
             {filteredProducts.map((product, index) => (
               <ProductCard key={product.id} product={product} index={index} />
             ))}

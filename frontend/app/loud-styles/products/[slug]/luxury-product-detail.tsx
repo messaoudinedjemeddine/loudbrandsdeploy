@@ -252,12 +252,12 @@ export default function LuxuryProductDetail({ product }: LuxuryProductDetailProp
         </motion.div>
 
         <motion.div 
-          className="container mx-auto px-4 py-8"
+          className="container mx-auto px-4 py-4 sm:py-8"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
         >
-          <div className="grid lg:grid-cols-2 gap-12 max-w-7xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 max-w-7xl mx-auto">
             {/* Image Gallery - Left Side */}
             <motion.div 
               className="order-2 lg:order-1"
@@ -266,7 +266,7 @@ export default function LuxuryProductDetail({ product }: LuxuryProductDetailProp
               <div className="relative">
                 {/* Main Image */}
                 <motion.div
-                  className="relative aspect-square bg-background dark:bg-gray-800 rounded-2xl overflow-hidden shadow-elegant dark:shadow-2xl"
+                  className="relative aspect-square bg-background dark:bg-gray-800 rounded-xl sm:rounded-2xl overflow-hidden shadow-elegant dark:shadow-2xl"
                   variants={imageVariants}
                   whileHover={{ scale: 1.02 }}
                   transition={{ duration: 0.3 }}
@@ -319,13 +319,13 @@ export default function LuxuryProductDetail({ product }: LuxuryProductDetailProp
                 {/* Thumbnails */}
                 {product.images.length > 1 && (
                   <motion.div 
-                    className="flex space-x-4 mt-6"
+                    className="flex space-x-2 sm:space-x-4 mt-4 sm:mt-6 overflow-x-auto pb-2"
                     variants={itemVariants}
                   >
                     {product.images.map((image, index) => (
                       <motion.button
                         key={index}
-                        className={`relative aspect-square w-20 rounded-lg overflow-hidden border-2 transition-all duration-300 ${
+                        className={`relative aspect-square w-16 sm:w-20 rounded-lg overflow-hidden border-2 transition-all duration-300 flex-shrink-0 ${
                           index === currentImageIndex 
                             ? 'border-primary shadow-elegant scale-105' 
                             : 'border-border hover:border-primary/50'
@@ -353,7 +353,7 @@ export default function LuxuryProductDetail({ product }: LuxuryProductDetailProp
             
             {/* Product Details - Right Side */}
             <motion.div 
-              className="order-1 lg:order-2 space-y-8"
+              className="order-1 lg:order-2 space-y-6 sm:space-y-8"
               variants={itemVariants}
             >
               {/* Product Header */}
@@ -382,7 +382,7 @@ export default function LuxuryProductDetail({ product }: LuxuryProductDetailProp
 
                 {/* Title */}
                 <motion.h1 
-                  className="text-4xl font-bold text-foreground leading-tight"
+                  className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground leading-tight"
                   variants={itemVariants}
                 >
                   {isRTL ? product.nameAr || product.name : product.name}
@@ -395,19 +395,19 @@ export default function LuxuryProductDetail({ product }: LuxuryProductDetailProp
                 className="space-y-2"
                 variants={itemVariants}
               >
-                <div className="flex items-center space-x-4">
-                  <span className="text-3xl font-bold text-foreground">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                  <span className="text-2xl sm:text-3xl font-bold text-foreground">
                     {product.price.toLocaleString()} DA
                   </span>
                   {product.oldPrice && product.oldPrice > product.price && (
-                    <>
-                      <span className="text-xl text-muted-foreground line-through">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                      <span className="text-lg sm:text-xl text-muted-foreground line-through">
                         {product.oldPrice.toLocaleString()} DA
                       </span>
-                      <Badge className="bg-primary/10 text-primary border-primary/20">
+                      <Badge className="bg-primary/10 text-primary border-primary/20 w-fit">
                         {Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)}% OFF
                       </Badge>
-                    </>
+                    </div>
                   )}
                 </div>
               </motion.div>
@@ -434,11 +434,11 @@ export default function LuxuryProductDetail({ product }: LuxuryProductDetailProp
                   <h3 className="text-lg font-semibold text-foreground">
                     {isRTL ? 'المقاس' : 'Size'}
                   </h3>
-                  <div className="flex flex-wrap gap-3">
+                  <div className="grid grid-cols-3 sm:flex sm:flex-wrap gap-2 sm:gap-3">
                                          {displaySizes.map((size, index) => (
                                                <motion.button
                           key={`${size}-${index}`}
-                          className={`group relative px-6 py-3 rounded-lg border-2 transition-all duration-300 font-medium ${
+                          className={`group relative px-3 sm:px-6 py-2 sm:py-3 rounded-lg border-2 transition-all duration-300 font-medium text-sm sm:text-base ${
                             selectedSize === size
                               ? 'border-primary bg-primary text-primary-foreground shadow-elegant'
                               : 'border-border hover:border-primary/50 bg-background hover:bg-muted/50'
@@ -500,19 +500,19 @@ export default function LuxuryProductDetail({ product }: LuxuryProductDetailProp
                 className="space-y-4"
                 variants={itemVariants}
               >
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <Button
                     size="lg"
-                    className="h-14 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground font-semibold shadow-elegant hover:shadow-luxury transition-all duration-300"
+                    className="h-12 sm:h-14 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground font-semibold shadow-elegant hover:shadow-luxury transition-all duration-300"
                     onClick={handleAddToCart}
                   >
-                    <ShoppingCart className="w-5 h-5 mr-2" />
-                    {isRTL ? 'أضف للسلة' : 'Add to Cart'}
+                    <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                    <span className="text-sm sm:text-base">{isRTL ? 'أضف للسلة' : 'Add to Cart'}</span>
                   </Button>
                   <Button
                     size="lg"
                     variant="outline"
-                    className="h-14 border-2 border-foreground text-foreground hover:bg-foreground hover:text-background font-semibold shadow-elegant transition-all duration-300"
+                    className="h-12 sm:h-14 border-2 border-foreground text-foreground hover:bg-foreground hover:text-background font-semibold shadow-elegant transition-all duration-300"
                     disabled={product.sizes && product.sizes.length > 0 && !selectedSize}
                     onClick={() => {
                       if (product.sizes && product.sizes.length > 0 && !selectedSize) {
@@ -533,14 +533,14 @@ export default function LuxuryProductDetail({ product }: LuxuryProductDetailProp
                       router.push('/checkout')
                     }}
                   >
-                    {isRTL ? 'اشتري الآن' : 'Buy Now'}
+                    <span className="text-sm sm:text-base">{isRTL ? 'اشتري الآن' : 'Buy Now'}</span>
                   </Button>
                 </div>
               </motion.div>
 
               {/* Service Highlights */}
             <motion.div 
-              className="grid grid-cols-3 gap-4 pt-6 border-t border-border dark:border-gray-700"
+              className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 pt-4 sm:pt-6 border-t border-border dark:border-gray-700"
               variants={itemVariants}
             >
               <div className="text-center space-y-2 p-4 rounded-lg bg-background/50 dark:bg-gray-800/50">
@@ -575,10 +575,10 @@ export default function LuxuryProductDetail({ product }: LuxuryProductDetailProp
           
           {/* Additional Information Below */}
           <motion.div 
-            className="max-w-7xl mx-auto mt-16"
+            className="max-w-7xl mx-auto mt-8 sm:mt-16"
             variants={itemVariants}
           >
-            <div className="grid md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
               {/* Craftsmanship Card */}
               <Card className="bg-background/50 dark:bg-gray-800/50 backdrop-blur-sm border-border dark:border-gray-700 shadow-elegant dark:shadow-2xl">
                 <CardContent className="p-6">
