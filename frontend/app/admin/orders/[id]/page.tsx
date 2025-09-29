@@ -968,7 +968,19 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                                   ))}
                                 </div>
                               ) : (
-                                <p>{item.quantity}x {item.size ? `- Taille: ${item.size}` : ''}</p>
+                                <div className="space-y-1">
+                                  {item.size ? (
+                                    <div className="flex items-center space-x-2">
+                                      <span className="font-medium">Taille:</span>
+                                      <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">
+                                        {item.size}
+                                      </span>
+                                    </div>
+                                  ) : null}
+                                  <p className="text-xs text-muted-foreground">
+                                    Quantité: {item.quantity}
+                                  </p>
+                                </div>
                               )}
                             </div>
                           </>
