@@ -664,9 +664,7 @@ router.patch('/orders/:id/items', async (req, res) => {
               productId: item.product.id,
               quantity: item.quantity,
               price: item.price,
-              size: item.size || null,
-              name: item.name,
-              nameAr: item.nameAr || null
+              size: item.size || null
             },
             include: {
               product: {
