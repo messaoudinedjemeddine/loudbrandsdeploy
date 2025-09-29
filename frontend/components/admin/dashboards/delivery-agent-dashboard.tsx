@@ -663,14 +663,13 @@ https://loudim.com/track-order
 
       {/* Delivery Management */}
       <Tabs defaultValue="confirmed" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-8">
+        <TabsList className="grid w-full grid-cols-7">
           <TabsTrigger value="confirmed">Confirmed Orders ({stats.confirmedOrders})</TabsTrigger>
           <TabsTrigger value="preparation">En préparation ({stats.enPreparation})</TabsTrigger>
           <TabsTrigger value="delivery">Sorti en livraison ({stats.sortiEnLivraison})</TabsTrigger>
           <TabsTrigger value="waiting">En attente du client ({yalidineShipments.filter(s => s.last_status === 'En attente du client').length})</TabsTrigger>
           <TabsTrigger value="failed">Tentative échouée ({yalidineShipments.filter(s => s.last_status === 'Tentative échouée').length})</TabsTrigger>
           <TabsTrigger value="alert">En alerte ({yalidineShipments.filter(s => s.last_status === 'En alerte').length})</TabsTrigger>
-          <TabsTrigger value="delivered">Delivered ({stats.livre})</TabsTrigger>
           <TabsTrigger value="yalidine">Yalidine Shipments ({yalidineShipments.length})</TabsTrigger>
         </TabsList>
 
@@ -1130,66 +1129,6 @@ https://loudim.com/track-order
           </Card>
         </TabsContent>
 
-        <TabsContent value="delivered" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Delivered Orders</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {yalidineShipments.filter(shipment => shipment.last_status === 'Livré').map((shipment, index) => (
-                  <div key={shipment.id || shipment.tracking || `delivered-${index}`} className="border rounded-lg p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-4">
-                          <div>
-                            <p className="font-medium">#{shipment.tracking}</p>
-                            <p className="text-sm text-muted-foreground">{shipment.customer_name}</p>
-                            <p className="text-sm text-muted-foreground">{shipment.customer_phone}</p>
-                            <p className="text-sm text-muted-foreground">
-                              {shipment.price?.toLocaleString()} DA
-                            </p>
-                          </div>
-                          <div className="flex space-x-2">
-                            <Badge className="bg-emerald-100 text-emerald-800 border border-emerald-200">
-                              {shipment.last_status}
-                            </Badge>
-                          </div>
-                        </div>
-                        <div className="mt-2 text-sm text-muted-foreground">
-                          {shipment.product_list || 'N/A'} • {shipment.weight || 1} kg
-                        </div>
-                      </div>
-                      <div className="flex space-x-2">
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={() => sendWhatsAppMessage(shipment.customer_phone, shipment.tracking)}
-                        >
-                          <ExternalLink className="w-4 h-4 mr-1" />
-                          WhatsApp
-                        </Button>
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={() => handleCallCustomer(shipment.customer_phone)}
-                        >
-                          <Phone className="w-4 h-4 mr-1" />
-                          Call
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-                {yalidineShipments.filter(shipment => shipment.last_status === 'Livré').length === 0 && (
-                  <div className="text-center py-8 text-muted-foreground">
-                    No delivered orders today
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
 
         <TabsContent value="yalidine" className="space-y-4">
       <Card>
