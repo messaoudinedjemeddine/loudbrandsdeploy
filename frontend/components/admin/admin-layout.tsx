@@ -39,6 +39,7 @@ const getNavigationByRole = (role: string) => {
         { name: 'Catégories', href: '/admin/categories', icon: Tag },
         { name: 'Utilisateurs', href: '/admin/users', icon: Users },
         { name: 'Expédition', href: '/admin/shipping', icon: Truck },
+        { name: 'Expéditions Yalidine', href: '/admin/yalidine-shipments', icon: Package },
         { name: 'Analyses', href: '/admin/analytics', icon: BarChart3 },
         { name: 'Analyses de Profit', href: '/admin/analytics/profit', icon: BarChart3 },
         { name: 'Paramètres', href: '/admin/settings', icon: Settings },

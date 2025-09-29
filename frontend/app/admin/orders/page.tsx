@@ -29,7 +29,8 @@ import {
   Edit3,
   Save,
   X,
-  ChevronDown
+  ChevronDown,
+  RotateCcw
 } from 'lucide-react'
 import Link from 'next/link'
 import { AdminLayout } from '@/components/admin/admin-layout'
@@ -129,6 +130,27 @@ export default function AdminOrdersPage() {
   useEffect(() => {
     setMounted(true)
     fetchOrders()
+  }, [])
+
+  // Refresh orders when the page becomes visible (user returns from order detail)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        fetchOrders()
+      }
+    }
+
+    const handleFocus = () => {
+      fetchOrders()
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    window.addEventListener('focus', handleFocus)
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+      window.removeEventListener('focus', handleFocus)
+    }
   }, [])
 
   const fetchOrders = async () => {
@@ -639,10 +661,22 @@ export default function AdminOrdersPage() {
         {/* Filters */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center">
-              <Filter className="w-5 h-5 mr-2" />
-              Filtres
-            </CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center">
+                <Filter className="w-5 h-5 mr-2" />
+                Filtres
+              </CardTitle>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={fetchOrders}
+                disabled={loading}
+                className="flex items-center space-x-2"
+              >
+                <RotateCcw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+                <span>Actualiser</span>
+              </Button>
+            </div>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -699,7 +733,7 @@ export default function AdminOrdersPage() {
                   <TableRow>
                     <TableHead className="w-[120px]">Commande #</TableHead>
                     <TableHead className="w-[150px]">Client</TableHead>
-                    <TableHead className="w-[100px]">Articles</TableHead>
+                    <TableHead className="w-[120px]">Articles</TableHead>
                     <TableHead className="w-[100px]">Total</TableHead>
                     <TableHead className="w-[120px]">Statut</TableHead>
                     <TableHead className="w-[120px]">Suivi</TableHead>
@@ -737,20 +771,25 @@ export default function AdminOrdersPage() {
                           </div>
                         </TableCell>
                         
-                        <TableCell className="w-[100px]">
-                          <div className="space-y-1">
+                        <TableCell className="w-[120px]">
+                          <div className="space-y-2">
                             {order.items.map((item, index) => (
-                              <div key={item.id} className="text-sm">
-                                <div className="font-medium truncate">
-                                  {item.quantity}x {item.product.name}
-                                </div>
-                                {item.size && (
-                                  <div className="text-xs text-muted-foreground truncate">
-                                    Taille: {item.size}
+                              <div key={item.id} className="bg-gray-50 dark:bg-gray-800 rounded-lg p-2">
+                                <div className="flex items-center justify-between mb-1">
+                                  <div className="text-xs font-semibold text-primary bg-primary/10 px-2 py-1 rounded-full">
+                                    {item.quantity}x
                                   </div>
-                                )}
+                                  {item.size && (
+                                    <div className="text-xs font-medium text-gray-600 dark:text-gray-300 bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded-full">
+                                      {item.size}
+                                    </div>
+                                  )}
+                                </div>
+                                <div className="text-sm font-medium truncate">
+                                  {item.product.name}
+                                </div>
                                 {index < order.items.length - 1 && (
-                                  <div className="border-t my-1"></div>
+                                  <div className="border-t border-gray-200 dark:border-gray-700 mt-2"></div>
                                 )}
                               </div>
                             ))}

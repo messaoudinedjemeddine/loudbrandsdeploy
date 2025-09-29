@@ -239,14 +239,15 @@ export default function HomePage() {
                 transition={{ duration: 0.2 }}
               >
                 <Link href="/loudim">
-                  <div className="bg-primary hover:bg-primary/90 rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-300">
-                    <Image
-                      src="/logos/logo-light.png"
-                      alt="LOUDIM - Explore Collection"
-                      width={80}
-                      height={32}
-                      className="h-6 w-auto"
-                    />
+                  <div className="bg-primary hover:bg-primary/90 rounded-full px-8 py-4 shadow-lg hover:shadow-xl transition-all duration-300 min-w-[200px] text-center">
+                    <h2 className="text-xl font-semibold tracking-wider cursor-pointer" dir="ltr">
+                      <span className="inline-block">
+                        <span className="text-white font-bold">LOUD</span>
+                        <span className="relative inline-block ml-2">
+                          <span className="text-white font-light">IM</span>
+                        </span>
+                      </span>
+                    </h2>
                   </div>
                 </Link>
               </motion.div>
@@ -256,14 +257,15 @@ export default function HomePage() {
                 transition={{ duration: 0.2 }}
               >
                 <Link href="/loud-styles">
-                  <div className="bg-primary hover:bg-primary/90 rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-300">
-                    <Image
-                      src="/logos/logo-md.png"
-                      alt="LOUD STYLES - Explore Collection"
-                      width={80}
-                      height={32}
-                      className="h-6 w-auto brightness-0 invert"
-                    />
+                  <div className="bg-primary hover:bg-primary/90 rounded-full px-8 py-4 shadow-lg hover:shadow-xl transition-all duration-300 min-w-[200px] text-center">
+                    <h2 className="text-xl font-semibold tracking-wider cursor-pointer" dir="ltr">
+                      <span className="inline-block">
+                        <span className="text-white font-bold">LOUD</span>
+                        <span className="relative inline-block ml-2">
+                          <span className="text-white font-light">STYLES</span>
+                        </span>
+                      </span>
+                    </h2>
                   </div>
                 </Link>
               </motion.div>

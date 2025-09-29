@@ -663,10 +663,13 @@ https://loudim.com/track-order
 
       {/* Delivery Management */}
       <Tabs defaultValue="confirmed" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-8">
           <TabsTrigger value="confirmed">Confirmed Orders ({stats.confirmedOrders})</TabsTrigger>
           <TabsTrigger value="preparation">En préparation ({stats.enPreparation})</TabsTrigger>
-          <TabsTrigger value="delivery">Out for Delivery ({stats.sortiEnLivraison})</TabsTrigger>
+          <TabsTrigger value="delivery">Sorti en livraison ({stats.sortiEnLivraison})</TabsTrigger>
+          <TabsTrigger value="waiting">En attente du client ({yalidineShipments.filter(s => s.last_status === 'En attente du client').length})</TabsTrigger>
+          <TabsTrigger value="failed">Tentative échouée ({yalidineShipments.filter(s => s.last_status === 'Tentative échouée').length})</TabsTrigger>
+          <TabsTrigger value="alert">En alerte ({yalidineShipments.filter(s => s.last_status === 'En alerte').length})</TabsTrigger>
           <TabsTrigger value="delivered">Delivered ({stats.livre})</TabsTrigger>
           <TabsTrigger value="yalidine">Yalidine Shipments ({yalidineShipments.length})</TabsTrigger>
         </TabsList>
@@ -892,6 +895,234 @@ https://loudim.com/track-order
                 {yalidineShipments.filter(shipment => shipment.last_status === 'Sorti en livraison').length === 0 && (
                   <div className="text-center py-8 text-muted-foreground">
                     No orders out for delivery
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="waiting" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>En attente du client</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {yalidineShipments.filter(shipment => shipment.last_status === 'En attente du client').map((shipment, index) => (
+                  <div key={shipment.id || shipment.tracking || `waiting-${index}`} className="border rounded-lg p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-4">
+                          <div>
+                            <p className="font-medium">#{shipment.tracking}</p>
+                            <p className="text-sm text-muted-foreground">{shipment.customer_name}</p>
+                            <p className="text-sm text-muted-foreground">{shipment.customer_phone}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {shipment.price?.toLocaleString()} DA
+                            </p>
+                          </div>
+                          <div className="flex space-x-2">
+                            <Badge className="bg-yellow-100 text-yellow-800 border border-yellow-200">
+                              {shipment.last_status}
+                            </Badge>
+                          </div>
+                        </div>
+                        <div className="mt-2 text-sm text-muted-foreground">
+                          {shipment.product_list || 'N/A'} • {shipment.weight || 1} kg
+                        </div>
+                        {shipment.customer_address && (
+                          <div className="mt-2 text-sm bg-muted p-2 rounded">
+                            <strong>Address:</strong> {shipment.customer_address}
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex space-x-2">
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => sendWhatsAppMessage(shipment.customer_phone, shipment.tracking)}
+                        >
+                          <ExternalLink className="w-4 h-4 mr-1" />
+                          WhatsApp
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => handleCallCustomer(shipment.customer_phone)}
+                        >
+                          <Phone className="w-4 h-4 mr-1" />
+                          Call
+                        </Button>
+                        {shipment.customer_address && (
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => handleNavigateToAddress(shipment.customer_address!)}
+                          >
+                            <Navigation className="w-4 h-4 mr-1" />
+                            Navigate
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {yalidineShipments.filter(shipment => shipment.last_status === 'En attente du client').length === 0 && (
+                  <div className="text-center py-8 text-muted-foreground">
+                    No orders waiting for client
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="failed" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Tentative échouée</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {yalidineShipments.filter(shipment => shipment.last_status === 'Tentative échouée').map((shipment, index) => (
+                  <div key={shipment.id || shipment.tracking || `failed-${index}`} className="border rounded-lg p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-4">
+                          <div>
+                            <p className="font-medium">#{shipment.tracking}</p>
+                            <p className="text-sm text-muted-foreground">{shipment.customer_name}</p>
+                            <p className="text-sm text-muted-foreground">{shipment.customer_phone}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {shipment.price?.toLocaleString()} DA
+                            </p>
+                          </div>
+                          <div className="flex space-x-2">
+                            <Badge className="bg-red-100 text-red-800 border border-red-200">
+                              {shipment.last_status}
+                            </Badge>
+                          </div>
+                        </div>
+                        <div className="mt-2 text-sm text-muted-foreground">
+                          {shipment.product_list || 'N/A'} • {shipment.weight || 1} kg
+                        </div>
+                        {shipment.customer_address && (
+                          <div className="mt-2 text-sm bg-muted p-2 rounded">
+                            <strong>Address:</strong> {shipment.customer_address}
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex space-x-2">
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => sendWhatsAppMessage(shipment.customer_phone, shipment.tracking)}
+                        >
+                          <ExternalLink className="w-4 h-4 mr-1" />
+                          WhatsApp
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => handleCallCustomer(shipment.customer_phone)}
+                        >
+                          <Phone className="w-4 h-4 mr-1" />
+                          Call
+                        </Button>
+                        {shipment.customer_address && (
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => handleNavigateToAddress(shipment.customer_address!)}
+                          >
+                            <Navigation className="w-4 h-4 mr-1" />
+                            Navigate
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {yalidineShipments.filter(shipment => shipment.last_status === 'Tentative échouée').length === 0 && (
+                  <div className="text-center py-8 text-muted-foreground">
+                    No failed delivery attempts
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="alert" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>En alerte</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {yalidineShipments.filter(shipment => shipment.last_status === 'En alerte').map((shipment, index) => (
+                  <div key={shipment.id || shipment.tracking || `alert-${index}`} className="border rounded-lg p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-4">
+                          <div>
+                            <p className="font-medium">#{shipment.tracking}</p>
+                            <p className="text-sm text-muted-foreground">{shipment.customer_name}</p>
+                            <p className="text-sm text-muted-foreground">{shipment.customer_phone}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {shipment.price?.toLocaleString()} DA
+                            </p>
+                          </div>
+                          <div className="flex space-x-2">
+                            <Badge className="bg-red-100 text-red-800 border border-red-200">
+                              {shipment.last_status}
+                            </Badge>
+                          </div>
+                        </div>
+                        <div className="mt-2 text-sm text-muted-foreground">
+                          {shipment.product_list || 'N/A'} • {shipment.weight || 1} kg
+                        </div>
+                        {shipment.customer_address && (
+                          <div className="mt-2 text-sm bg-muted p-2 rounded">
+                            <strong>Address:</strong> {shipment.customer_address}
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex space-x-2">
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => sendWhatsAppMessage(shipment.customer_phone, shipment.tracking)}
+                        >
+                          <ExternalLink className="w-4 h-4 mr-1" />
+                          WhatsApp
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => handleCallCustomer(shipment.customer_phone)}
+                        >
+                          <Phone className="w-4 h-4 mr-1" />
+                          Call
+                        </Button>
+                        {shipment.customer_address && (
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => handleNavigateToAddress(shipment.customer_address!)}
+                          >
+                            <Navigation className="w-4 h-4 mr-1" />
+                            Navigate
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {yalidineShipments.filter(shipment => shipment.last_status === 'En alerte').length === 0 && (
+                  <div className="text-center py-8 text-muted-foreground">
+                    No orders in alert status
                   </div>
                 )}
               </div>
