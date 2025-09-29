@@ -500,6 +500,11 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
       return
     }
 
+    if (!newItem.size || newItem.size.trim() === '') {
+      toast.error('Please enter a size for the item')
+      return
+    }
+
     const product = availableProducts.find(p => p.id === newItem.productId)
     if (!product) {
       toast.error('Selected product not found')
@@ -512,7 +517,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
       nameAr: product.nameAr,
       quantity: newItem.quantity,
       price: product.price,
-      size: newItem.size || undefined,
+      size: newItem.size,
       product: {
         id: product.id,
         name: product.name,
@@ -541,6 +546,13 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
   const saveOrderItems = async () => {
     if (!order) return
 
+    // Validate that all items have sizes
+    const itemsWithoutSize = orderItems.filter(item => !item.size || item.size.trim() === '')
+    if (itemsWithoutSize.length > 0) {
+      toast.error('Tous les articles doivent avoir une taille spécifiée')
+      return
+    }
+
     try {
       console.log('Saving order items...')
       console.log('Order ID:', order.id)
@@ -555,8 +567,12 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
 
       // Transform order items to match backend expectations
       const transformedItems = orderItems.map(item => ({
+        id: item.id,
         product: {
-          id: item.product.id
+          id: item.product.id,
+          name: item.product.name,
+          nameAr: item.product.nameAr,
+          image: item.product.image
         },
         quantity: item.quantity,
         price: item.price,
@@ -792,8 +808,9 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                               <Input
                                 value={item.size || ''}
                                 onChange={(e) => updateItemSize(item.id, e.target.value)}
-                                placeholder="Saisir la taille"
+                                placeholder="Taille (requis)"
                                 className="w-24 h-8 text-sm"
+                                required
                               />
                             </div>
                             <div className="flex items-center space-x-2">
@@ -809,11 +826,8 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                           </div>
                         ) : (
                           <>
-                            {item.size && (
-                              <p className="text-sm text-muted-foreground">Taille: {item.size}</p>
-                            )}
                             <p className="text-sm text-muted-foreground">
-                              Quantité: {item.quantity}
+                              {item.quantity}x {item.size ? `- Taille: ${item.size}` : ''}
                             </p>
                           </>
                         )}
@@ -963,8 +977,9 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                         <Input
                           value={newItem.size}
                           onChange={(e) => setNewItem(prev => ({ ...prev, size: e.target.value }))}
-                          placeholder="Taille (optionnel)"
+                          placeholder="Taille (requis)"
                           className="h-9"
+                          required
                         />
                         <Button
                           onClick={addNewItem}
