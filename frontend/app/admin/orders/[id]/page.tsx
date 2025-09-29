@@ -38,6 +38,11 @@ interface OrderDetailPageProps {
   }>
 }
 
+interface OrderItemPiece {
+  id: string
+  size: string
+}
+
 interface OrderItem {
   id: string
   name: string
@@ -45,6 +50,7 @@ interface OrderItem {
   quantity: number
   price: number
   size?: string
+  pieces?: OrderItemPiece[] // Individual pieces with their own sizes
   product: {
     id: string
     name: string
@@ -476,9 +482,29 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
   const updateItemQuantité = (itemId: string, quantity: number) => {
     if (quantity <= 0) return
     
-    setOrderItems(prev => prev.map(item => 
-      item.id === itemId ? { ...item, quantity } : item
-    ))
+    setOrderItems(prev => prev.map(item => {
+      if (item.id === itemId) {
+        const currentPieces = item.pieces || []
+        const newPieces = [...currentPieces]
+        
+        // Add or remove pieces based on quantity change
+        if (quantity > currentPieces.length) {
+          // Add new pieces
+          for (let i = currentPieces.length; i < quantity; i++) {
+            newPieces.push({
+              id: `piece-${Date.now()}-${i}`,
+              size: ''
+            })
+          }
+        } else if (quantity < currentPieces.length) {
+          // Remove excess pieces
+          newPieces.splice(quantity)
+        }
+        
+        return { ...item, quantity, pieces: newPieces }
+      }
+      return item
+    }))
   }
 
   // Update item size
@@ -491,6 +517,47 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
   // Remove item from order
   const removeItem = (itemId: string) => {
     setOrderItems(prev => prev.filter(item => item.id !== itemId))
+  }
+
+  // Add piece to item
+  const addPiece = (itemId: string) => {
+    setOrderItems(prev => prev.map(item => 
+      item.id === itemId 
+        ? { 
+            ...item, 
+            pieces: [...(item.pieces || []), { 
+              id: `piece-${Date.now()}-${Math.random()}`, 
+              size: '' 
+            }]
+          }
+        : item
+    ))
+  }
+
+  // Remove piece from item
+  const removePiece = (itemId: string, pieceId: string) => {
+    setOrderItems(prev => prev.map(item => 
+      item.id === itemId 
+        ? { 
+            ...item, 
+            pieces: (item.pieces || []).filter(piece => piece.id !== pieceId)
+          }
+        : item
+    ))
+  }
+
+  // Update piece size
+  const updatePieceSize = (itemId: string, pieceId: string, size: string) => {
+    setOrderItems(prev => prev.map(item => 
+      item.id === itemId 
+        ? { 
+            ...item, 
+            pieces: (item.pieces || []).map(piece => 
+              piece.id === pieceId ? { ...piece, size } : piece
+            )
+          }
+        : item
+    ))
   }
 
   // Add new item to order
@@ -511,6 +578,12 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
       return
     }
 
+    // Create individual pieces for each quantity
+    const pieces: OrderItemPiece[] = Array.from({ length: newItem.quantity }, (_, index) => ({
+      id: `piece-${Date.now()}-${index}`,
+      size: newItem.size
+    }))
+
     const newOrderItem: OrderItem = {
       id: `temp-${Date.now()}`, // Temporary ID for new items
       name: product.name,
@@ -518,6 +591,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
       quantity: newItem.quantity,
       price: product.price,
       size: newItem.size,
+      pieces: pieces,
       product: {
         id: product.id,
         name: product.name,
@@ -546,10 +620,16 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
   const saveOrderItems = async () => {
     if (!order) return
 
-    // Validate that all items have sizes
-    const itemsWithoutSize = orderItems.filter(item => !item.size || item.size.trim() === '')
-    if (itemsWithoutSize.length > 0) {
-      toast.error('Tous les articles doivent avoir une taille spécifiée')
+    // Validate that all pieces have sizes
+    const itemsWithMissingSizes = orderItems.filter(item => {
+      if (item.pieces && item.pieces.length > 0) {
+        return item.pieces.some(piece => !piece.size || piece.size.trim() === '')
+      }
+      return !item.size || item.size.trim() === ''
+    })
+    
+    if (itemsWithMissingSizes.length > 0) {
+      toast.error('Toutes les pièces doivent avoir une taille spécifiée')
       return
     }
 
@@ -566,20 +646,46 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
       console.log('New total:', newTotal)
 
       // Transform order items to match backend expectations
-      const transformedItems = orderItems.map(item => ({
-        id: item.id,
-        product: {
-          id: item.product.id,
-          name: item.product.name,
-          nameAr: item.product.nameAr,
-          image: item.product.image
-        },
-        quantity: item.quantity,
-        price: item.price,
-        size: item.size || undefined,
-        name: item.name,
-        nameAr: item.nameAr || undefined
-      }))
+      // Create separate items for each piece
+      const transformedItems: any[] = []
+      
+      orderItems.forEach(item => {
+        if (item.pieces && item.pieces.length > 0) {
+          // Create separate items for each piece
+          item.pieces.forEach(piece => {
+            transformedItems.push({
+              id: `${item.id}-${piece.id}`,
+              product: {
+                id: item.product.id,
+                name: item.product.name,
+                nameAr: item.product.nameAr,
+                image: item.product.image
+              },
+              quantity: 1,
+              price: item.price,
+              size: piece.size,
+              name: item.name,
+              nameAr: item.nameAr || undefined
+            })
+          })
+        } else {
+          // Fallback for items without pieces
+          transformedItems.push({
+            id: item.id,
+            product: {
+              id: item.product.id,
+              name: item.product.name,
+              nameAr: item.product.nameAr,
+              image: item.product.image
+            },
+            quantity: item.quantity,
+            price: item.price,
+            size: item.size || undefined,
+            name: item.name,
+            nameAr: item.nameAr || undefined
+          })
+        }
+      })
       
       console.log('Transformed items:', transformedItems)
       
@@ -802,17 +908,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                       <div className="flex-1">
                         <h4 className="font-medium">{item.product.name}</h4>
                         {editingItems ? (
-                          <div className="space-y-2 mt-2">
-                            <div className="flex items-center space-x-2">
-                              <label className="text-sm font-medium">Taille:</label>
-                              <Input
-                                value={item.size || ''}
-                                onChange={(e) => updateItemSize(item.id, e.target.value)}
-                                placeholder="Taille (requis)"
-                                className="w-24 h-8 text-sm"
-                                required
-                              />
-                            </div>
+                          <div className="space-y-3 mt-2">
                             <div className="flex items-center space-x-2">
                               <label className="text-sm font-medium">Quantité:</label>
                               <Input
@@ -823,12 +919,58 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                                 className="w-20 h-8 text-sm"
                               />
                             </div>
+                            <div className="space-y-2">
+                              <label className="text-sm font-medium">Tailles des pièces:</label>
+                              <div className="space-y-2">
+                                {(item.pieces || []).map((piece, index) => (
+                                  <div key={piece.id} className="flex items-center space-x-2">
+                                    <span className="text-xs text-muted-foreground w-16">Pièce {index + 1}:</span>
+                                    <Input
+                                      value={piece.size}
+                                      onChange={(e) => updatePieceSize(item.id, piece.id, e.target.value)}
+                                      placeholder="Taille"
+                                      className="w-24 h-8 text-sm"
+                                      required
+                                    />
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => removePiece(item.id, piece.id)}
+                                      className="h-8 w-8 p-0"
+                                    >
+                                      <X className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                ))}
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => addPiece(item.id)}
+                                  className="h-8 text-xs"
+                                >
+                                  + Ajouter une pièce
+                                </Button>
+                              </div>
+                            </div>
                           </div>
                         ) : (
                           <>
-                            <p className="text-sm text-muted-foreground">
-                              {item.quantity}x {item.size ? `- Taille: ${item.size}` : ''}
-                            </p>
+                            <div className="text-sm text-muted-foreground">
+                              {item.pieces && item.pieces.length > 0 ? (
+                                <div className="space-y-1">
+                                  {item.pieces.map((piece, index) => (
+                                    <div key={piece.id} className="flex items-center space-x-2">
+                                      <span className="font-medium">Pièce {index + 1}:</span>
+                                      <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">
+                                        {piece.size}
+                                      </span>
+                                    </div>
+                                  ))}
+                                </div>
+                              ) : (
+                                <p>{item.quantity}x {item.size ? `- Taille: ${item.size}` : ''}</p>
+                              )}
+                            </div>
                           </>
                         )}
                       </div>
