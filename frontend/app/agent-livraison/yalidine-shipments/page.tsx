@@ -88,7 +88,7 @@ export default function AgentYalidineShipmentsPage() {
   ]
 
   useEffect(() => {
-    fetchYalidineShipments()
+    fetchAllYalidineShipments()
   }, [])
 
   // Reset pagination when filter changes
@@ -135,6 +135,21 @@ export default function AgentYalidineShipmentsPage() {
         total_pages: 0,
         per_page: shipmentPagination.per_page
       })
+    } finally {
+      setLoadingShipments(false)
+      setLoading(false)
+    }
+  }
+
+  // Fetch all Yalidine shipments (not paginated for filtering)
+  const fetchAllYalidineShipments = async () => {
+    try {
+      setLoadingShipments(true)
+      const response = await yalidineAPI.getAllShipments({ page: 1 })
+      setYalidineShipments(response.data || [])
+    } catch (error) {
+      console.error('Error fetching all Yalidine shipments:', error)
+      setYalidineShipments([])
     } finally {
       setLoadingShipments(false)
       setLoading(false)
@@ -275,7 +290,7 @@ https://loudim.com/track-order
                   </Button>
                 )}
                 <Button 
-                  onClick={() => fetchYalidineShipments(1)} 
+                  onClick={() => fetchAllYalidineShipments()} 
                   disabled={loadingShipments}
                   variant="outline"
                   size="sm"

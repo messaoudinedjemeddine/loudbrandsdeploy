@@ -171,6 +171,17 @@ export function DeliveryAgentDashboard() {
     fetchDeliveryData()
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Fetch Yalidine shipments for dashboard tabs
+  const fetchYalidineShipments = async () => {
+    try {
+      const response = await yalidineAPI.getAllShipments({ page: 1 })
+      setYalidineShipments(response.data || [])
+    } catch (error) {
+      console.error('Error fetching Yalidine shipments:', error)
+      setYalidineShipments([])
+    }
+  }
+
 
   const fetchDeliveryData = async () => {
     try {
@@ -178,7 +189,7 @@ export function DeliveryAgentDashboard() {
       setError(null)
 
       // Fetch delivery data, Yalidine shipments, and Yalidine stats
-      const [ordersData, yalidineStats] = await Promise.all([
+      const [ordersData, yalidineStats, yalidineShipmentsData] = await Promise.all([
         api.admin.getOrders({ limit: 100 }), // Get more orders for delivery agent
         yalidineAPI.getShipmentStats().catch(err => {
           console.warn('Failed to fetch Yalidine stats:', err)
@@ -194,11 +205,16 @@ export function DeliveryAgentDashboard() {
             echangeEchoue: 0,
             totalShipments: 0
           }
+        }),
+        yalidineAPI.getAllShipments({ page: 1 }).catch(err => {
+          console.warn('Failed to fetch Yalidine shipments:', err)
+          return { data: [] }
         })
       ])
 
       const ordersList = (ordersData as any).orders || ordersData as Order[]
       setOrders(ordersList)
+      setYalidineShipments(yalidineShipmentsData.data || [])
 
       // Calculate stats combining Yalidine data with confirmed orders
       const confirmedOrders = ordersList.filter((o: Order) => o.callCenterStatus === 'CONFIRMED')
