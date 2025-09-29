@@ -14,7 +14,7 @@ import {
   Navigation,
   AlertTriangle
 } from 'lucide-react'
-import { AgentLivraisonLayout } from '@/components/agent-livraison/agent-livraison-layout'
+import { AdminLayout } from '@/components/admin/admin-layout'
 import { yalidineAPI } from '@/lib/yalidine-api'
 import { toast } from 'sonner'
 
@@ -221,19 +221,19 @@ https://loudim.com/track-order
 
   if (loading) {
     return (
-      <AgentLivraisonLayout>
+      <AdminLayout>
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" />
             <p className="text-muted-foreground">Loading Yalidine shipments...</p>
           </div>
         </div>
-      </AgentLivraisonLayout>
+      </AdminLayout>
     )
   }
 
   return (
-    <AgentLivraisonLayout>
+    <AdminLayout>
       <div className="space-y-6">
         {/* Header */}
         <div>
@@ -511,6 +511,6 @@ https://loudim.com/track-order
           </CardContent>
         </Card>
       </div>
-    </AgentLivraisonLayout>
+    </AdminLayout>
   )
 }
