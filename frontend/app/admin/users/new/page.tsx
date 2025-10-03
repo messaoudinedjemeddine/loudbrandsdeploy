@@ -18,6 +18,7 @@ import {
 import Link from 'next/link'
 import { AdminLayout } from '@/components/admin/admin-layout'
 import { api } from '@/lib/api'
+import { validatePhoneNumber, validateEmail } from '@/lib/validation'
 import { toast } from 'sonner'
 
 export default function NewUserPage() {
@@ -34,6 +35,11 @@ export default function NewUserPage() {
     role: 'USER',
     isActive: true
   })
+  
+  const [validationErrors, setValidationErrors] = useState({
+    phone: '',
+    email: ''
+  })
 
   useEffect(() => {
     setMounted(true)
@@ -43,10 +49,49 @@ export default function NewUserPage() {
 
   const handleInputChange = (field: string, value: any) => {
     setUserData(prev => ({ ...prev, [field]: value }))
+    
+    // Clear validation error when user starts typing
+    if (field === 'phone' || field === 'email') {
+      setValidationErrors(prev => ({
+        ...prev,
+        [field]: ''
+      }))
+    }
+  }
+  
+  const validateForm = (): boolean => {
+    let isValid = true
+    const errors = { phone: '', email: '' }
+    
+    // Validate phone number if provided
+    if (userData.phone) {
+      const phoneValidation = validatePhoneNumber(userData.phone)
+      if (!phoneValidation.isValid) {
+        errors.phone = phoneValidation.error || ''
+        isValid = false
+      }
+    }
+    
+    // Validate email
+    const emailValidation = validateEmail(userData.email)
+    if (!emailValidation.isValid) {
+      errors.email = emailValidation.error || ''
+      isValid = false
+    }
+    
+    setValidationErrors(errors)
+    return isValid
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // Validate form
+    if (!validateForm()) {
+      toast.error('Please fix the validation errors')
+      return
+    }
+    
     setIsLoading(true)
 
     try {
@@ -130,7 +175,11 @@ export default function NewUserPage() {
                     onChange={(e) => handleInputChange('email', e.target.value)}
                     placeholder="user@example.com"
                     required
+                    className={validationErrors.email ? 'border-red-500' : ''}
                   />
+                  {validationErrors.email && (
+                    <p className="text-red-500 text-sm">{validationErrors.email}</p>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="phone">Phone Number</Label>
@@ -138,8 +187,12 @@ export default function NewUserPage() {
                     id="phone"
                     value={userData.phone}
                     onChange={(e) => handleInputChange('phone', e.target.value)}
-                    placeholder="+213 XXX XXX XXX"
+                    placeholder="06XXXXXXXX, 05XXXXXXXX, ou 07XXXXXXXX"
+                    className={validationErrors.phone ? 'border-red-500' : ''}
                   />
+                  {validationErrors.phone && (
+                    <p className="text-red-500 text-sm">{validationErrors.phone}</p>
+                  )}
                 </div>
               </div>
 

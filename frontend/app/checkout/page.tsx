@@ -31,6 +31,7 @@ import { useCartStore } from '@/lib/store'
 import { useLocaleStore } from '@/lib/locale-store'
 import { api } from '@/lib/api'
 import { yalidineAPI, type Wilaya, type Commune, type Center, type ShippingFees } from '@/lib/yalidine-api'
+import { validatePhoneNumber, validateEmail, formatPhoneNumber } from '@/lib/validation'
 import { toast } from 'sonner'
 
 export default function CheckoutPage() {
@@ -60,6 +61,12 @@ export default function CheckoutPage() {
     centerId: '',
     deliveryAddress: '',
     notes: ''
+  })
+  
+  // Validation errors
+  const [validationErrors, setValidationErrors] = useState({
+    customerPhone: '',
+    customerEmail: ''
   })
 
   useEffect(() => {
@@ -194,6 +201,14 @@ export default function CheckoutPage() {
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }))
     
+    // Clear validation error when user starts typing
+    if (field === 'customerPhone' || field === 'customerEmail') {
+      setValidationErrors(prev => ({
+        ...prev,
+        [field]: ''
+      }))
+    }
+    
     // Handle wilaya change
     if (field === 'wilayaId') {
       setFormData(prev => ({ 
@@ -205,11 +220,39 @@ export default function CheckoutPage() {
       loadCommunes(value)
     }
   }
+  
+  const validateForm = (): boolean => {
+    let isValid = true
+    const errors = { customerPhone: '', customerEmail: '' }
+    
+    // Validate phone number
+    const phoneValidation = validatePhoneNumber(formData.customerPhone)
+    if (!phoneValidation.isValid) {
+      errors.customerPhone = phoneValidation.error || ''
+      isValid = false
+    }
+    
+    // Validate email
+    const emailValidation = validateEmail(formData.customerEmail)
+    if (!emailValidation.isValid) {
+      errors.customerEmail = emailValidation.error || ''
+      isValid = false
+    }
+    
+    setValidationErrors(errors)
+    return isValid
+  }
 
   const handleNextStep = () => {
     if (currentStep === 1) {
       if (!formData.customerName || !formData.customerPhone) {
         toast.error('Please fill in all required fields')
+        return
+      }
+      
+      // Validate phone and email
+      if (!validateForm()) {
+        toast.error('Please fix the validation errors')
         return
       }
     }
@@ -413,9 +456,13 @@ export default function CheckoutPage() {
                               id="customerPhone"
                               value={formData.customerPhone}
                               onChange={(e) => handleInputChange('customerPhone', e.target.value)}
-                              placeholder="+213 XXX XXX XXX"
+                              placeholder="06XXXXXXXX, 05XXXXXXXX, ou 07XXXXXXXX"
                               required
+                              className={validationErrors.customerPhone ? 'border-red-500' : ''}
                             />
+                            {validationErrors.customerPhone && (
+                              <p className="text-red-500 text-sm mt-1">{validationErrors.customerPhone}</p>
+                            )}
                           </div>
                           <div className="md:col-span-2">
                             <Label htmlFor="customerEmail">Email (Optional)</Label>
@@ -425,7 +472,11 @@ export default function CheckoutPage() {
                               value={formData.customerEmail}
                               onChange={(e) => handleInputChange('customerEmail', e.target.value)}
                               placeholder="your@email.com"
+                              className={validationErrors.customerEmail ? 'border-red-500' : ''}
                             />
+                            {validationErrors.customerEmail && (
+                              <p className="text-red-500 text-sm mt-1">{validationErrors.customerEmail}</p>
+                            )}
                           </div>
                         </div>
                       </div>
