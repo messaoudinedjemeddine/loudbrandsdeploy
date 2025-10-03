@@ -18,6 +18,7 @@ import {
   Phone,
   Package,
   MessageSquare,
+  MessageCircle,
   Edit,
   Tag,
   ExternalLink,
