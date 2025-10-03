@@ -359,6 +359,63 @@ https://loudim.com/track-order
     }
   }
 
+  const sendTrackingMessage = (phoneNumber: string, trackingNumber: string) => {
+    try {
+      // Format phone number for WhatsApp (remove leading 0 and add country code)
+      const formattedPhone = phoneNumber.startsWith('0') ? phoneNumber.substring(1) : phoneNumber
+      const whatsappNumber = `213${formattedPhone}`
+      
+      // Create tracking message
+      const message = `مرحبا! يمكنكم تتبع طلبكم رقم #${trackingNumber} عبر الرابط التالي:
+
+https://loudbrandss.com/track-order?tracking=${trackingNumber}
+
+شكرا لثقتكم بنا!`
+      
+      // Encode message for URL
+      const encodedMessage = encodeURIComponent(message)
+      
+      // Create WhatsApp URL
+      const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`
+      
+      // Open WhatsApp
+      window.open(whatsappUrl, '_blank')
+      
+      toast.success('Tracking message prepared for sending')
+    } catch (error) {
+      console.error('Error sending tracking message:', error)
+      toast.error('Failed to prepare tracking message')
+    }
+  }
+  
+  const sendClaimMessage = (phoneNumber: string, trackingNumber: string) => {
+    try {
+      // Format phone number for WhatsApp (remove leading 0 and add country code)
+      const formattedPhone = phoneNumber.startsWith('0') ? phoneNumber.substring(1) : phoneNumber
+      const whatsappNumber = `213${formattedPhone}`
+      
+      // Create claim message
+      const message = `مرحبا! طلبكم رقم #${trackingNumber} جاهز للاستلام من نقطة التوزيع.
+
+يرجى التوجه لاستلام طلبكم من أقرب نقطة توزيع.
+
+شكرا لثقتكم بنا!`
+      
+      // Encode message for URL
+      const encodedMessage = encodeURIComponent(message)
+      
+      // Create WhatsApp URL
+      const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`
+      
+      // Open WhatsApp
+      window.open(whatsappUrl, '_blank')
+      
+      toast.success('Claim message prepared for sending')
+    } catch (error) {
+      console.error('Error sending claim message:', error)
+      toast.error('Failed to prepare claim message')
+    }
+  }
 
   const handleCallCustomer = (phone: string) => {
     window.open(`tel:${phone}`, '_blank')
@@ -367,6 +424,17 @@ https://loudim.com/track-order
   const handleNavigateToAddress = (address: string) => {
     const encodedAddress = encodeURIComponent(address)
     window.open(`https://www.google.com/maps/search/?api=1&query=${encodedAddress}`, '_blank')
+  }
+  
+  const getYalidineStatusForOrder = (order: Order) => {
+    if (!order.trackingNumber) return null
+    
+    // Find the corresponding Yalidine shipment
+    const yalidineShipment = yalidineShipments.find(shipment => 
+      shipment.tracking === order.trackingNumber
+    )
+    
+    return yalidineShipment ? yalidineShipment.last_status : null
   }
 
   if (loading) {
@@ -760,6 +828,14 @@ https://loudim.com/track-order
                             </span>
                           </div>
                         )}
+                        {getYalidineStatusForOrder(order) && (
+                          <div className="text-sm text-muted-foreground mb-2">
+                            <span className="font-medium">Yalidine Status:</span>
+                            <Badge variant={getStatusVariant(getYalidineStatusForOrder(order)!) as any} className="ml-2">
+                              {getYalidineStatusForOrder(order)}
+                            </Badge>
+                          </div>
+                        )}
                         <div className={`flex items-center ${isRTL ? 'space-x-reverse space-x-4' : 'space-x-4'} text-sm text-muted-foreground mb-2`}>
                           <span>{order.customerName}</span>
                           <span>{order.items.length} items</span>
@@ -790,14 +866,26 @@ https://loudim.com/track-order
                           Notes
                         </Button>
                         {order.trackingNumber && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => sendWhatsAppMessage(order.customerPhone, order.trackingNumber!)}
-                          >
-                            <ExternalLink className="w-4 h-4 mr-1" />
-                            WhatsApp
-                          </Button>
+                          <>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => sendTrackingMessage(order.customerPhone, order.trackingNumber!)}
+                              className="bg-green-50 hover:bg-green-100 text-green-700 border-green-200"
+                            >
+                              <MessageCircle className="w-4 h-4 mr-1" />
+                              Send Tracking
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => sendClaimMessage(order.customerPhone, order.trackingNumber!)}
+                              className="bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200"
+                            >
+                              <Send className="w-4 h-4 mr-1" />
+                              Claim Order
+                            </Button>
+                          </>
                         )}
                       </div>
                     </div>
