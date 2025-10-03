@@ -1354,7 +1354,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                           value={deliveryData.deliveryAddress}
                           onChange={(e) => setDeliveryData(prev => ({
                             ...prev,
-                            deliveryAdresse: e.target.value
+                            deliveryAddress: e.target.value
                           }))}
                           placeholder="Saisissez votre adresse complète"
                         />
