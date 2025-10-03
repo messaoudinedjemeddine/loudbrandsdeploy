@@ -109,15 +109,27 @@ interface YalidineShipment {
   date_last_status: string;
 }
 
-const statusColors = {
-  READY: 'bg-yellow-100 text-yellow-800',
-  IN_TRANSIT: 'bg-blue-100 text-blue-800',
-  DONE: 'bg-green-100 text-green-800',
-  CONFIRMED: 'bg-green-100 text-green-800',
-  ANSWERED: 'bg-green-100 text-green-800',
-  DIDNT_ANSWER: 'bg-red-100 text-red-800',
-  SMS_SENT: 'bg-blue-100 text-blue-800'
-}
+const getStatusVariant = (status: string) => {
+  const statusMap: Record<string, string> = {
+    'Livré': 'success',
+    'Sorti en livraison': 'info',
+    'En attente du client': 'warning',
+    'Tentative échouée': 'error',
+    'En alerte': 'error',
+    'En préparation': 'warning',
+    'Expédié': 'info',
+    'Centre': 'purple',
+    'READY': 'warning',
+    'IN_TRANSIT': 'info',
+    'DONE': 'success',
+    'CONFIRMED': 'success',
+    'ANSWERED': 'success',
+    'DIDNT_ANSWER': 'error',
+    'SMS_SENT': 'info',
+    'default': 'secondary'
+  };
+  return statusMap[status] || statusMap.default;
+};
 
 const statusLabels = {
   READY: 'Ready',
@@ -129,11 +141,15 @@ const statusLabels = {
   SMS_SENT: 'SMS Sent'
 }
 
-const communicationStatusColors = {
-  ANSWERED: 'bg-green-100 text-green-800 border border-green-200',
-  DIDNT_ANSWER: 'bg-red-100 text-red-800 border border-red-200',
-  SMS_SENT: 'bg-blue-100 text-blue-800 border border-blue-200'
-}
+const getCommunicationStatusVariant = (status: string) => {
+  const statusMap: Record<string, string> = {
+    'ANSWERED': 'success',
+    'DIDNT_ANSWER': 'error',
+    'SMS_SENT': 'info',
+    'default': 'secondary'
+  };
+  return statusMap[status] || statusMap.default;
+};
 
 const communicationStatusLabels = {
   ANSWERED: 'Answered',
@@ -652,16 +668,7 @@ https://loudim.com/track-order
                               </p>
                             </div>
                             <div className="flex space-x-2">
-                              <Badge 
-                                className={`${
-                                  shipment.last_status === 'Livré' ? 'bg-green-100 text-green-800 border-green-200' :
-                                  shipment.last_status === 'Sorti en livraison' ? 'bg-blue-100 text-blue-800 border-blue-200' :
-                                  shipment.last_status === 'En attente du client' ? 'bg-yellow-100 text-yellow-800 border-yellow-200' :
-                                  shipment.last_status === 'Tentative échouée' ? 'bg-red-100 text-red-800 border-red-200' :
-                                  shipment.last_status === 'En alerte' ? 'bg-red-100 text-red-800 border-red-200' :
-                                  'bg-gray-100 text-gray-800 border-gray-200'
-                                }`}
-                              >
+                              <Badge variant={getStatusVariant(shipment.last_status) as any}>
                                 {shipment.last_status}
                               </Badge>
                             </div>
@@ -822,7 +829,7 @@ https://loudim.com/track-order
                             </p>
                           </div>
                           <div className="flex space-x-2">
-                            <Badge className="bg-amber-100 text-amber-800 border border-amber-200">
+                            <Badge variant={getStatusVariant(shipment.last_status) as any}>
                               {shipment.last_status}
                             </Badge>
                           </div>
@@ -898,7 +905,7 @@ https://loudim.com/track-order
                             </p>
                           </div>
                           <div className="flex space-x-2">
-                            <Badge className="bg-sky-100 text-sky-800 border border-sky-200">
+                            <Badge variant={getStatusVariant(shipment.last_status) as any}>
                               {shipment.last_status}
                             </Badge>
                           </div>
@@ -974,7 +981,7 @@ https://loudim.com/track-order
                             </p>
                           </div>
                           <div className="flex space-x-2">
-                            <Badge className="bg-yellow-100 text-yellow-800 border border-yellow-200">
+                            <Badge variant={getStatusVariant(shipment.last_status) as any}>
                               {shipment.last_status}
                             </Badge>
                           </div>
@@ -1050,7 +1057,7 @@ https://loudim.com/track-order
                             </p>
                           </div>
                           <div className="flex space-x-2">
-                            <Badge className="bg-red-100 text-red-800 border border-red-200">
+                            <Badge variant={getStatusVariant(shipment.last_status) as any}>
                               {shipment.last_status}
                             </Badge>
                           </div>
@@ -1126,7 +1133,7 @@ https://loudim.com/track-order
                             </p>
                           </div>
                           <div className="flex space-x-2">
-                            <Badge className="bg-red-100 text-red-800 border border-red-200">
+                            <Badge variant={getStatusVariant(shipment.last_status) as any}>
                               {shipment.last_status}
                             </Badge>
                           </div>

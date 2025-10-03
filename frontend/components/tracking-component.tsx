@@ -25,15 +25,15 @@ const statusIcons = {
   'default': <AlertCircle className="h-4 w-4 text-gray-500" />
 };
 
-const statusColors = {
-  'Livré': 'bg-green-100 text-green-800 border-green-200',
-  'Echèc livraison': 'bg-red-100 text-red-800 border-red-200',
-  'En attente': 'bg-yellow-100 text-yellow-800 border-yellow-200',
-  'Sorti en livraison': 'bg-blue-100 text-blue-800 border-blue-200',
-  'Expédié': 'bg-blue-100 text-blue-800 border-blue-200',
-  'Centre': 'bg-purple-100 text-purple-800 border-purple-200',
-  'default': 'bg-gray-100 text-gray-800 border-gray-200'
-};
+const statusVariants = {
+  'Livré': 'success',
+  'Echèc livraison': 'error',
+  'En attente': 'warning',
+  'Sorti en livraison': 'info',
+  'Expédié': 'info',
+  'Centre': 'purple',
+  'default': 'secondary'
+} as const;
 
 export function TrackingComponent({ initialTrackingNumber }: TrackingComponentProps) {
   const [trackingNumber, setTrackingNumber] = useState(initialTrackingNumber || '');
@@ -95,8 +95,8 @@ export function TrackingComponent({ initialTrackingNumber }: TrackingComponentPr
     return statusIcons[status as keyof typeof statusIcons] || statusIcons.default;
   };
 
-  const getStatusColor = (status: string) => {
-    return statusColors[status as keyof typeof statusColors] || statusColors.default;
+  const getStatusVariant = (status: string) => {
+    return statusVariants[status as keyof typeof statusVariants] || statusVariants.default;
   };
 
   const getCurrentStatus = () => {
@@ -160,7 +160,7 @@ export function TrackingComponent({ initialTrackingNumber }: TrackingComponentPr
                 {getStatusIcon(currentStatus.status)}
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
-                    <Badge className={getStatusColor(currentStatus.status)}>
+                    <Badge variant={getStatusVariant(currentStatus.status) as any}>
                       {currentStatus.status}
                     </Badge>
                     <span className="text-sm text-muted-foreground">
@@ -380,7 +380,7 @@ export function TrackingComponent({ initialTrackingNumber }: TrackingComponentPr
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <Badge className={getStatusColor(status.status)}>
+                      <Badge variant={getStatusVariant(status.status) as any}>
                         {status.status}
                       </Badge>
                       <span className="text-sm text-muted-foreground">
