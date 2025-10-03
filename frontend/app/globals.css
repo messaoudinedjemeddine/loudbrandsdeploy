@@ -147,6 +147,32 @@ html, body {
     --chart-4: 25 15% 30%;
     --chart-5: 30 35% 60%;
   }
+  
+  /* Dark mode button text visibility fixes */
+  .dark button {
+    color: hsl(var(--foreground));
+  }
+  
+  .dark button[data-variant="default"] {
+    color: hsl(var(--primary-foreground));
+  }
+  
+  .dark button[data-variant="outline"] {
+    color: hsl(var(--foreground));
+    border-color: hsl(var(--border));
+  }
+  
+  .dark button[data-variant="secondary"] {
+    color: hsl(var(--secondary-foreground));
+  }
+  
+  .dark button[data-variant="ghost"] {
+    color: hsl(var(--foreground));
+  }
+  
+  .dark button[data-variant="link"] {
+    color: hsl(var(--primary));
+  }
 }
 
 @layer base {
