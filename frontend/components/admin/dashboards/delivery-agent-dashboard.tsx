@@ -212,7 +212,7 @@ export function DeliveryAgentDashboard() {
   // Fetch Yalidine shipments for dashboard tabs
   const fetchYalidineShipments = async () => {
     try {
-      const response = await yalidineAPI.getAllShipments({ page: 1, limit: 1000 })
+      const response = await yalidineAPI.getAllShipments({ page: 1 })
       setYalidineShipments(response.data || [])
     } catch (error) {
       console.error('Error fetching Yalidine shipments:', error)
@@ -244,7 +244,7 @@ export function DeliveryAgentDashboard() {
             totalShipments: 0
           }
         }),
-        yalidineAPI.getAllShipments({ page: 1, limit: 1000 }).catch(err => {
+        yalidineAPI.getAllShipments({ page: 1 }).catch(err => {
           console.warn('Failed to fetch Yalidine shipments:', err)
           return { data: [] }
         })
