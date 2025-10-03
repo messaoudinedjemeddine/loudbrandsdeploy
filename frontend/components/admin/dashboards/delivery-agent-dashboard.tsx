@@ -542,8 +542,9 @@ https://loudim.com/track-order
       </div>
 
       {/* Delivery Management */}
-      <Tabs defaultValue="confirmed" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-6">
+      <Tabs defaultValue="all-parcels" className="space-y-4">
+        <TabsList className="grid w-full grid-cols-7">
+          <TabsTrigger value="all-parcels">All Parcels ({yalidineShipments.length})</TabsTrigger>
           <TabsTrigger value="confirmed">Confirmed Orders ({stats.confirmedOrders})</TabsTrigger>
           <TabsTrigger value="preparation">En préparation ({stats.enPreparation})</TabsTrigger>
           <TabsTrigger value="delivery">Sorti en livraison ({stats.sortiEnLivraison})</TabsTrigger>
@@ -551,6 +552,122 @@ https://loudim.com/track-order
           <TabsTrigger value="failed">Tentative échouée ({yalidineShipments.filter(s => s.last_status === 'Tentative échouée').length})</TabsTrigger>
           <TabsTrigger value="alert">En alerte ({yalidineShipments.filter(s => s.last_status === 'En alerte').length})</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="all-parcels" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <Package className="w-5 h-5 mr-2" />
+                  All Yalidine Parcels ({yalidineShipments.length})
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={fetchDeliveryData}
+                    disabled={loading}
+                  >
+                    <Loader2 className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                    Refresh
+                  </Button>
+                </div>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {yalidineShipments.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <Package className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                    <p>No parcels found</p>
+                    <p className="text-sm">All your Yalidine parcels will appear here</p>
+                  </div>
+                ) : (
+                  yalidineShipments.map((shipment, index) => (
+                    <div key={shipment.id || shipment.tracking || `parcel-${index}`} className="border rounded-lg p-4 hover:bg-muted/50 transition-colors">
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-4">
+                            <div>
+                              <p className="font-medium">#{shipment.tracking}</p>
+                              <p className="text-sm text-muted-foreground">{shipment.customer_name}</p>
+                              <p className="text-sm text-muted-foreground">{shipment.customer_phone}</p>
+                              <p className="text-sm text-muted-foreground">
+                                {shipment.price?.toLocaleString()} DA
+                              </p>
+                            </div>
+                            <div className="flex space-x-2">
+                              <Badge 
+                                className={`${
+                                  shipment.last_status === 'Livré' ? 'bg-green-100 text-green-800 border-green-200' :
+                                  shipment.last_status === 'Sorti en livraison' ? 'bg-blue-100 text-blue-800 border-blue-200' :
+                                  shipment.last_status === 'En attente du client' ? 'bg-yellow-100 text-yellow-800 border-yellow-200' :
+                                  shipment.last_status === 'Tentative échouée' ? 'bg-red-100 text-red-800 border-red-200' :
+                                  shipment.last_status === 'En alerte' ? 'bg-red-100 text-red-800 border-red-200' :
+                                  'bg-gray-100 text-gray-800 border-gray-200'
+                                }`}
+                              >
+                                {shipment.last_status}
+                              </Badge>
+                            </div>
+                          </div>
+                          <div className="mt-2 text-sm text-muted-foreground">
+                            <div className="flex items-center space-x-4">
+                              <span>{shipment.product_list || 'N/A'}</span>
+                              <span>•</span>
+                              <span>{shipment.weight || 1} kg</span>
+                              <span>•</span>
+                              <span>{shipment.from_wilaya_name} → {shipment.to_wilaya_name}</span>
+                              <span>•</span>
+                              <span>{shipment.to_commune_name}</span>
+                            </div>
+                          </div>
+                          {shipment.customer_address && (
+                            <div className="mt-2 text-sm bg-muted p-2 rounded">
+                              <strong>Address:</strong> {shipment.customer_address}
+                            </div>
+                          )}
+                          <div className="mt-2 text-xs text-muted-foreground">
+                            Created: {new Date(shipment.date_creation).toLocaleDateString()} • 
+                            Last Update: {new Date(shipment.date_last_status).toLocaleDateString()}
+                          </div>
+                        </div>
+                        <div className="flex space-x-2">
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => sendWhatsAppMessage(shipment.customer_phone, shipment.tracking)}
+                          >
+                            <ExternalLink className="w-4 h-4 mr-1" />
+                            WhatsApp
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => handleCallCustomer(shipment.customer_phone)}
+                          >
+                            <Phone className="w-4 h-4 mr-1" />
+                            Call
+                          </Button>
+                          {shipment.customer_address && (
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => handleNavigateToAddress(shipment.customer_address!)}
+                            >
+                              <Navigation className="w-4 h-4 mr-1" />
+                              Navigate
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
         <TabsContent value="confirmed" className="space-y-4">
           <Card>
