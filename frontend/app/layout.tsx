@@ -1,6 +1,6 @@
 import './globals.css';
 import type { Metadata } from 'next';
-import { Inter, Noto_Sans_Arabic } from 'next/font/google';
+import { Inter, Noto_Sans_Arabic, Cairo } from 'next/font/google';
 import { Toaster } from '@/components/ui/sonner';
 import { ThemeProvider } from '@/components/theme-provider';
 import { RTLProvider } from '@/components/rtl-provider';
@@ -14,13 +14,25 @@ import { Analytics } from '@vercel/analytics/react';
 const inter = Inter({ 
   subsets: ['latin'],
   variable: '--font-inter',
-  display: 'swap'
+  display: 'swap',
+  preload: true,
+  fallback: ['system-ui', 'arial']
 });
 
 const notoSansArabic = Noto_Sans_Arabic({ 
   subsets: ['arabic'],
   variable: '--font-arabic',
-  display: 'swap'
+  display: 'swap',
+  preload: true,
+  fallback: ['system-ui', 'arial']
+});
+
+const cairo = Cairo({ 
+  subsets: ['arabic'],
+  variable: '--font-cairo',
+  display: 'swap',
+  preload: false,
+  fallback: ['system-ui', 'arial']
 });
 
 export const metadata: Metadata = {
@@ -94,7 +106,7 @@ export default function RootLayout({
         <meta name="theme-color" content="#C4A47C" />
       </head>
       <body 
-        className={`${inter.variable} ${notoSansArabic.variable} font-sans`} 
+        className={`${inter.variable} ${notoSansArabic.variable} ${cairo.variable} font-sans`} 
         suppressHydrationWarning
       >
         <ThemeProvider

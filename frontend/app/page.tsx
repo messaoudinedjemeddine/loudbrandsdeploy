@@ -1,16 +1,19 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense, lazy } from 'react'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { ShoppingCart, Star, Truck, Shield, Headphones, CreditCard, Play, Pause } from 'lucide-react'
 import Link from 'next/link'
-import Image from 'next/image'
+import { LazyImage } from '@/components/performance/lazy-image'
+import { LazyComponent } from '@/components/performance/lazy-component'
 import { useCartStore } from '@/lib/store'
 import { useLocaleStore } from '@/lib/locale-store'
-import { Navbar } from '@/components/navbar'
+
+// Lazy load heavy components
+const Navbar = lazy(() => import('@/components/navbar').then(mod => ({ default: mod.Navbar })))
 
 // Performance optimizations - removed lazy loading for now
 
@@ -175,31 +178,46 @@ export default function HomePage() {
       <section className="relative h-screen flex items-center justify-center overflow-hidden bg-gradient-to-r from-camel-100 via-camel-200 to-camel-300 dark:from-camel-800 dark:via-camel-700 dark:to-camel-600">
         {/* Navbar positioned over video */}
         <div className="absolute top-0 left-0 right-0 z-50">
-          <Navbar />
+          <Suspense fallback={<div className="h-16 bg-white/90 backdrop-blur-sm" />}>
+            <Navbar />
+          </Suspense>
         </div>
         
         {/* Hero Video Background */}
-        <video
-          id="hero-video"
-          className="absolute inset-0 w-full h-full object-cover"
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="metadata"
-          poster="/images/Djawhara Green2.jpg"
-        >
-          <source src="/videos/hero-video.mp4" type="video/mp4" />
-          <source src="/videos/hero-video.webm" type="video/webm" />
-          <source src="/videos/hero-video.ogg" type="video/ogg" />
-          
-          {/* Fallback image if video fails to load */}
-          <img
+        <LazyComponent fallback={
+          <LazyImage
             src="/images/Djawhara Green2.jpg"
             alt="LOUD BRANDS Hero"
+            width={1920}
+            height={1080}
             className="absolute inset-0 w-full h-full object-cover"
+            priority={true}
           />
-        </video>
+        }>
+          <video
+            id="hero-video"
+            className="absolute inset-0 w-full h-full object-cover"
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            poster="/images/Djawhara Green2.jpg"
+          >
+            <source src="/videos/hero-video.mp4" type="video/mp4" />
+            <source src="/videos/hero-video.webm" type="video/webm" />
+            <source src="/videos/hero-video.ogg" type="video/ogg" />
+            
+            {/* Fallback image if video fails to load */}
+            <LazyImage
+              src="/images/Djawhara Green2.jpg"
+              alt="LOUD BRANDS Hero"
+              width={1920}
+              height={1080}
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          </video>
+        </LazyComponent>
 
         {/* Video Overlay */}
         <div className="absolute inset-0 bg-black/40" />
