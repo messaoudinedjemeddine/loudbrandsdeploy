@@ -166,6 +166,44 @@ export function DeliveryAgentDashboard() {
   const [showCommunicationDialog, setShowCommunicationDialog] = useState(false)
   const [showNotesDialog, setShowNotesDialog] = useState(false)
   const [loadingAction, setLoadingAction] = useState(false)
+  
+  // Status filter for All Parcels tab
+  const [statusFilter, setStatusFilter] = useState<string>('all')
+  
+  // Yalidine status options for filtering
+  const yalidineStatuses = [
+    { value: 'all', label: 'All Statuses' },
+    { value: 'Pas encore expédié', label: 'Pas encore expédié' },
+    { value: 'A vérifier', label: 'A vérifier' },
+    { value: 'En préparation', label: 'En préparation' },
+    { value: 'Pas encore ramassé', label: 'Pas encore ramassé' },
+    { value: 'Prêt à expédier', label: 'Prêt à expédier' },
+    { value: 'Ramassé', label: 'Ramassé' },
+    { value: 'Bloqué', label: 'Bloqué' },
+    { value: 'Débloqué', label: 'Débloqué' },
+    { value: 'Transfert', label: 'Transfert' },
+    { value: 'Expédié', label: 'Expédié' },
+    { value: 'Centre', label: 'Centre' },
+    { value: 'En localisation', label: 'En localisation' },
+    { value: 'Vers Wilaya', label: 'Vers Wilaya' },
+    { value: 'Reçu à Wilaya', label: 'Reçu à Wilaya' },
+    { value: 'En attente du client', label: 'En attente du client' },
+    { value: 'Prêt pour livreur', label: 'Prêt pour livreur' },
+    { value: 'Sorti en livraison', label: 'Sorti en livraison' },
+    { value: 'En attente', label: 'En attente' },
+    { value: 'En alerte', label: 'En alerte' },
+    { value: 'Tentative échouée', label: 'Tentative échouée' },
+    { value: 'Livré', label: 'Livré' },
+    { value: 'Echèc livraison', label: 'Echèc livraison' },
+    { value: 'Retour vers centre', label: 'Retour vers centre' },
+    { value: 'Retourné au centre', label: 'Retourné au centre' },
+    { value: 'Retour transfert', label: 'Retour transfert' },
+    { value: 'Retour groupé', label: 'Retour groupé' },
+    { value: 'Retour à retirer', label: 'Retour à retirer' },
+    { value: 'Retour vers vendeur', label: 'Retour vers vendeur' },
+    { value: 'Retourné au vendeur', label: 'Retourné au vendeur' },
+    { value: 'Echange échoué', label: 'Echange échoué' }
+  ]
 
   useEffect(() => {
     fetchDeliveryData()
@@ -174,7 +212,7 @@ export function DeliveryAgentDashboard() {
   // Fetch Yalidine shipments for dashboard tabs
   const fetchYalidineShipments = async () => {
     try {
-      const response = await yalidineAPI.getAllShipments({ page: 1 })
+      const response = await yalidineAPI.getAllShipments({ page: 1, limit: 1000 })
       setYalidineShipments(response.data || [])
     } catch (error) {
       console.error('Error fetching Yalidine shipments:', error)
@@ -206,7 +244,7 @@ export function DeliveryAgentDashboard() {
             totalShipments: 0
           }
         }),
-        yalidineAPI.getAllShipments({ page: 1 }).catch(err => {
+        yalidineAPI.getAllShipments({ page: 1, limit: 1000 }).catch(err => {
           console.warn('Failed to fetch Yalidine shipments:', err)
           return { data: [] }
         })
@@ -559,9 +597,21 @@ https://loudim.com/track-order
               <CardTitle className="flex items-center justify-between">
                 <div className="flex items-center">
                   <Package className="w-5 h-5 mr-2" />
-                  All Yalidine Parcels ({yalidineShipments.length})
+                  All Yalidine Parcels ({statusFilter === 'all' ? yalidineShipments.length : yalidineShipments.filter(s => s.last_status === statusFilter).length})
                 </div>
                 <div className="flex items-center space-x-2">
+                  <Select value={statusFilter} onValueChange={setStatusFilter}>
+                    <SelectTrigger className="w-48">
+                      <SelectValue placeholder="Filter by status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {yalidineStatuses.map((status) => (
+                        <SelectItem key={status.value} value={status.value}>
+                          {status.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <Button
                     size="sm"
                     variant="outline"
@@ -576,14 +626,19 @@ https://loudim.com/track-order
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {yalidineShipments.length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <Package className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                    <p>No parcels found</p>
-                    <p className="text-sm">All your Yalidine parcels will appear here</p>
-                  </div>
-                ) : (
-                  yalidineShipments.map((shipment, index) => (
+                {(() => {
+                  const filteredShipments = statusFilter === 'all' 
+                    ? yalidineShipments 
+                    : yalidineShipments.filter(shipment => shipment.last_status === statusFilter);
+                  
+                  return filteredShipments.length === 0 ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <Package className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                      <p>{statusFilter === 'all' ? 'No parcels found' : `No parcels with status "${statusFilter}"`}</p>
+                      <p className="text-sm">All your Yalidine parcels will appear here</p>
+                    </div>
+                  ) : (
+                    filteredShipments.map((shipment, index) => (
                     <div key={shipment.id || shipment.tracking || `parcel-${index}`} className="border rounded-lg p-4 hover:bg-muted/50 transition-colors">
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
@@ -663,7 +718,8 @@ https://loudim.com/track-order
                       </div>
                     </div>
                   ))
-                )}
+                );
+                })()}
               </div>
             </CardContent>
           </Card>
