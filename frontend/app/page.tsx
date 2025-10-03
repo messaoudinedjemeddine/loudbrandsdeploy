@@ -11,6 +11,7 @@ import { LazyImage } from '@/components/performance/lazy-image'
 import { LazyComponent } from '@/components/performance/lazy-component'
 import { useCartStore } from '@/lib/store'
 import { useLocaleStore } from '@/lib/locale-store'
+import Image from 'next/image'
 
 // Lazy load heavy components
 const Navbar = lazy(() => import('@/components/navbar').then(mod => ({ default: mod.Navbar })))
